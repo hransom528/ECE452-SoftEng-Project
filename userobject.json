@@ -1,0 +1,12 @@
+User Object:
+{
+  "userId": "String", // A unique identifier for the user, obtained from Auth0
+(if we want to send a user confirmation email, can we source their email from Auth0?)
+  “email”: “String”, // User’s email address
+  "name": "String", // The user's full name
+  "phoneNumber": "String", // The user's phone number
+  “stripeId”: “String”, // Corresponds to user’s payment details (inc. credit card information) handled by Stripe
+  “cartId”: “String” // Identifier of user’s unique shopping cart
+  “watchListId”: “String” // Identifier of user’s unique watchlist
+  “orderHistory”: “Array” // History of orderIDs for the user
+}
