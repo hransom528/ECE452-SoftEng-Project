@@ -1,4 +1,3 @@
-User Object:
 {
   "userId": "String", // A unique identifier for the user, obtained from Auth0
 (if we want to send a user confirmation email, can we source their email from Auth0?)
