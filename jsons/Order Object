@@ -1,0 +1,6 @@
+ {
+  “orderID” : ”String” / “long”, // Unique identifier for a particular order
+  “dateTime” : “Date”, // Date order is made using JavaScript Date object
+  “totalPrice” : “Number”, // Price summed from the products included in order along with tax and shipping/handling
+  “productList” : “Array” // Key-Value list of products and their quantities in cart
+}
