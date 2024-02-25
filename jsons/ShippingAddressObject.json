@@ -1,0 +1,10 @@
+{
+  “addressID” : “String” // Unique identifier of the shipping address 
+  “recipientName” : “String” // Name of order recipient (usually user, could also be a gift)
+  “streetAddress” : “String” // Shipping street address 
+  “city” : “String” // Shipping city 
+  “State” : “String” // Shipping state 
+  “postalCode” : “Number” // Shipping zip code
+  “isDefault” : “Boolean” // True or false if address is default 
+  “isValid” : “Boolean” // True or false depending on Google Address Validation API
+}
