@@ -1,0 +1,11 @@
+{
+  “watchListId” : ”String”, // Unique identifier to the watch list
+  “watchedPlaced” : ”String”, // Time the order was watched at (may delete)
+  “stockWarning” : “String” or Enum, // Warns if watched item is low on stock
+}
+
+ShoppingCart Object
+{
+  “cartId” : ”String”, // Unique Identifier to the cart
+  “cartSubtotal” : “Number”, // Total subtotal price of all combined products in the shopping cart
+}

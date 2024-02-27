@@ -1,0 +1,7 @@
+{
+  “reviewId” : “String” // Unique identifier to each review 
+  “title”: “String” // Title of the review
+  “rating” : “Number” // Integer from 1-5 corresponding to user’s satisfaction; represented in stars
+  “comment” : “String” // Text body of the review 
+  “dateTime” : “Date” // Date review was made using a JavaScript Date object 
+}

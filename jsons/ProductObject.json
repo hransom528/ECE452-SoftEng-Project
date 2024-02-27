@@ -1,0 +1,21 @@
+{
+  "productId": "String", // A unique identifier for the product
+  "name": "String", // The name of the product
+  "description": "String", // A description of the product
+  “brand”: “String”, // Brand name of the product
+  “trendingScore”, “String”, // Trending score to rank top trending products
+  “topTrending”, “Boolean” / “String” // Ranking of top trending products derived from trendingScores
+  "type": "String", // The type/category the product belongs to (e.g., "weights", "cardio equipment")
+  "price": "Number", // The price of the product
+  "stockQuantity": "Number", // The amount of stock available
+  "images": ["String"], // URLs to images of the product
+  "specs": {
+    "weight": "Number", // Weight of the product, if applicable
+    "dimensions": "String", // Dimensions of the product
+    "material": "String", // Material of the product
+    "color": "String" // Color of the product
+    “size”:”String” // Size of the product (S, M, L, etc.)
+  },
+  “rating”: “String” // Corresponds to average reviews ratings compiled from reviewIds associated with Product
+  "tags": ["String"] // Searchable tags associated with the product (possibly implement)
+}
