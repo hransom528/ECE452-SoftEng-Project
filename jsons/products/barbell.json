@@ -1,18 +1,21 @@
 {
-    "productId": "16FGEULYMPCCRLBRXWBA", 
-    "name": "Fitness Gear Olympic Curl Bar", 
-    "description": "This chrome solid steel bar accommodates 2” Olympic-style plates. Angling provides optimal comfort for the elbows and wrists. Especially effective in building the upper arm muscles and forearms.", 
-    "brand" : "Fitness Gear", 
-    "type": "Barbell",
-    "price": 69.99, 
-    "stockQuantity": 10, 
-    "images": ["https://dks.scene7.com/is/image/GolfGalaxy/16FGEULYMPCCRLBRXWBA-2?qlt=70&wid=600&fmt=pjpeg", "https://dks.scene7.com/is/image/GolfGalaxy/OCB-47_NOCOLOR_DET?wid=2000&fmt=pjpeg"], 
-    "specs": {
-      "weight": 16, 
-      "material": "Chrome", 
-      "color": "Silver" 
-    },
-    "trendingScore" : 4.5,
-    "topTrending" : false,
-    "rating": 4.2 
-  }
+  "_id": "16FGEULYMPCCRLBRXWBA",
+  "name": "Fitness Gear Olympic Curl Bar",
+  "description": "This chrome solid steel bar accommodates 2” Olympic-style plates. Angling provides optimal comfort for the elbows and wrists. Especially effective in building the upper arm muscles and forearms.",
+  "brand": "Fitness Gear",
+  "type": "Barbell",
+  "price": 69.99,
+  "stockQuantity": 10,
+  "images": [
+    "https://dks.scene7.com/is/image/GolfGalaxy/16FGEULYMPCCRLBRXWBA-2?qlt=70&wid=600&fmt=pjpeg",
+    "https://dks.scene7.com/is/image/GolfGalaxy/OCB-47_NOCOLOR_DET?wid=2000&fmt=pjpeg"
+  ],
+  "specs": {
+    "weight": 16,
+    "material": "Chrome",
+    "color": "Silver"
+  },
+  "trendingScore": 4.5,
+  "topTrending": false,
+  "rating": 4.2
+}
