@@ -2,7 +2,7 @@ const { MongoClient } = require('mongodb');
 const assert = require('assert');
 
 // MongoDB URI
-const MONGO_URI = 'mongodb+srv://your_username:your_password@your_cluster_url/your_database_name?retryWrites=true&w=majority';
+const MONGO_URI = 'mongodb+srv://admin:SoftEng452@cluster0.qecmfqe.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0';
 
 // Database Name
 const dbName = 'website';
