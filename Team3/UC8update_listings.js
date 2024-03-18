@@ -5,7 +5,7 @@ const assert = require('assert');
 const MONGO_URI = 'mongodb+srv://your_username:your_password@your_cluster_url/your_database_name?retryWrites=true&w=majority';
 
 // Database Name
-const dbName = 'your_database_name';
+const dbName = 'website';
 
 // Collection Name
 const collectionName = 'your_collection_name';
