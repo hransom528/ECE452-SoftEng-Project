@@ -11,4 +11,5 @@
 - Ali Eke
 
 ## Summary of Code Files
+- **Product_Search**: Searches the product database based on user query 
 - 
