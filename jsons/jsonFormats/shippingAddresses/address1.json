@@ -1,0 +1,10 @@
+{
+    "addressID" : 123456,
+    "recipientName" : "P Sherman",
+    "streetAddress" : "608 Francis Mine",
+    "city" : "Sacramento",
+    "state" : "California" ,
+    "postalCode" : 95814,
+    "isDefault" : false,
+    "isValid" : true 
+  }
