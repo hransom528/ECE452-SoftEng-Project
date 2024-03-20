@@ -7,7 +7,7 @@ async function connectDB() {
     try {
         await client.connect();
         console.log("Connected successfully to MongoDB");
-        return client.db('website'); // Specify your DB name
+        return client.db('website');
     } catch (error) {
         console.error("Could not connect to MongoDB", error);
         process.exit(1);

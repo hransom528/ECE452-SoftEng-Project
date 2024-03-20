@@ -1,10 +1,11 @@
 const { connectDB } = require('./dbConfig'); 
 
 async function testConnection() {
-    const db = await connectDB();
-    if(db) {
-        console.log("Database connection test successful.");
-        // Optionally, perform further operations to test the connection
+    try {
+        const db = await connectDB();
+        console.log("Database connection test successful.", db);
+    } catch (error) {
+        console.error("Failed to connect to MongoDB:", error.message);
     }
 }
 
