@@ -46,6 +46,4 @@ async function updateListings() {
 
 // Call the updateListings function
 updateListings();
- ///////hijkmknjnjn]
- ///hi sjbdqbdsb dc ksanckdc
- //adcd
+// new coment 
