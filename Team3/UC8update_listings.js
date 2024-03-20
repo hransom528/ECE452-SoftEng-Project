@@ -48,7 +48,3 @@ async function updateListings() {
 
 // Call the updateListings function
 updateListings();
-//Replace your_username, your_password, your_cluster_url, your_database_name, your_collection_name,
-//and your_product_id with your actual MongoDB credentials, database details, 
-//    and product ID for the listing you want to update.
-  //  You can modify the update object to include the fields you want to update for the listing.
