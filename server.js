@@ -1,6 +1,7 @@
 const http = require('http');
 const url = require('url');
 const { StringDecoder } = require('string_decoder');
+const {updateListings } = require('./Team3/UC8update_listings.js'); 
 const { 
     updateUserEmail,
     updateUserName,
@@ -34,6 +35,9 @@ const server = http.createServer(async (req, res) => {
                 switch (trimmedPath) {
                     case 'update-email':
                         result = await updateUserEmail(requestBody.userId, requestBody.newEmail);
+                        break;
+                    case 'update-listings':
+                            result = await updateListings(requestBody.productIds, requestBody.updateFields);
                         break;
                     case 'update-name':
                         result = await updateUserName(requestBody.userId, requestBody.newName);
