@@ -1,4 +1,4 @@
-const { MongoClient } = require('mongodb');
+const { ObjectId } = require('mongodb');
 const { connectDB } = require('../dbConfig');
 
 async function updateListings(productIds, updateFields) {
@@ -6,10 +6,13 @@ async function updateListings(productIds, updateFields) {
         throw new Error('\'productIds\' and \'updateFields\' are required');
     }
 
+    // Convert productIds from string to ObjectId
+    const objectIdProductIds = productIds.map(id => new ObjectId(id));
+
     const db = await connectDB();
     const collection = db.collection('products');
 
-    const filter = { productId: { $in: productIds } };
+    const filter = { _id: { $in: objectIdProductIds } };
     const update = {
         $set: updateFields
     };
@@ -21,7 +24,6 @@ async function updateListings(productIds, updateFields) {
     console.log('Listings updated successfully');
     return result;
 }
-
 module.exports = {
-     updateListings
+    updateListings
 };
