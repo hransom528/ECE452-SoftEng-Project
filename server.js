@@ -37,7 +37,7 @@ const server = http.createServer(async (req, res) => {
                         result = await updateUserEmail(requestBody.userId, requestBody.newEmail);
                         break;
                     case 'update-listings':
-                            result = await updateListings(requestBody.productIds, requestBody.updateFields);
+                        result = await updateListings(requestBody.productIds, requestBody.updateFields);
                         break;
                     case 'update-name':
                         result = await updateUserName(requestBody.userId, requestBody.newName);
