@@ -1,14 +1,9 @@
 const { MongoClient } = require('mongodb');
-const assert = require('assert');
-
-const MONGO_URI = 'mongodb+srv://admin:SoftEng452@cluster0.qecmfqe.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0';
-const dbName = 'website';
-const collectionName = 'products';
 const { connectDB } = require('../dbConfig');
 
-async function updateProductsById(productIds, updateFields) {
+async function updateListings(productIds, updateFields) {
     if (!productIds || !updateFields) {
-        throw new Error('productIds and updateFields are required');
+        throw new Error('\'productIds\' and \'updateFields\' are required');
     }
 
     const db = await connectDB();
@@ -28,5 +23,5 @@ async function updateProductsById(productIds, updateFields) {
 }
 
 module.exports = {
-    updateProductsById
+     updateListings
 };
