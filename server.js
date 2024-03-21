@@ -37,6 +37,9 @@ const server = http.createServer(async (req, res) => {
                         result = await updateUserEmail(requestBody.userId, requestBody.newEmail);
                         break;
                     case 'update-listings':
+                        if (!Array.isArray(requestBody.productIds) || typeof requestBody.updateFields !== 'object') {
+                            throw new Error('Invalid input for updating listings');
+                        }
                         result = await updateListings(requestBody.productIds, requestBody.updateFields);
                         break;
                     case 'update-name':
