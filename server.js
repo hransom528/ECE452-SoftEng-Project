@@ -4,6 +4,8 @@ const http = require('http');
 const url = require('url');
 const { StringDecoder } = require('string_decoder');
 const {updateListings } = require('./Team3/UC8update_listings.js'); 
+const { addProduct } = require('./Team3/UCCreateProduct.js');
+
 const { 
     updateUserEmail,
     updateUserName,
@@ -59,6 +61,10 @@ const server = http.createServer(async (req, res) => {
                     case 'update-shipping-address':
                         result = await updateUserShippingAddress(requestBody.userId, requestBody.addressId, requestBody.updatedAddress);
                         break;
+                    case 'add-product':
+                    result = await addProduct(requestBody);
+                     break;
+
                     default:
                         throw new Error('Route not found');
                 }
