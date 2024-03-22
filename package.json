@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "dotenv": "^16.4.5",
     "googleapis": "^133.0.0",
     "mongodb": "^6.5.0",
     "node": "^21.7.1",
