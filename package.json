@@ -1,9 +1,11 @@
 {
   "dependencies": {
     "dotenv": "^16.4.5",
+    "google-auth-library": "^9.7.0",
     "googleapis": "^133.0.0",
     "mongodb": "^6.5.0",
     "node": "^21.7.1",
+    "node-fetch": "^3.3.2",
     "nodemailer": "^6.9.13",
     "stripe": "^14.21.0",
     "uuid": "^9.0.1"

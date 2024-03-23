@@ -1,3 +1,6 @@
+const { registerUser } = require('./Team1/Reg_lgn/registration');
+const { getAccessTokenFromCode, getUserInfo } = require('./Team1/Reg_lgn/oAuthHandler');
+
 require('dotenv').config();
 
 const http = require('http');
@@ -62,8 +65,30 @@ const server = http.createServer(async (req, res) => {
                         result = await updateUserShippingAddress(requestBody.userId, requestBody.addressId, requestBody.updatedAddress);
                         break;
                     case 'add-product':
-                    result = await addProduct(requestBody);
-                     break;
+                        result = await addProduct(requestBody);
+                        break;
+                    case 'registerUser':
+                        const accessToken = requestBody.accToken; // part of post request JSON
+                        if (!accessToken) {
+                            throw new Error('Not able to authorize'); // maybe give res writehead here
+                        }
+                        try {
+                            // exchanging code for for access Token
+                            // const accessToken = await getAccessTokenFromCode(authCode);
+
+                            // use access token to get user's info from google account
+                            const userInfo = await getUserInfo(accessToken);
+
+                            //use the info we got to finish registering the user
+                            result = await registerUser(userInfo, requestBody);
+                        } catch (oauthError) {
+                            // handling auth errors
+                            res.writeHead(400, { 'Content-Type': 'application/json' });
+                            res.end(JSON.stringify({ message: 'OAuth Error', error: oauthError.message }));
+                            return;
+                        }
+
+                        break;
 
                     default:
                         throw new Error('Route not found');
