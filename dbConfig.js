@@ -1,5 +1,5 @@
 const { MongoClient } = require('mongodb');
-
+const dbName = 'website';
 const mongoURI = process.env.MONGO_URI;
 const client = new MongoClient(mongoURI);
 
