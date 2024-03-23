@@ -53,7 +53,7 @@ const server = http.createServer(async (req, res) => {
                     case 'update-email':
                         result = await updateUserEmail(requestBody.userId, requestBody.newEmail);
                         break;
-                        case 'update-listings':
+                    case 'update-listings':
                             console.log("Received productIds for update:", requestBody.productIds);
                             console.log("Received update fields:", requestBody.updateFields);
                             console.log("Received fields to remove:", requestBody.unsetFields); // Log the fields to remove
