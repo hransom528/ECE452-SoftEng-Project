@@ -1,6 +1,5 @@
 const Stripe = require('stripe');
-// Access the Stripe secret key from environment variables
-const stripe = Stripe(process.env.pk_test_51Ot8H8IYD2Ak4FLoPHpmVZsGQY9mtmlaJBqmDxQvuqi6HsM9oDkIal74YGlJDw0LuWqNxb8r1eD8cH1Q2yjGtvpW00crbHgrlB);
+const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
 async function createPaymentIntent(amount, currency) {
     try {
         const paymentIntent = await stripe.paymentIntents.create({
