@@ -44,21 +44,22 @@ const server = http.createServer(async (req, res) => {
                     case 'update-email':
                         result = await updateUserEmail(requestBody.userId, requestBody.newEmail);
                         break;
-                     case 'update-listings':
+                        case 'update-listings':
                             console.log("Received productIds for update:", requestBody.productIds);
                             console.log("Received update fields:", requestBody.updateFields);
+                            console.log("Received fields to remove:", requestBody.unsetFields); // Log the fields to remove
                         
                             if (!Array.isArray(requestBody.productIds) || 
                                 typeof requestBody.updateFields !== 'object' ||
-                                requestBody.productIds.some(id => !ObjectId.isValid(id))) {
+                                requestBody.productIds.some(id => !ObjectId.isValid(id)) ||
+                                (requestBody.unsetFields && !Array.isArray(requestBody.unsetFields))) { // Check if unsetFields is an array if it exists
                                 res.writeHead(400, { 'Content-Type': 'application/json' });
                                 res.end(JSON.stringify({ message: 'Invalid input for updating listings' }));
                                 return;  
                             }
-                    
-                            result = await updateListings(requestBody.productIds, requestBody.updateFields);
-                            break;
                         
+                            result = await updateListings(requestBody.productIds, requestBody.updateFields, requestBody.unsetFields); // Pass the unsetFields as well
+                            break;
                     case 'update-name':
                         result = await updateUserName(requestBody.userId, requestBody.newName);
                         break;
