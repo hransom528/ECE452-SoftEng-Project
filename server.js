@@ -1,8 +1,9 @@
 require('dotenv').config();
-
+const { ObjectId } = require('mongodb');
 const http = require('http');
 const url = require('url');
 const { StringDecoder } = require('string_decoder');
+
 const {updateListings } = require('./Team3/UC8update_listings.js'); 
 const { addProduct } = require('./Team3/UCCreateProduct.js');
 const { updateDiscount } = require('./Team3/UC10DiscountManagement.js');
@@ -31,8 +32,10 @@ const server = http.createServer(async (req, res) => {
 
         req.on('end', async () => {
             buffer += decoder.end();
+            console.log("Received buffer:", buffer);
 
             // Handle POST requests
+            
             try {
                 const requestBody = JSON.parse(buffer);
                 let result = null;
@@ -41,12 +44,21 @@ const server = http.createServer(async (req, res) => {
                     case 'update-email':
                         result = await updateUserEmail(requestBody.userId, requestBody.newEmail);
                         break;
-                    case 'update-listings':
-                        if (!Array.isArray(requestBody.productIds) || typeof requestBody.updateFields !== 'object') {
-                            throw new Error('Invalid input for updating listings');
-                        }
-                        result = await updateListings(requestBody.productIds, requestBody.updateFields);
-                        break;
+                     case 'update-listings':
+                            console.log("Received productIds for update:", requestBody.productIds);
+                            console.log("Received update fields:", requestBody.updateFields);
+                        
+                            if (!Array.isArray(requestBody.productIds) || 
+                                typeof requestBody.updateFields !== 'object' ||
+                                requestBody.productIds.some(id => !ObjectId.isValid(id))) {
+                                res.writeHead(400, { 'Content-Type': 'application/json' });
+                                res.end(JSON.stringify({ message: 'Invalid input for updating listings' }));
+                                return;  
+                            }
+                    
+                            result = await updateListings(requestBody.productIds, requestBody.updateFields);
+                            break;
+                        
                     case 'update-name':
                         result = await updateUserName(requestBody.userId, requestBody.newName);
                         break;
@@ -81,8 +93,9 @@ const server = http.createServer(async (req, res) => {
                 res.writeHead(200, { 'Content-Type': 'application/json' });
                 res.end(JSON.stringify({ message: 'Operation successful', data: result }));
             } catch (error) {
+                console.error("Error parsing JSON:", error);
                 res.writeHead(400, { 'Content-Type': 'application/json' });
-                res.end(JSON.stringify({ message: 'Error processing request', error: error.message }));
+                res.end(JSON.stringify({ message: 'Invalid JSON format', error: error.toString() }));
             }
         });
     } else {
