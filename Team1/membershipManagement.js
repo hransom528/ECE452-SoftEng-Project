@@ -1,37 +1,66 @@
-const stripe = require('stripe')('pk_test_51Ot8H8IYD2Ak4FLoPHpmVZsGQY9mtmlaJBqmDxQvuqi6HsM9oDkIal74YGlJDw0LuWqNxb8r1eD8cH1Q2yjGtvpW00crbHgrlB'); // Replace with your Stripe secret key
+const { connectDB } = require('../dbConfig');
+const { ObjectId } = require('mongodb');
 
-async function createPremiumMembership(userId, paymentMethodId) {
-    // have Stripe Customer ID and Price ID stored/configured
-    const customer = /* retrieve or create the Stripe Customer ID for the given userId */;
-    const priceId = /* Stripe Price ID for premium membership */;
+// Will implement Stripe validation later. For now, assuming payment is valid.
 
-    try {
-        const subscription = await stripe.subscriptions.create({
-            customer: customer,
-            items: [{ price: priceId }],
-            default_payment_method: paymentMethodId,
-            expand: ['latest_invoice.payment_intent'],
-        });
+async function getUserById(userId) {
+    const db = await connectDB();
+    const collection = db.collection('users');
 
-        console.log("Created premium membership for user", userId);
-        return subscription;
-    } catch (error) {
-        console.error("Failed to create premium membership", error);
-        throw error;
+    const user = await collection.findOne({ _id: new ObjectId(userId) });
+    return user;
+}
+
+async function updateUserPremiumStatus(userId, isPremium) {
+    const db = await connectDB();
+    const collection = db.collection('users');
+
+    const result = await collection.updateOne(
+        { _id: new ObjectId(userId) }, // Convert string ID to ObjectId
+        { $set: { isPremium: isPremium } }
+    );
+    return result.modifiedCount === 1;
+}
+
+
+async function createPremiumMembership(userId) {
+    const user = await getUserById(userId);
+
+    if (user.isPremium) {
+        console.log("User is already a premium member.");
+        return false; // Indicates no action was taken since the user is already premium
+    }
+
+    // test: assume payment is always valid
+    const paymentIsValid = true; // would implement a check with Stripe
+
+    if (paymentIsValid) {
+        const updateSucceeded = await updateUserPremiumStatus(userId, true);
+        if (updateSucceeded) {
+            console.log("Created premium membership for user", userId);
+            return true; // Indicates successful update
+        } else {
+            console.error("Failed to update user's premium status");
+            return false;
+        }
     }
 }
 
 async function cancelPremiumMembership(userId) {
-    const subscriptionId = /* retrieve the Stripe Subscription ID for the given userId */;
-    
-    try {
-        const canceledSubscription = await stripe.subscriptions.del(subscriptionId);
-        
+    const user = await getUserById(userId);
+
+    if (!user.isPremium) {
+        console.log("User is not a premium member.");
+        return false; // Indicates no action was taken since the user is not premium
+    }
+
+    const updateSucceeded = await updateUserPremiumStatus(userId, false);
+    if (updateSucceeded) {
         console.log("Cancelled premium membership for user", userId);
-        return canceledSubscription;
-    } catch (error) {
-        console.error("Failed to cancel premium membership", error);
-        throw error;
+        return true; // Indicates successful update
+    } else {
+        console.error("Failed to update user's premium status");
+        return false;
     }
 }
 

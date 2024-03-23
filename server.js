@@ -4,7 +4,7 @@ const http = require('http');
 const url = require('url');
 const { StringDecoder } = require('string_decoder');
 const { createPaymentIntent, saveCard } = require('./Team3/stripe.js');
-const {updateListings } = require('./Team3/UC8update_listings.js'); 
+const { updateListings } = require('./Team3/UC8update_listings.js'); 
 const { addProduct } = require('./Team3/UCCreateProduct.js');
 const { updateDiscount } = require('./Team3/UC10DiscountManagement.js');
 const { 
@@ -15,8 +15,8 @@ const {
     addUserShippingAddress,
     updateUserShippingAddress
 } = require('./Team1/userProfile');
-
 const { startChat } = require('./Team1/chatSupport.js');
+const { createPremiumMembership, cancelPremiumMembership } = require('./Team1/membershipManagement.js');
 
 // Initialize chat instance before starting server
 let chatInstance = null;
@@ -49,9 +49,6 @@ const server = http.createServer(async (req, res) => {
                 let result = null;
 
                 switch (trimmedPath) {
-                    case 'update-email':
-                        result = await updateUserEmail(requestBody.userId, requestBody.newEmail);
-                        break;
                     case 'update-listings':
                             console.log("Received productIds for update:", requestBody.productIds);
                             console.log("Received update fields:", requestBody.updateFields);
@@ -83,7 +80,18 @@ const server = http.createServer(async (req, res) => {
                                     throw new Error('Missing required fields for saving card');
                                 }
                                 break;
-                        
+                    case 'update-discount':
+                        // Make sure requestBody has the necessary fields
+                        if (!requestBody._id || !requestBody.discountPercentage) {
+                            throw new Error('Both _id and discountPercentage are required');
+                        }
+                        result = await updateDiscount(requestBody._id, requestBody.discountPercentage);
+                        break;
+            
+                    // userProfile.js
+                    case 'update-email':
+                        result = await updateUserEmail(requestBody.userId, requestBody.newEmail);
+                        break;    
                     case 'update-name':
                         result = await updateUserName(requestBody.userId, requestBody.newName);
                         break;
@@ -102,6 +110,8 @@ const server = http.createServer(async (req, res) => {
                     case 'add-product':
                     result = await addProduct(requestBody);
                         break;
+
+                    // chatSupport.js
                     case 'send-chat-message':
                         if (!chatInstance) {
                             res.writeHead(503, { 'Content-Type': 'application/json' });
@@ -118,6 +128,21 @@ const server = http.createServer(async (req, res) => {
                             return;
                         }
                         break;
+                    
+                    // membershipManagement.js
+                    case 'create-premium-membership':
+                        if (!requestBody.userId) {
+                            throw new Error('Missing userId for creating premium membership');
+                        }
+                        result = await createPremiumMembership(requestBody.userId);
+                        break;
+                    case 'cancel-premium-membership':
+                        if (!requestBody.userId) {
+                            throw new Error('Missing userId for cancelling premium membership');
+                        }
+                        result = await cancelPremiumMembership(requestBody.userId);
+                        break;
+            
                                             
                     default:
                         throw new Error('Route not found');
