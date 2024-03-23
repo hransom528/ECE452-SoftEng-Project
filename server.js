@@ -5,6 +5,7 @@ const url = require('url');
 const { StringDecoder } = require('string_decoder');
 const {updateListings } = require('./Team3/UC8update_listings.js'); 
 const { addProduct } = require('./Team3/UCCreateProduct.js');
+const { updateDiscount } = require('./Team3/UC10DiscountManagement.js');
 
 const { 
     updateUserEmail,
@@ -63,7 +64,15 @@ const server = http.createServer(async (req, res) => {
                         break;
                     case 'add-product':
                     result = await addProduct(requestBody);
-                     break;
+                        break;
+                    case 'update-discount':
+                        // Make sure requestBody has the necessary fields
+                        if (!requestBody._id || !requestBody.discountPercentage) {
+                            throw new Error('Both _id and discountPercentage are required');
+                        }
+                        result = await updateDiscount(requestBody._id, requestBody.discountPercentage);
+                      break;
+    
 
                     default:
                         throw new Error('Route not found');
