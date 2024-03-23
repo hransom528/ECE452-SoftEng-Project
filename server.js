@@ -7,6 +7,7 @@ const { StringDecoder } = require('string_decoder');
 const {updateListings } = require('./Team3/UC8update_listings.js'); 
 const { addProduct } = require('./Team3/UCCreateProduct.js');
 const { updateDiscount } = require('./Team3/UC10DiscountManagement.js');
+const { getProductPerformance } = require('./Team3/UC9_Product_Performace_Insight.js');
 
 const { 
     updateUserEmail,
@@ -15,7 +16,6 @@ const {
     updateUserPremiumStatus,
     addUserShippingAddress,
     updateUserShippingAddress,
-    getProductPerformance
 } = require('./Team1/userProfile');
 
 const server = http.createServer(async (req, res) => {
