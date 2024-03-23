@@ -1,6 +1,6 @@
 const Stripe = require('stripe');
-// Access the Stripe secret key from environment variables
 const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
+
 
 async function createPaymentIntent(amount, currency) {
     try {
