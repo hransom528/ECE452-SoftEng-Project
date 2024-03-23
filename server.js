@@ -7,7 +7,6 @@ const { createPaymentIntent, saveCard } = require('./Team3/stripe.js');
 const {updateListings } = require('./Team3/UC8update_listings.js'); 
 const { addProduct } = require('./Team3/UCCreateProduct.js');
 const { updateDiscount } = require('./Team3/UC10DiscountManagement.js');
-
 const { 
     updateUserEmail,
     updateUserName,
