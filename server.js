@@ -3,11 +3,10 @@ const { ObjectId } = require('mongodb');
 const http = require('http');
 const url = require('url');
 const { StringDecoder } = require('string_decoder');
-
-const {updateListings } = require('./Team3/UC8update_listings.js'); 
+const { createPaymentIntent, saveCard } = require('./Team3/stripe.js');
+const { updateListings } = require('./Team3/UC8update_listings.js'); 
 const { addProduct } = require('./Team3/UCCreateProduct.js');
 const { updateDiscount } = require('./Team3/UC10DiscountManagement.js');
-
 const { 
     updateUserEmail,
     updateUserName,
@@ -16,8 +15,8 @@ const {
     addUserShippingAddress,
     updateUserShippingAddress
 } = require('./Team1/userProfile');
-
 const { startChat } = require('./Team1/chatSupport.js');
+const { createPremiumMembership, cancelPremiumMembership } = require('./Team1/membershipManagement.js');
 
 // Initialize chat instance before starting server
 let chatInstance = null;
@@ -51,20 +50,36 @@ const server = http.createServer(async (req, res) => {
 
                 switch (trimmedPath) {
                     case 'update-listings':
-                        console.log("Received productIds for update:", requestBody.productIds);
-                        console.log("Received update fields:", requestBody.updateFields);
-                        console.log("Received fields to remove:", requestBody.unsetFields); // Log the fields to remove
-                    
-                        if (!Array.isArray(requestBody.productIds) || 
-                            typeof requestBody.updateFields !== 'object' ||
-                            requestBody.productIds.some(id => !ObjectId.isValid(id)) ||
-                            (requestBody.unsetFields && !Array.isArray(requestBody.unsetFields))) { // Check if unsetFields is an array if it exists
-                            res.writeHead(400, { 'Content-Type': 'application/json' });
-                            res.end(JSON.stringify({ message: 'Invalid input for updating listings' }));
-                            return;  
-                        }
-                        result = await updateListings(requestBody.productIds, requestBody.updateFields, requestBody.unsetFields); // Pass the unsetFields as well
-                        break;
+                            console.log("Received productIds for update:", requestBody.productIds);
+                            console.log("Received update fields:", requestBody.updateFields);
+                            console.log("Received fields to remove:", requestBody.unsetFields); // Log the fields to remove
+                        
+                            if (!Array.isArray(requestBody.productIds) || 
+                                typeof requestBody.updateFields !== 'object' ||
+                                requestBody.productIds.some(id => !ObjectId.isValid(id)) ||
+                                (requestBody.unsetFields && !Array.isArray(requestBody.unsetFields))) { // Check if unsetFields is an array if it exists
+                                res.writeHead(400, { 'Content-Type': 'application/json' });
+                                res.end(JSON.stringify({ message: 'Invalid input for updating listings' }));
+                                return;  
+                            }
+                        
+                            result = await updateListings(requestBody.productIds, requestBody.updateFields, requestBody.unsetFields); // Pass the unsetFields as well
+                            break;
+                    case 'create-payment-intent':
+                                if (requestBody.amount && requestBody.currency) {
+                                    result = await createPaymentIntent(requestBody.amount, requestBody.currency);
+                                } else {
+                                    throw new Error('Missing required fields for payment intent');
+                                }
+                                break;
+                        
+                    case 'save-card':
+                                if (requestBody.paymentMethodId && requestBody.customerId) {
+                                    result = await saveCard(requestBody.paymentMethodId, requestBody.customerId);
+                                } else {
+                                    throw new Error('Missing required fields for saving card');
+                                }
+                                break;
                     case 'update-discount':
                         // Make sure requestBody has the necessary fields
                         if (!requestBody._id || !requestBody.discountPercentage) {
@@ -72,6 +87,8 @@ const server = http.createServer(async (req, res) => {
                         }
                         result = await updateDiscount(requestBody._id, requestBody.discountPercentage);
                         break;
+            
+                    // userProfile.js
                     case 'update-email':
                         result = await updateUserEmail(requestBody.userId, requestBody.newEmail);
                         break;    
@@ -93,6 +110,8 @@ const server = http.createServer(async (req, res) => {
                     case 'add-product':
                     result = await addProduct(requestBody);
                         break;
+
+                    // chatSupport.js
                     case 'send-chat-message':
                         if (!chatInstance) {
                             res.writeHead(503, { 'Content-Type': 'application/json' });
@@ -109,6 +128,21 @@ const server = http.createServer(async (req, res) => {
                             return;
                         }
                         break;
+                    
+                    // membershipManagement.js
+                    case 'create-premium-membership':
+                        if (!requestBody.userId) {
+                            throw new Error('Missing userId for creating premium membership');
+                        }
+                        result = await createPremiumMembership(requestBody.userId);
+                        break;
+                    case 'cancel-premium-membership':
+                        if (!requestBody.userId) {
+                            throw new Error('Missing userId for cancelling premium membership');
+                        }
+                        result = await cancelPremiumMembership(requestBody.userId);
+                        break;
+            
                                             
                     default:
                         throw new Error('Route not found');
