@@ -14,7 +14,8 @@ const {
     updateUserPhoneNumber,
     updateUserPremiumStatus,
     addUserShippingAddress,
-    updateUserShippingAddress
+    updateUserShippingAddress,
+    getProductPerformance
 } = require('./Team1/userProfile');
 
 const server = http.createServer(async (req, res) => {
@@ -85,7 +86,19 @@ const server = http.createServer(async (req, res) => {
                         }
                         result = await updateDiscount(requestBody._id, requestBody.discountPercentage);
                       break;
-    
+                    case 'get-product-performance':
+                        const productIds = parsedUrl.query.productIds ? parsedUrl.query.productIds.split(',') : [];
+                        getProductPerformance(productIds)
+                            .then(performanceData => {
+                                res.writeHead(200, { 'Content-Type': 'application/json' });
+                                res.end(JSON.stringify({ message: 'Product performance data fetched successfully', data: performanceData }));
+                            })
+                            .catch(error => {
+                                console.error("Error fetching product performance data:", error);
+                                res.writeHead(500, { 'Content-Type': 'application/json' });
+                                res.end(JSON.stringify({ message: 'Failed to fetch product performance data', error: error.toString() }));
+                            });
+                        break;
 
                     default:
                         throw new Error('Route not found');
