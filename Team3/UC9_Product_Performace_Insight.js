@@ -1,61 +1,53 @@
-const { MongoClient } = require('mongodb');
-//const assert = require('assert');
+const { ObjectId } = require('mongodb');
+const { connectDB } = require('../dbConfig.js');
 
-// MongoDB URI
-const MONGO_URI = 'mongodb+srv://admin:SoftEng452@cluster0.qecmfqe.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0';
-// Database Name
-const dbName = 'website';
+const getProductPerformance = async (productIds) => {
+    const db = await connectDB();
+    const sales = db.collection('sales');
+    const ratings = db.collection('ratings');
 
-// Collection Name
-const salesCollectionName = 'sales_data'; //  sales data collection
-const ratingsCollectionName = 'customer_ratings'; // customer ratings collection
+    console.log("Fetching performance data for productIds:", productIds);
 
-// Function to fetch and analyze product performance insights
-async function fetchProductPerformanceInsights() {
-    const client = new MongoClient(MONGO_URI);
     try {
-        await client.connect();
-        console.log('Connected to MongoDB');
-
-        const db = client.db(dbName);
-
-        // Fetch sales data
-        const salesCollection = db.collection(salesCollectionName);
-        const salesData = await salesCollection.find({}).toArray(); // Fetches all sales data
-        console.log('Sales Data:', salesData);
-
-        // Calculate total sales and average sales per product
-        let totalSales = 0;
-        let productCount = 0;
-        salesData.forEach(sale => {
-            totalSales += sale.amount; //  'amount' represents the sales figure
-            productCount++;
+        const salesDataPromises = productIds.map(id => {
+            if (!ObjectId.isValid(id)) {
+                throw new Error(`Invalid ObjectId: ${id}`);
+            }
+            return sales.aggregate([
+                { $match: { productId: new ObjectId(id) } },
+                { $group: { _id: "$productId", totalSales: { $sum: "$amount" } } }
+            ]).toArray();
         });
-        const averageSales = totalSales / productCount;
-        console.log('Total Sales:', totalSales, 'Average Sales per Product:', averageSales);
 
-        // Fetch customer ratings
-        const ratingsCollection = db.collection(ratingsCollectionName);
-        const ratingsData = await ratingsCollection.find({}).toArray(); // Fetches all ratings data
-        console.log('Ratings Data:', ratingsData);
-
-        // Calculate average rating
-        let totalRating = 0;
-        ratingsData.forEach(rating => {
-            totalRating += rating.score; //  'score' represents the rating
+        const ratingsDataPromises = productIds.map(id => {
+            if (!ObjectId.isValid(id)) {
+                throw new Error(`Invalid ObjectId: ${id}`);
+            }
+            return ratings.aggregate([
+                { $match: { productId: new ObjectId(id) } },
+                { $group: { _id: "$productId", averageRating: { $avg: "$rating" } } }
+            ]).toArray();
         });
-        const averageRating = totalRating / ratingsData.length;
-        console.log('Average Rating:', averageRating);
 
-    } catch (err) {
-        console.error('Error fetching product performance insights:', err);
-    } finally {
-        // Close the client
-        await client.close();
-        console.log('Disconnected from MongoDB');
+        const salesDataResults = await Promise.allSettled(salesDataPromises);
+        const ratingsDataResults = await Promise.allSettled(ratingsDataPromises);
+
+        const performanceData = productIds.map(id => {
+            const salesData = salesDataResults.find(result => result.status === 'fulfilled' && result.value[0]?._id.toString() === id);
+            const ratingsData = ratingsDataResults.find(result => result.status === 'fulfilled' && result.value[0]?._id.toString() === id);
+
+            return {
+                productId: id,
+                totalSales: salesData?.value[0]?.totalSales || 0,
+                averageRating: ratingsData?.value[0]?.averageRating || 0
+            };
+        });
+
+        return performanceData;
+    } catch (error) {
+        console.error("An error occurred while fetching product performance data:", error);
+        throw error;
     }
-}
+};
 
-// Call the function to fetch product performance insights
-fetchProductPerformanceInsights();
-
+module.exports = { getProductPerformance };
