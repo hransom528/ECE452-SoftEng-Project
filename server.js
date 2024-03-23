@@ -3,7 +3,7 @@ const { ObjectId } = require('mongodb');
 const http = require('http');
 const url = require('url');
 const { StringDecoder } = require('string_decoder');
-
+const { createPaymentIntent, saveCard } = require('./Team3/stripe.js');
 const {updateListings } = require('./Team3/UC8update_listings.js'); 
 const { addProduct } = require('./Team3/UCCreateProduct.js');
 const { updateDiscount } = require('./Team3/UC10DiscountManagement.js');
@@ -50,31 +50,41 @@ const server = http.createServer(async (req, res) => {
                 let result = null;
 
                 switch (trimmedPath) {
-                    case 'update-listings':
-                        console.log("Received productIds for update:", requestBody.productIds);
-                        console.log("Received update fields:", requestBody.updateFields);
-                        console.log("Received fields to remove:", requestBody.unsetFields); // Log the fields to remove
-                    
-                        if (!Array.isArray(requestBody.productIds) || 
-                            typeof requestBody.updateFields !== 'object' ||
-                            requestBody.productIds.some(id => !ObjectId.isValid(id)) ||
-                            (requestBody.unsetFields && !Array.isArray(requestBody.unsetFields))) { // Check if unsetFields is an array if it exists
-                            res.writeHead(400, { 'Content-Type': 'application/json' });
-                            res.end(JSON.stringify({ message: 'Invalid input for updating listings' }));
-                            return;  
-                        }
-                        result = await updateListings(requestBody.productIds, requestBody.updateFields, requestBody.unsetFields); // Pass the unsetFields as well
-                        break;
-                    case 'update-discount':
-                        // Make sure requestBody has the necessary fields
-                        if (!requestBody._id || !requestBody.discountPercentage) {
-                            throw new Error('Both _id and discountPercentage are required');
-                        }
-                        result = await updateDiscount(requestBody._id, requestBody.discountPercentage);
-                        break;
                     case 'update-email':
                         result = await updateUserEmail(requestBody.userId, requestBody.newEmail);
-                        break;    
+                        break;
+                        case 'update-listings':
+                            console.log("Received productIds for update:", requestBody.productIds);
+                            console.log("Received update fields:", requestBody.updateFields);
+                            console.log("Received fields to remove:", requestBody.unsetFields); // Log the fields to remove
+                        
+                            if (!Array.isArray(requestBody.productIds) || 
+                                typeof requestBody.updateFields !== 'object' ||
+                                requestBody.productIds.some(id => !ObjectId.isValid(id)) ||
+                                (requestBody.unsetFields && !Array.isArray(requestBody.unsetFields))) { // Check if unsetFields is an array if it exists
+                                res.writeHead(400, { 'Content-Type': 'application/json' });
+                                res.end(JSON.stringify({ message: 'Invalid input for updating listings' }));
+                                return;  
+                            }
+                        
+                            result = await updateListings(requestBody.productIds, requestBody.updateFields, requestBody.unsetFields); // Pass the unsetFields as well
+                            break;
+                    case 'create-payment-intent':
+                                if (requestBody.amount && requestBody.currency) {
+                                    result = await createPaymentIntent(requestBody.amount, requestBody.currency);
+                                } else {
+                                    throw new Error('Missing required fields for payment intent');
+                                }
+                                break;
+                        
+                    case 'save-card':
+                                if (requestBody.paymentMethodId && requestBody.customerId) {
+                                    result = await saveCard(requestBody.paymentMethodId, requestBody.customerId);
+                                } else {
+                                    throw new Error('Missing required fields for saving card');
+                                }
+                                break;
+                        
                     case 'update-name':
                         result = await updateUserName(requestBody.userId, requestBody.newName);
                         break;
