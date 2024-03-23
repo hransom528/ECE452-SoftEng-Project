@@ -17,6 +17,15 @@ const {
     updateUserShippingAddress
 } = require('./Team1/userProfile');
 
+const { startChat } = require('./Team1/chatSupport.js');
+
+// Initialize chat instance before starting server
+let chatInstance = null;
+startChat().then(chat => {
+    chatInstance = chat;
+}).catch(error => console.error('Failed to start chat:', error));
+
+
 const server = http.createServer(async (req, res) => {
     const parsedUrl = url.parse(req.url, true);
     const path = parsedUrl.pathname;
@@ -41,25 +50,31 @@ const server = http.createServer(async (req, res) => {
                 let result = null;
 
                 switch (trimmedPath) {
+                    case 'update-listings':
+                        console.log("Received productIds for update:", requestBody.productIds);
+                        console.log("Received update fields:", requestBody.updateFields);
+                        console.log("Received fields to remove:", requestBody.unsetFields); // Log the fields to remove
+                    
+                        if (!Array.isArray(requestBody.productIds) || 
+                            typeof requestBody.updateFields !== 'object' ||
+                            requestBody.productIds.some(id => !ObjectId.isValid(id)) ||
+                            (requestBody.unsetFields && !Array.isArray(requestBody.unsetFields))) { // Check if unsetFields is an array if it exists
+                            res.writeHead(400, { 'Content-Type': 'application/json' });
+                            res.end(JSON.stringify({ message: 'Invalid input for updating listings' }));
+                            return;  
+                        }
+                        result = await updateListings(requestBody.productIds, requestBody.updateFields, requestBody.unsetFields); // Pass the unsetFields as well
+                        break;
+                    case 'update-discount':
+                        // Make sure requestBody has the necessary fields
+                        if (!requestBody._id || !requestBody.discountPercentage) {
+                            throw new Error('Both _id and discountPercentage are required');
+                        }
+                        result = await updateDiscount(requestBody._id, requestBody.discountPercentage);
+                        break;
                     case 'update-email':
                         result = await updateUserEmail(requestBody.userId, requestBody.newEmail);
-                        break;
-                        case 'update-listings':
-                            console.log("Received productIds for update:", requestBody.productIds);
-                            console.log("Received update fields:", requestBody.updateFields);
-                            console.log("Received fields to remove:", requestBody.unsetFields); // Log the fields to remove
-                        
-                            if (!Array.isArray(requestBody.productIds) || 
-                                typeof requestBody.updateFields !== 'object' ||
-                                requestBody.productIds.some(id => !ObjectId.isValid(id)) ||
-                                (requestBody.unsetFields && !Array.isArray(requestBody.unsetFields))) { // Check if unsetFields is an array if it exists
-                                res.writeHead(400, { 'Content-Type': 'application/json' });
-                                res.end(JSON.stringify({ message: 'Invalid input for updating listings' }));
-                                return;  
-                            }
-                        
-                            result = await updateListings(requestBody.productIds, requestBody.updateFields, requestBody.unsetFields); // Pass the unsetFields as well
-                            break;
+                        break;    
                     case 'update-name':
                         result = await updateUserName(requestBody.userId, requestBody.newName);
                         break;
@@ -78,15 +93,23 @@ const server = http.createServer(async (req, res) => {
                     case 'add-product':
                     result = await addProduct(requestBody);
                         break;
-                    case 'update-discount':
-                        // Make sure requestBody has the necessary fields
-                        if (!requestBody._id || !requestBody.discountPercentage) {
-                            throw new Error('Both _id and discountPercentage are required');
+                    case 'send-chat-message':
+                        if (!chatInstance) {
+                            res.writeHead(503, { 'Content-Type': 'application/json' });
+                            res.end(JSON.stringify({ message: 'Chat service is not available' }));
+                            return;
                         }
-                        result = await updateDiscount(requestBody._id, requestBody.discountPercentage);
-                      break;
-    
-
+                        try {
+                            const chatResponse = await chatInstance.handleIncomingMessage(requestBody.message);
+                            result = { reply: chatResponse };
+                        } catch (error) {
+                            console.error('Error during chat message handling:', error);
+                            res.writeHead(500, { 'Content-Type': 'application/json' });
+                            res.end(JSON.stringify({ message: 'Failed to handle chat message', error: error.toString() }));
+                            return;
+                        }
+                        break;
+                                            
                     default:
                         throw new Error('Route not found');
                 }
