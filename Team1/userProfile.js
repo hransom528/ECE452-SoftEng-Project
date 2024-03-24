@@ -107,10 +107,14 @@ async function updateUserShippingAddress(userId, addressId, updatedAddress) {
         throw new Error('userId, addressId, and updatedAddress are required');
     }
 
+    // Ensure that updatedAddress does not contain an addressId field
+    // This prevents changing the addressId during an update
+    const { addressId: _, ...updateFields } = updatedAddress;
+
     const db = await connectDB();
     const result = await db.collection('users').updateOne(
         { _id: new ObjectId(userId), "shippingAddresses.addressId": addressId },
-        { $set: { "shippingAddresses.$": updatedAddress } }
+        { $set: { "shippingAddresses.$": { ...updateFields, addressId } } }
     );
 
     if (result.matchedCount === 0) {
