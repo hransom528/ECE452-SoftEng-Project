@@ -5,6 +5,8 @@ const { connectDB } = require('../dbConfig.js');
 const mongoURI = process.env.MONGO_URI;
 // Function to create a new Stripe customer and update the MongoDB database
 async function createStripeCustomerAndUpdateDB(userObjectId, email, name) {
+  const db = await connectDB();
+  const users = db.collection('users');
   // First, check if the user document already has a stripeCustomerId
   const existingUser = await users.findOne({ _id: new ObjectId(userObjectId) });
 
