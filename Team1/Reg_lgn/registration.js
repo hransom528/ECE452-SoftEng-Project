@@ -17,7 +17,6 @@ async function registerUser(userInfo, requestBody) {
             const newUser = {
                 email: userInfo.email,
                 name: userInfo.name,
-                phoneNumber: requestBody.phoneNum,
                 isPremium: requestBody.premium,
                 stripeID: 'NA FOR NOW',
                 shippingAddressses: requestBody.address,

@@ -23,26 +23,37 @@ async function updateUserPremiumStatus(userId, isPremium) {
 }
 
 
-async function createPremiumMembership(userId) {
+async function createPremiumMembership(userId, paymentMethodId) {
     const user = await getUserById(userId);
 
     if (user.isPremium) {
         console.log("User is already a premium member.");
-        return false; // Indicates no action was taken since the user is already premium
+        return { success: false, message: "User is already a premium member." };
     }
 
-    // test: assume payment is always valid
-    const paymentIsValid = true; // would implement a check with Stripe
+    // Verify the card with the payment method ID and user's Stripe ID
+    try {
+        const verificationResult = await verifyCard(paymentMethodId, user.stripeId);
 
-    if (paymentIsValid) {
-        const updateSucceeded = await updateUserPremiumStatus(userId, true);
-        if (updateSucceeded) {
-            console.log("Created premium membership for user", userId);
-            return true; // Indicates successful update
+        if (verificationResult.success) {
+            // If card verification is successful, update user's premium status
+            const updateSucceeded = await updateUserPremiumStatus(userId, true);
+
+            if (updateSucceeded) {
+                console.log("Created premium membership for user", userId);
+                return { success: true, message: "Premium membership created successfully." };
+            } else {
+                console.error("Failed to update user's premium status");
+                return { success: false, message: "Failed to update user's premium status." };
+            }
         } else {
-            console.error("Failed to update user's premium status");
-            return false;
+            // Handle failure to verify the card
+            return { success: false, message: "Failed to verify the card." };
         }
+    } catch (error) {
+        // Handle exceptions during the verification process
+        console.error("Error during card verification:", error);
+        throw error;
     }
 }
 

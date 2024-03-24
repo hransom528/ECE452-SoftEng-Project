@@ -2,9 +2,18 @@ const { connectDB } = require('../dbConfig');
 const { ObjectId } = require('mongodb');
 const { v4: uuidv4 } = require('uuid');
 
+function validateEmail(email) {
+    const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    return re.test(String(email).toLowerCase());
+}
+
 async function updateUserEmail(userId, newEmail) {
     if (!userId || !newEmail) {
         throw new Error('userId and newEmail are required');
+    }
+
+    if (!validateEmail(newEmail)) {
+        throw new Error('Invalid email format');
     }
     
     const db = await connectDB();
@@ -39,25 +48,6 @@ async function updateUserName(userId, newName) {
     }
 
     console.log(`Successfully updated the name for user ID ${userId}`);
-    return result;
-}
-
-async function updateUserPhoneNumber(userId, newPhoneNumber) {
-    if (!userId || !newPhoneNumber) {
-        throw new Error('userId and newPhoneNumber are required');
-    }
-
-    const db = await connectDB();
-    const result = await db.collection('users').updateOne(
-        { _id: new ObjectId(userId) },
-        { $set: { phoneNumber: newPhoneNumber } }
-    );
-
-    if (result.matchedCount === 0) {
-        throw new Error(`No user found with ID ${userId}`);
-    }
-
-    console.log(`Successfully updated the phone number for user ID ${userId}`);
     return result;
 }
 
@@ -128,7 +118,6 @@ async function updateUserShippingAddress(userId, addressId, updatedAddress) {
 module.exports = {
     updateUserEmail,
     updateUserName,
-    updateUserPhoneNumber,
     updateUserPremiumStatus,
     addUserShippingAddress,
     updateUserShippingAddress,

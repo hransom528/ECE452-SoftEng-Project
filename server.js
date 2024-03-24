@@ -10,7 +10,6 @@ const { updateDiscount } = require('./Team3/UC10DiscountManagement.js');
 const { 
     updateUserEmail,
     updateUserName,
-    updateUserPhoneNumber,
     updateUserPremiumStatus,
     addUserShippingAddress,
     updateUserShippingAddress
@@ -67,21 +66,21 @@ const server = http.createServer(async (req, res) => {
                         
                             result = await updateListings(requestBody.productIds, requestBody.updateFields, requestBody.unsetFields); // Pass the unsetFields as well
                             break;
-                            case 'create-payment-intent':
-                if (requestBody.amount && requestBody.currency) {
-                    result = await createPaymentIntent(requestBody.amount, requestBody.currency);
-                } else {
-                    throw new Error('Missing required fields for payment intent');
-                }
-                break;
+                    case 'create-payment-intent':
+                        if (requestBody.amount && requestBody.currency) {
+                            result = await createPaymentIntent(requestBody.amount, requestBody.currency);
+                        } else {
+                            throw new Error('Missing required fields for payment intent');
+                        }
+                        break;
             
-            case 'verify-card':
-                if (requestBody.paymentMethodId && requestBody.stripeCustomerId) {
-                    result = await verifyCard(requestBody.paymentMethodId, requestBody.stripeCustomerId);
-                } else {
-                    throw new Error('Missing required fields for verifying card');
-                }
-                break;
+                    case 'verify-card':
+                        if (requestBody.paymentMethodId && requestBody.stripeCustomerId) {
+                            result = await verifyCard(requestBody.paymentMethodId, requestBody.stripeCustomerId);
+                        } else {
+                            throw new Error('Missing required fields for verifying card');
+                        }
+                        break;
                     case 'update-discount':
                         // Make sure requestBody has the necessary fields
                         if (!requestBody._id || !requestBody.discountPercentage) {
@@ -96,9 +95,6 @@ const server = http.createServer(async (req, res) => {
                         break;    
                     case 'update-name':
                         result = await updateUserName(requestBody.userId, requestBody.newName);
-                        break;
-                    case 'update-phone-number':
-                        result = await updateUserPhoneNumber(requestBody.userId, requestBody.newPhoneNumber);
                         break;
                     case 'update-premium-status':
                         result = await updateUserPremiumStatus(requestBody.userId, requestBody.isPremium);
