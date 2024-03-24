@@ -10,3 +10,4 @@ async function testConnection() {
 }
 
 testConnection().catch(console.error);
+console.log("This is chris")
