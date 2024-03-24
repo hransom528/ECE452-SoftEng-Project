@@ -88,19 +88,18 @@ const server = http.createServer(async (req, res) => {
                             // Add new case for verifying card details
                             case 'verify-card-details':
                                 try {
-                                    const { userObjectId, stripeCustomerId, cardDetails } = requestBody;
-                                    const verifyResult = await verifyCardAndUpdateDB(userObjectId, stripeCustomerId, cardDetails);
+                                    const { userObjectId, stripeCustomerId, stripeToken } = requestBody;
+                                    const verifyResult = await verifyCardAndUpdateDB(userObjectId, stripeCustomerId, stripeToken);
                                     res.writeHead(200, { 'Content-Type': 'application/json' });
                                     res.end(JSON.stringify({ success: true, data: verifyResult }));
-                                    return; // Exit the function after sending the response
                                 } catch (error) {
                                     console.error("Error verifying card details:", error);
                                     if (!res.headersSent) {
                                         res.writeHead(500, { 'Content-Type': 'application/json' });
                                         res.end(JSON.stringify({ success: false, message: 'Failed to verify card details', error: error.message }));
                                     }
-                                    return; // Exit the function after sending the error response
                                 }
+                                return; // Exit the function after handling the request
                     // userProfile.js
                     case 'update-email':
                         result = await updateUserEmail(requestBody.userId, requestBody.newEmail);
