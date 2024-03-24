@@ -17,6 +17,8 @@ const {
 } = require('./Team1/userProfile');
 const { startChat } = require('./Team1/chatSupport.js');
 const { createPremiumMembership, cancelPremiumMembership } = require('./Team1/membershipManagement.js');
+const { registerUser } = require('./Team1/Reg_lgn/registration');
+const { getAccessTokenFromCode, getUserInfo } = require('./Team1/Reg_lgn/oAuthHandler');
 
 // Initialize chat instance before starting server
 let chatInstance = null;
@@ -111,6 +113,28 @@ const server = http.createServer(async (req, res) => {
                     result = await addProduct(requestBody);
                         break;
 
+                    case 'registerUser':
+                        const accessToken = requestBody.accToken; // part of post request JSON
+                        if (!accessToken) {
+                            throw new Error('Not able to authorize'); // maybe give res writehead here
+                        }
+                        try {
+                            // exchanging code for for access Token
+                            // const accessToken = await getAccessTokenFromCode(authCode);
+
+                            // use access token to get user's info from google account
+                            const userInfo = await getUserInfo(accessToken);
+
+                            //use the info we got to finish registering the user
+                            result = await registerUser(userInfo, requestBody);
+                        } catch (oauthError) {
+                            // handling auth errors
+                            res.writeHead(400, { 'Content-Type': 'application/json' });
+                            res.end(JSON.stringify({ message: 'OAuth Error', error: oauthError.message }));
+                            return;
+                        }
+                        break;
+
                     // chatSupport.js
                     case 'send-chat-message':
                         if (!chatInstance) {
@@ -142,8 +166,7 @@ const server = http.createServer(async (req, res) => {
                         }
                         result = await cancelPremiumMembership(requestBody.userId);
                         break;
-            
-                                            
+                              
                     default:
                         throw new Error('Route not found');
                 }
