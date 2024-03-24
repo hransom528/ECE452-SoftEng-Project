@@ -73,7 +73,7 @@ async function gatherReviewData(productName) {
     });
 }
 
-// Usage example
+
 async function main() {
     try {
         const productId = 'your_product_id'; // Set your product ID here
