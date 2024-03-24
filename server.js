@@ -3,7 +3,7 @@ const { ObjectId } = require('mongodb');
 const http = require('http');
 const url = require('url');
 const { StringDecoder } = require('string_decoder');
-const { createPaymentIntent, saveCard } = require('./Team3/stripe.js');
+const { createPaymentIntent, verifyCard } = require('./Team3/stripe.js');
 const {updateListings } = require('./Team3/UC8update_listings.js'); 
 const { addProduct } = require('./Team3/UCCreateProduct.js');
 const { updateDiscount } = require('./Team3/UC10DiscountManagement.js');
@@ -67,21 +67,21 @@ const server = http.createServer(async (req, res) => {
                         
                             result = await updateListings(requestBody.productIds, requestBody.updateFields, requestBody.unsetFields); // Pass the unsetFields as well
                             break;
-                    case 'create-payment-intent':
-                                if (requestBody.amount && requestBody.currency) {
-                                    result = await createPaymentIntent(requestBody.amount, requestBody.currency);
-                                } else {
-                                    throw new Error('Missing required fields for payment intent');
-                                }
-                                break;
-                        
-                    case 'save-card':
-                                if (requestBody.paymentMethodId && requestBody.customerId) {
-                                    result = await saveCard(requestBody.paymentMethodId, requestBody.customerId);
-                                } else {
-                                    throw new Error('Missing required fields for saving card');
-                                }
-                                break;
+                            case 'create-payment-intent':
+                if (requestBody.amount && requestBody.currency) {
+                    result = await createPaymentIntent(requestBody.amount, requestBody.currency);
+                } else {
+                    throw new Error('Missing required fields for payment intent');
+                }
+                break;
+            
+            case 'verify-card':
+                if (requestBody.paymentMethodId && requestBody.stripeCustomerId) {
+                    result = await verifyCard(requestBody.paymentMethodId, requestBody.stripeCustomerId);
+                } else {
+                    throw new Error('Missing required fields for verifying card');
+                }
+                break;
                     case 'update-discount':
                         // Make sure requestBody has the necessary fields
                         if (!requestBody._id || !requestBody.discountPercentage) {
