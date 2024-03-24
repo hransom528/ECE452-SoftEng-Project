@@ -11,7 +11,7 @@ async function registerUser(userInfo, requestBody) {
         const existingUser = await usersCollection.findOne({ email: userInfo.email });
         if (existingUser) {
             // User already exists
-            return { success: false, message: 'User already registered.', userId: existingUser._id };
+            return { message: 'User already registered. Logging you in!', userId: existingUser._id };
         } else {
             // If the user is new, create a new user object including the data from Google
             const newUser = {
