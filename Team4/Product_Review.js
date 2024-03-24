@@ -22,41 +22,43 @@ async function connectToDB() {
     }
 }
 
-// Function to retrieve user's name from the "users" collection
-async function getUserName(userId) {
+// Function to retrieve product ID from the "products" collection by product name
+async function getProductIdByName(productName) {
     const db = await connectToDB();
-    const usersCollection = db.collection('users');
-    const user = await usersCollection.findOne({ _id: userId });
-    return user.name;
+    const productsCollection = db.collection('products');
+    const product = await productsCollection.findOne({ name: productName });
+    return product._id;
 }
 
 // Function to allow the user to give a star rating and leave a review for a product
-async function reviewProduct(userId, productId, rating, review) {
-    const userName = await getUserName(userId);
+async function reviewProduct(productName, title, rating, review) {
+    const productId = await getProductIdByName(productName);
     const db = await connectToDB();
     const reviewsCollection = db.collection('reviews');
     const result = await reviewsCollection.insertOne({
-        userId: userId,
         productId: productId,
-        userName: userName,
+        title: title,
         rating: rating,
-        review: review
+        review: review,
+        dateTime: new Date().toISOString()
     });
-    console.log(`Review added for product ${productId} by user ${userName}`);
+    console.log(`Review added for product ${productName}`);
     return result.insertedId;
 }
 
-// Usage example
-const userId = "user_id_here"; // Provide the actual user ID
-const productId = "product_id_here"; // Provide the actual product ID
-const rating = 4; // User's rating for the product (between 1 and 5)
-const reviewText = "This product is amazing! Highly recommended."; // User's review for the product
+// Sample review data
+const reviewData = {
+    productName: "barbell", // Product name
+    title: "Pretty Mediocre Barbell", // Review title
+    rating: 3, // Rating (between 1 and 5)
+    review: "Hard to grip onto, but still did its job. You get what you pay for." // Review comment
+};
 
-reviewProduct(userId, productId, rating, reviewText)
+// Usage example
+reviewProduct(reviewData.productName, reviewData.title, reviewData.rating, reviewData.review)
     .then(insertedId => {
         console.log("Review inserted with ID:", insertedId);
     })
     .catch(error => {
         console.error("Error:", error);
     });
-
