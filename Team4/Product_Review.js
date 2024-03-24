@@ -29,7 +29,7 @@ async function connectToDB() {
 }
 
 // Function to retrieve product ID by name
-async function getProductIdByName(productName) {
+async function getProductIdByName(Name) {
     const db = await connectToDB();
     const productsCollection = db.collection('products');
     const product = await productsCollection.findOne({ name: productName });
@@ -68,7 +68,7 @@ async function gatherReviewData(productName) {
 async function main() {
     try {
         await connectToDB();
-        const productId = await getProductIdByName(productName);
+        const productId = await getProductIdByName(Name);
         const reviewData = await gatherReviewData(productName);
         const insertedId = await reviewProduct(productId, reviewData.title, reviewData.rating, reviewData.review);
         console.log("Review inserted with ID:", insertedId);
