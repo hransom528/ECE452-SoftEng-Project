@@ -3,13 +3,14 @@ const { ObjectId } = require('mongodb');
 const http = require('http');
 const url = require('url');
 const { StringDecoder } = require('string_decoder');
-const { createPaymentIntent, verifyCard } = require('./Team3/stripe.js');
+const { createStripeCustomerAndUpdateDB, verifyCardAndUpdateDB } = require('./Team3/stripe.js');
 const {updateListings } = require('./Team3/UC8update_listings.js'); 
 const { addProduct } = require('./Team3/UCCreateProduct.js');
 const { updateDiscount } = require('./Team3/UC10DiscountManagement.js');
 const { 
     updateUserEmail,
     updateUserName,
+    updateUserPhoneNumber,
     updateUserPremiumStatus,
     addUserShippingAddress,
     updateUserShippingAddress
@@ -66,35 +67,48 @@ const server = http.createServer(async (req, res) => {
                         
                             result = await updateListings(requestBody.productIds, requestBody.updateFields, requestBody.unsetFields); // Pass the unsetFields as well
                             break;
-                    case 'create-payment-intent':
-                        if (requestBody.amount && requestBody.currency) {
-                            result = await createPaymentIntent(requestBody.amount, requestBody.currency);
-                        } else {
-                            throw new Error('Missing required fields for payment intent');
-                        }
-                        break;
-            
-                    case 'verify-card':
-                        if (requestBody.paymentMethodId && requestBody.stripeCustomerId) {
-                            result = await verifyCard(requestBody.paymentMethodId, requestBody.stripeCustomerId);
-                        } else {
-                            throw new Error('Missing required fields for verifying card');
-                        }
-                        break;
-                    case 'update-discount':
-                        // Make sure requestBody has the necessary fields
-                        if (!requestBody._id || !requestBody.discountPercentage) {
-                            throw new Error('Both _id and discountPercentage are required');
-                        }
-                        result = await updateDiscount(requestBody._id, requestBody.discountPercentage);
-                        break;
-            
+                            case 'create-stripe-customer':
+                                const { userObjectId, email, name } = requestBody;
+                                createStripeCustomerAndUpdateDB(userObjectId, email, name)
+                                    .then(customerResult => {
+                                        if (!res.headersSent) {
+                                            res.writeHead(200, { 'Content-Type': 'application/json' });
+                                            res.end(JSON.stringify({ success: true, data: customerResult }));
+                                        }
+                                    })
+                                    .catch(error => {
+                                        console.error("Error creating Stripe customer:", error);
+                                        if (!res.headersSent) {
+                                            res.writeHead(500, { 'Content-Type': 'application/json' });
+                                            res.end(JSON.stringify({ success: false, message: 'Failed to create Stripe customer', error: error.message }));
+                                        }
+                                    });
+                                return; // Prevent further execution
+                            // Add new case for verifying card details
+                            case 'verify-card-details':
+                                try {
+                                    const { userObjectId, stripeCustomerId, cardDetails } = requestBody;
+                                    const verifyResult = await verifyCardAndUpdateDB(userObjectId, stripeCustomerId, cardDetails);
+                                    res.writeHead(200, { 'Content-Type': 'application/json' });
+                                    res.end(JSON.stringify({ success: true, data: verifyResult }));
+                                    return; // Exit the function after sending the response
+                                } catch (error) {
+                                    console.error("Error verifying card details:", error);
+                                    if (!res.headersSent) {
+                                        res.writeHead(500, { 'Content-Type': 'application/json' });
+                                        res.end(JSON.stringify({ success: false, message: 'Failed to verify card details', error: error.message }));
+                                    }
+                                    return; // Exit the function after sending the error response
+                                }
                     // userProfile.js
                     case 'update-email':
                         result = await updateUserEmail(requestBody.userId, requestBody.newEmail);
                         break;    
                     case 'update-name':
                         result = await updateUserName(requestBody.userId, requestBody.newName);
+                        break;
+                    case 'update-phone-number':
+                        result = await updateUserPhoneNumber(requestBody.userId, requestBody.newPhoneNumber);
                         break;
                     case 'update-premium-status':
                         result = await updateUserPremiumStatus(requestBody.userId, requestBody.isPremium);

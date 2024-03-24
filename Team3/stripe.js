@@ -1,55 +1,80 @@
-const Stripe = require('stripe');
-const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
+require('dotenv').config();
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+const { MongoClient, ObjectId } = require('mongodb');
+const { connectDB } = require('../dbConfig.js');
+const mongoURI = process.env.MONGO_URI;
 
 
-/**
- * Verifies a payment method by attaching it to a Stripe customer.
- *
- * @param {string} paymentMethodId The ID of the payment method to attach.
- * @param {string} userStripeId The Stripe customer ID from your user database.
- * @returns {Promise<Object>} The result of the operation.
- */
-async function createPaymentIntent(amount, currency) {
-  try {
-      const paymentIntent = await stripe.paymentIntents.create({
-          amount,
-          currency,
-          payment_method_types: ['card'],
-      });
 
-      // Return the client secret and the payment intent ID if no errors occur
+// Function to create a new Stripe customer and update the MongoDB database
+async function createStripeCustomerAndUpdateDB(userObjectId, email, name) {
+  const db = await connectDB();
+  const users = db.collection('users');
+
+  // First, check if the user document already has a stripeCustomerId
+  const existingUser = await users.findOne({ _id: new ObjectId(userObjectId) });
+
+  if (existingUser && existingUser.stripeCustomerId) {
       return {
-          success: true,
-          clientSecret: paymentIntent.client_secret,
-          paymentIntentId: paymentIntent.id
+          success: false,
+          message: 'Stripe customer already exists for this user.',
+          stripeCustomerId: existingUser.stripeCustomerId
       };
-  } catch (error) {
-      console.error("Error creating payment intent:", error);
-      throw error;
   }
-}
-async function verifyCard(paymentMethodId, userStripeId) {
-    try {
-        // Attach the payment method to the Stripe customer
-        const paymentMethod = await stripe.paymentMethods.attach(paymentMethodId, {
-            customer: userStripeId,
-        });
 
-        // Set the payment method as the default for the Stripe customer
-        const customer = await stripe.customers.update(userStripeId, {
-            invoice_settings: { default_payment_method: paymentMethod.id },
-        });
+  // If no stripeCustomerId, proceed to create a new Stripe customer
+  const customer = await stripe.customers.create({
+      email: email,
+      name: name
+  });
 
-        // Return success and details if no errors occur
-        return {
-            success: true,
-            paymentMethodId: paymentMethod.id,
-            customer: customer.id
-        };
-    } catch (error) {
-        console.error("Error verifying card:", error);
-        throw error;
-    }
+  // Update MongoDB user document with the new Stripe customer ID
+  await users.updateOne(
+      { _id: new ObjectId(userObjectId) },
+      { $set: { stripeCustomerId: customer.id } }
+  );
+
+  return { success: true, stripeCustomerId: customer.id };
 }
 
-module.exports = { createPaymentIntent, verifyCard };
+// Function to verify card details and update the MongoDB database
+async function verifyCardAndUpdateDB(userObjectId, stripeCustomerId, cardDetails) {
+    const db = await connectDB();
+    const users = db.collection('users'); // Your users collection name
+
+    // Create a payment method for the provided card details
+    const paymentMethod = await stripe.paymentMethods.create({
+        type: 'card',
+        card: {
+            number: cardDetails.number,
+            exp_month: cardDetails.exp_month,
+            exp_year: cardDetails.exp_year,
+            cvc: cardDetails.cvc
+        }
+    });
+
+    // Attach the payment method to the Stripe customer
+    await stripe.paymentMethods.attach(paymentMethod.id, {
+        customer: stripeCustomerId
+    });
+
+    // Update the Stripe customer to have the new payment method as default
+    await stripe.customers.update(stripeCustomerId, {
+        invoice_settings: {
+            default_payment_method: paymentMethod.id
+        }
+    });
+
+    // Update the user document in MongoDB with the new payment method ID
+    await users.updateOne(
+        { _id: new ObjectId(userObjectId) },
+        { $set: { paymentMethodId: paymentMethod.id } }
+    );
+
+    return { paymentMethodId: paymentMethod.id };
+}
+
+module.exports = {
+    createStripeCustomerAndUpdateDB,
+    verifyCardAndUpdateDB
+};
