@@ -28,20 +28,19 @@ async function connectToDB() {
     }
 }
 
-// Function to retrieve product name by ID
-async function getProductNameById(productId) {
+// Function to retrieve product ID by name
+async function getProductByName(productName) {
     const db = await connectToDB();
     const productsCollection = db.collection('products');
-    const product = await productsCollection.findOne({ _id: productId });
+    const product = await productsCollection.findOne({ name: productName });
     if (!product) {
-        throw new Error(`Product with ID "${productId}" not found`);
+        throw new Error(`Product "${productName}" not found`);
     }
     return product.name;
 }
 
-
 // Function to allow the user to give a star rating and leave a review for a product
-async function reviewProduct(title, rating, review) {
+async function reviewProduct(productId, title, rating, review) {
     const db = await connectToDB();
     const reviewsCollection = db.collection('reviews');
     const result = await reviewsCollection.insertOne({
@@ -50,36 +49,48 @@ async function reviewProduct(title, rating, review) {
         review: review,
         dateTime: new Date().toISOString()
     });
-    console.log("Review added");
+    console.log(`Review added for product with ID ${productId}`);
     return result.insertedId;
 }
 
-
 // Function to gather review data from user input
-async function gatherReviewData(productName) {
-    return new Promise((resolve, reject) => {
-        rl.question(`Enter review title for product "${productName}": `, (title) => {
-            rl.question('Enter rating (1-5): ', (rating) => {
-                const ratingInt = parseInt(rating);
-                if (isNaN(ratingInt) || ratingInt < 1 || ratingInt > 5) {
-                    reject(new Error("Rating must be a number between 1 and 5"));
-                    return;
-                }
-                rl.question('Enter review: ', (review) => {
-                    resolve({ title, rating: ratingInt, review });
+async function gatherReviewData() {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const productName = await askForProductName();
+            const productId = await getProductIdByName(productName);
+            rl.question(`Enter review title for product "${productName}": `, (title) => {
+                rl.question('Enter rating (1-5): ', async (rating) => {
+                    const ratingInt = parseInt(rating);
+                    if (isNaN(ratingInt) || ratingInt < 1 || ratingInt > 5) {
+                        reject(new Error("Rating must be a number between 1 and 5"));
+                        return;
+                    }
+                    rl.question('Enter review: ', (review) => {
+                        resolve({ productId, title, rating: ratingInt, review });
+                    });
                 });
             });
+        } catch (error) {
+            reject(error);
+        }
+    });
+}
+
+async function askForProductName() {
+    return new Promise((resolve, reject) => {
+        rl.question('Enter the name of the product you want to review: ', (productName) => {
+            resolve(productName);
         });
     });
 }
 
-
+// Usage example
 async function main() {
     try {
-        const productId = 'your_product_id'; // Set your product ID here
-        const productName = await getProductNameById(productId); // Retrieve product name from the product collection
-        const reviewData = await gatherReviewData(productName);
-        const insertedId = await reviewProduct(reviewData.title, reviewData.rating, reviewData.review);
+        await connectToDB();
+        const reviewData = await gatherReviewData();
+        const insertedId = await reviewProduct(reviewData.productId, reviewData.title, reviewData.rating, reviewData.review);
         console.log("Review inserted with ID:", insertedId);
     } catch (error) {
         console.error("Error:", error);
@@ -89,6 +100,5 @@ async function main() {
         await client.close();
     }
 }
-
 
 main();
