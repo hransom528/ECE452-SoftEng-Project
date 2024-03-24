@@ -1,4 +1,4 @@
-// Includes dependencies
+
 const { MongoClient } = require('mongodb');
 const readline = require('readline');
 
