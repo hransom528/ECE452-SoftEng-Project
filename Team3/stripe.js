@@ -65,9 +65,7 @@ async function verifyCardAndUpdateDB(userObjectId, stripeCustomerId, stripeToken
               default_payment_method: paymentMethod.id
           }
       });
-
       console.log("Default payment method updated for customer");
-
       // Update the user document in MongoDB with the new payment method ID
       await users.updateOne(
           { _id: new ObjectId(userObjectId) },
