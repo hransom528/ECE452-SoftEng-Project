@@ -60,8 +60,13 @@ async function gatherReviewData(productName) {
     return new Promise((resolve, reject) => {
         rl.question(`Enter review title for product "${productName}": `, (title) => {
             rl.question('Enter rating (1-5): ', (rating) => {
+                const ratingInt = parseInt(rating);
+                if (isNaN(ratingInt) || ratingInt < 1 || ratingInt > 5) {
+                    reject(new Error("Rating must be a number between 1 and 5"));
+                    return;
+                }
                 rl.question('Enter review: ', (review) => {
-                    resolve({ title, rating: parseInt(rating), review });
+                    resolve({ title, rating: ratingInt, review });
                 });
             });
         });
