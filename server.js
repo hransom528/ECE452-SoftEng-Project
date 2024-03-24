@@ -20,23 +20,6 @@ const { startChat } = require('./Team1/chatSupport.js');
 const { createPremiumMembership, cancelPremiumMembership } = require('./Team1/membershipManagement.js');
 const { registerUser } = require('./Team1/Reg_lgn/registration');
 const { getAccessTokenFromCode, getUserInfo } = require('./Team1/Reg_lgn/oAuthHandler');
-const https = require('https');
-const fs = require('fs');
-const mongoose = require('mongoose');
-const mime = require('mime');
-const { addToCart, removeFromCart } = require('./Cart_Checkout');
-const { getWatchList, removeFromWatchList, addToWatchList } = require('./prod_Watchlist');
-
-console.log({ addToWatchList, removeFromWatchList, getWatchList, addToCart, removeFromCart });
-
-// Database connection details
-const MONGO_URI = 'mongodb+srv://admin:SoftEng452@cluster0.qecmfqe.mongodb.net/website?retryWrites=true&w=majority&appName=Cluster0';
-
-
-
-mongoose.connect(MONGO_URI)
-    .then(() => console.log('Successfully connected to MongoDB.'))
-    .catch(err => console.error('Connection error', err));
 
 // Initialize chat instance before starting server
 let chatInstance = null;
