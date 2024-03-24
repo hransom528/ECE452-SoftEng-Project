@@ -5,6 +5,8 @@ const { connectDB } = require('../dbConfig.js');
 const mongoURI = process.env.MONGO_URI;
 // Function to create a new Stripe customer and update the MongoDB database
 async function createStripeCustomerAndUpdateDB(userObjectId, email, name) {
+  const db = await connectDB();
+  const users = db.collection('users');
   // First, check if the user document already has a stripeCustomerId
   const existingUser = await users.findOne({ _id: new ObjectId(userObjectId) });
 
@@ -65,9 +67,7 @@ async function verifyCardAndUpdateDB(userObjectId, stripeCustomerId, stripeToken
               default_payment_method: paymentMethod.id
           }
       });
-
       console.log("Default payment method updated for customer");
-
       // Update the user document in MongoDB with the new payment method ID
       await users.updateOne(
           { _id: new ObjectId(userObjectId) },
