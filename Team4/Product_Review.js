@@ -71,10 +71,10 @@ async function gatherReviewData(productName) {
 // Usage example
 async function main() {
     try {
-        await connectToDB();
-        const productName = await getProductIdByName(productId); // Retrieve product name from the product collection
+        const productId = 'your_product_id'; // Set your product ID here
+        const productName = await getProductNameById(productId); // Retrieve product name from the product collection
         const reviewData = await gatherReviewData(productName);
-        const insertedId = await reviewProduct(productName, reviewData.title, reviewData.rating, reviewData.review);
+        const insertedId = await reviewProduct(productId, reviewData.title, reviewData.rating, reviewData.review);
         console.log("Review inserted with ID:", insertedId);
     } catch (error) {
         console.error("Error:", error);
