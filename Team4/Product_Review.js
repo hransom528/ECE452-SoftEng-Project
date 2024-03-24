@@ -1,6 +1,12 @@
 // Includes dependencies
 const { MongoClient } = require('mongodb');
-const assert = require("assert");
+const readline = require('readline');
+
+// Create interface for user input
+const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout
+});
 
 // TODO: Change MongoDB URI to secret
 const MONGO_URI = "mongodb+srv://admin:SoftEng452@cluster0.qecmfqe.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
@@ -22,7 +28,7 @@ async function connectToDB() {
     }
 }
 
-// Function to retrieve product ID from the "products" collection by product name
+// Function to retrieve product ID by name
 async function getProductIdByName(productName) {
     const db = await connectToDB();
     const productsCollection = db.collection('products');
@@ -31,8 +37,7 @@ async function getProductIdByName(productName) {
 }
 
 // Function to allow the user to give a star rating and leave a review for a product
-async function reviewProduct(productName, title, rating, review) {
-    const productId = await getProductIdByName(productName);
+async function reviewProduct(productId, title, rating, review) {
     const db = await connectToDB();
     const reviewsCollection = db.collection('reviews');
     const result = await reviewsCollection.insertOne({
@@ -42,23 +47,38 @@ async function reviewProduct(productName, title, rating, review) {
         review: review,
         dateTime: new Date().toISOString()
     });
-    console.log(`Review added for product ${productName}`);
+    console.log(`Review added for product with ID ${productId}`);
     return result.insertedId;
 }
 
-// Sample review data
-const reviewData = {
-    productName: "barbell", // Product name
-    title: "Pretty Mediocre Barbell", // Review title
-    rating: 3, // Rating (between 1 and 5)
-    review: "Hard to grip onto, but still did its job. You get what you pay for." // Review comment
-};
+// Function to gather review data from user input
+async function gatherReviewData(productName) {
+    return new Promise((resolve, reject) => {
+        rl.question(`Enter review title for product "${productName}": `, (title) => {
+            rl.question('Enter rating (1-5): ', (rating) => {
+                rl.question('Enter review: ', (review) => {
+                    resolve({ title, rating: parseInt(rating), review });
+                });
+            });
+        });
+    });
+}
 
 // Usage example
-reviewProduct(reviewData.productName, reviewData.title, reviewData.rating, reviewData.review)
-    .then(insertedId => {
+async function main() {
+    try {
+        await connectToDB();
+        const productId = await getProductIdByName(productName);
+        const reviewData = await gatherReviewData(productName);
+        const insertedId = await reviewProduct(productId, reviewData.title, reviewData.rating, reviewData.review);
         console.log("Review inserted with ID:", insertedId);
-    })
-    .catch(error => {
+    } catch (error) {
         console.error("Error:", error);
-    });
+    } finally {
+        // Close readline interface and MongoDB client
+        rl.close();
+        await client.close();
+    }
+}
+
+main();
