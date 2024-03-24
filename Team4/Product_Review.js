@@ -59,7 +59,7 @@ async function gatherReviewData() {
         try {
             const productName = await askForProductName();
             const productId = await getProductIdByName(productName);
-            rl.question(`Enter review title for product "${productName}": `, (title) => {
+            rl.question(`Enter review title for product "${productId}": `, (title) => {
                 rl.question('Enter rating (1-5): ', async (rating) => {
                     const ratingInt = parseInt(rating);
                     if (isNaN(ratingInt) || ratingInt < 1 || ratingInt > 5) {
@@ -67,7 +67,7 @@ async function gatherReviewData() {
                         return;
                     }
                     rl.question('Enter review: ', (review) => {
-                        resolve({ productId, title, rating: ratingInt, review });
+                        resolve({ title, rating: ratingInt, review });
                     });
                 });
             });
@@ -90,7 +90,7 @@ async function main() {
     try {
         await connectToDB();
         const reviewData = await gatherReviewData();
-        const insertedId = await reviewProduct(reviewData.productId, reviewData.title, reviewData.rating, reviewData.review);
+        const insertedId = await reviewProduct( reviewData.title, reviewData.rating, reviewData.review);
         console.log("Review inserted with ID:", insertedId);
     } catch (error) {
         console.error("Error:", error);
