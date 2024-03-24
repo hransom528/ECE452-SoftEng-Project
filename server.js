@@ -9,6 +9,7 @@ const { addProduct } = require('./Team3/UCCreateProduct.js');
 const { updateDiscount } = require('./Team3/UC10DiscountManagement.js');
 const { 
     updateUserEmail,
+    // this is a change 
     updateUserName,
     updateUserPhoneNumber,
     updateUserPremiumStatus,
@@ -200,3 +201,6 @@ const PORT = 3000;
 server.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
 });
+
+
+// this a change
