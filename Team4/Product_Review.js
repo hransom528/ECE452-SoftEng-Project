@@ -41,19 +41,19 @@ async function getProductNameById(productId) {
 
 
 // Function to allow the user to give a star rating and leave a review for a product
-async function reviewProduct(productId, title, rating, review) {
+async function reviewProduct(title, rating, review) {
     const db = await connectToDB();
     const reviewsCollection = db.collection('reviews');
     const result = await reviewsCollection.insertOne({
-        productId: productId,
         title: title,
         rating: rating,
         review: review,
         dateTime: new Date().toISOString()
     });
-    console.log(`Review added for product with ID ${productId}`);
+    console.log("Review added");
     return result.insertedId;
 }
+
 
 // Function to gather review data from user input
 async function gatherReviewData(productName) {
@@ -79,7 +79,7 @@ async function main() {
         const productId = 'your_product_id'; // Set your product ID here
         const productName = await getProductNameById(productId); // Retrieve product name from the product collection
         const reviewData = await gatherReviewData(productName);
-        const insertedId = await reviewProduct(productId, reviewData.title, reviewData.rating, reviewData.review);
+        const insertedId = await reviewProduct(reviewData.title, reviewData.rating, reviewData.review);
         console.log("Review inserted with ID:", insertedId);
     } catch (error) {
         console.error("Error:", error);
@@ -89,5 +89,6 @@ async function main() {
         await client.close();
     }
 }
+
 
 main();
