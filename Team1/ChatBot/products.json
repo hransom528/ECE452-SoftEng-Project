@@ -1,0 +1,293 @@
+[
+  {
+    "_id": "16FGEULYMPCCRLBRXWBA",
+    "name": "Fitness Gear Olympic Curl Bar",
+    "description": "This chrome solid steel bar accommodates 2” Olympic-style plates. Angling provides optimal comfort for the elbows and wrists. Especially effective in building the upper arm muscles and forearms.",
+    "brand": "Fitness Gear",
+    "type": "Barbell",
+    "price": 69.99,
+    "stockQuantity": 10,
+    "images": [
+      "https://dks.scene7.com/is/image/GolfGalaxy/16FGEULYMPCCRLBRXWBA-2?qlt=70&wid=600&fmt=pjpeg",
+      "https://dks.scene7.com/is/image/GolfGalaxy/OCB-47_NOCOLOR_DET?wid=2000&fmt=pjpeg"
+    ],
+    "specs": {
+      "weight": 16,
+      "material": "Chrome",
+      "color": "Silver"
+    },
+    "trendingScore": 4.5,
+    "topTrending": false,
+    "rating": 4.2
+  },
+  {
+    "_id": "65f8e79c8c06f461ae617084",
+    "name": "Fitness Gear Cast Hex Dumbbell- Single",
+    "description": "This is a dumbbell",
+    "brand": "Dicks",
+    "type": "bench workout",
+    "price": 149.99,
+    "stockQuantity": 15,
+    "images": [
+      "https://dks.scene7.com/is/image/GolfGalaxy/16FGEUPRGHDBNCHXXWGH?wid=2000&fmt=pjpeg",
+      "https://dks.scene7.com/is/image/GolfGalaxy/STE00407_NOCOLOR_DET-alt1?wid=2000&fmt=pjpeg"
+    ],
+    "specs": {
+      "weight": "150 lbs",
+      "color": "Black",
+      "material": "carbon steel"
+    },
+    "trendingScore": 4.6,
+    "topTrending": true,
+    "rating": 4.9
+  },
+  {
+    "_id": "65f8e9f18c06f461ae617085",
+    "name": "Marcy 6' Chrome Bar",
+    "description": "Complete with deep threads and safety spin locks to maximize plate stability and safety during lifts, the Marcy® 6’ Chrome Bar secures standard sized weights to reduce movement and provide you with fluid performance on each exercise.",
+    "brand": "Marcy",
+    "type": "Barbell",
+    "price": 64.99,
+    "stockQuantity": 12,
+    "images": [
+      "https://dks.scene7.com/is/image/GolfGalaxy/16MCYU6CHRMBRXXXXWBA?wid=2000&fmt=pjpeg",
+      "https://dks.scene7.com/is/image/GolfGalaxy/TRB-72.2_NOCOLOR_FACE?wid=2000&fmt=pjpeg"
+    ],
+    "specs": {
+      "weight": 10,
+      "material": "Chrome",
+      "color": "Silver"
+    },
+    "trendingScore": 4,
+    "topTrending": false,
+    "rating": 4.3
+  },
+  {
+    "_id": "65f8ece88c06f461ae617086",
+    "name": "Fitness Gear Pro GHD Bench",
+    "description": "This is a bench",
+    "brand": "Dicks",
+    "type": "bench workout",
+    "price": 149.99,
+    "stockQuantity": 15,
+    "images": [
+      "https://dks.scene7.com/is/image/GolfGalaxy/16FGEUPRGHDBNCHXXWGH?wid=2000&fmt=pjpeg",
+      "https://dks.scene7.com/is/image/GolfGalaxy/STE00407_NOCOLOR_DET-alt1?wid=2000&fmt=pjpeg"
+    ],
+    "specs": {
+      "weight": "150 lbs",
+      "color": "Black",
+      "material": "carbon steel"
+    },
+    "trendingScore": 4.6,
+    "topTrending": true,
+    "rating": 4.9
+  },
+  {
+    "_id": "65f8ede18c06f461ae617087",
+    "name": "Horizon Fitness 7.0AT Studio Series Treadmill",
+    "description": "This is a cardio machine",
+    "brand": "Horizon",
+    "type": "Pre/Post workout",
+    "price": 800,
+    "stockQuantity": 10,
+    "images": [
+      "https://dks.scene7.com/is/image/GolfGalaxy/HTM1377-01_NOCOLOR_DET?wid=2000&fmt=pjpeg",
+      "https://dks.scene7.com/is/image/GolfGalaxy/21HRZU70TSTDSRSTRTRD?wid=2000&fmt=pjpeg"
+    ],
+    "specs": {
+      "weight": "200 lbs",
+      "color": "Black",
+      "material": "carbon steel"
+    },
+    "trendingScore": "3.5",
+    "topTrending": true,
+    "rating": 4.9
+  },
+  {
+    "_id": "65f8f3a68c06f461ae617088",
+    "name": "Fitness Gear Multi-Purpose Mat",
+    "description": "The Fitness Gear® Multi-Purpose Mat helps protect floors and carpets from equipment damage and is great for a variety of floor exercises. Non-slip and easy to clean, the mat is constructed of durable 1/4 inches thick, closed cell vinyl that is safe and is virtually odorless. Fits most treadmills, elliptical machines and recumbent bikes to reduce equipment noise and vibration. Rolls up for storage convenience.",
+    "brand": "Fitness Gear",
+    "type": "Mat",
+    "price": 1335.99,
+    "stockQuantity": 50,
+    "images": [
+      "https://dks.scene7.com/is/image/GolfGalaxy/16FGEUFGMLTPRPSXREAC_Black?wid=2000&fmt=pjpeg",
+      "https://dks.scene7.com/is/image/GolfGalaxy/CFM00012_Black_DET?wid=2000&fmt=pjpeg"
+    ],
+    "specs": {
+      "weight": 5,
+      "material": "Styrofoam",
+      "color": "Black"
+    },
+    "trendingScore": 6,
+    "topTrending": false,
+    "rating": 332
+  },
+  {
+    "_id": "65f8f4b88c06f461ae617089",
+    "name": "Schwinn 190 Upright Exercise Bike",
+    "description": "Interact, train, and compete against others in a virtual world that motivates you at every mile (separate digital subscription required)",
+    "brand": "Schwinn",
+    "type": "Exercise Bike",
+    "price": 449.98,
+    "stockQuantity": 30,
+    "images": [
+      "https://dks.scene7.com/is/image/GolfGalaxy/22SCWUSCHWNN190PRBKS?wid=2000&fmt=pjpeg",
+      "https://dks.scene7.com/is/image/GolfGalaxy/100947S_NOCOLOR_DET?wid=2000&fmt=pjpeg"
+    ],
+    "specs": {
+      "weight": 50,
+      "material": "Plastic",
+      "color": "White"
+    },
+    "trendingScore": 4,
+    "topTrending": false,
+    "rating": 4.6
+  },
+  {
+    "_id": "65f8ffd58c06f461ae61708a",
+    "name": "Nike Kettleball",
+    "description": "Crafted for versatility and built to last, the Nike Kettlebell is a powerhouse of fitness equipment. With a sleek black powder-coated finish, the kettlebell ensures a smooth and secure grip, with or without chalk. Its rock-solid, wobble-free base keeps you in control during every workout, while vibrant color stripes make size identification a breeze. Take your fitness to the next level with this training essential. JUST DO IT.",
+    "brand": "Nike",
+    "type": "Kettleball",
+    "price": 55,
+    "stockQuantity": 20,
+    "images": [
+      "https://dks.scene7.com/is/image/GolfGalaxy/23NIKUNKKTTLBLL24KTT?wid=2000&fmt=pjpeg"
+    ],
+    "specs": {
+      "weight": 18,
+      "material": "Chrome",
+      "color": "Black and Red"
+    },
+    "trendingScore": 3,
+    "topTrending": false,
+    "rating": 2.8
+  },
+  {
+    "_id": "65f8ffee8c06f461ae61708b",
+    "name": "Fitness Gear Olympic Cast Plate - Single",
+    "description": "Maximize your workout with the Fitness Gear® Olympic Cast Plate. The heavy-duty cast iron construction will provide many years of use. Convenient grip handles allow for easy moving.",
+    "brand": "Fitness Gear",
+    "type": "Weight Plate",
+    "price": 34.98,
+    "stockQuantity": 30,
+    "images": [
+      "https://dks.scene7.com/is/image/GolfGalaxy/16FGEUFG25LBLYCSTWPL?wid=2000&fmt=pjpeg"
+    ],
+    "specs": {
+      "weight": 25,
+      "material": "chrome",
+      "color": "black"
+    },
+    "trendingScore": 7,
+    "topTrending": true,
+    "rating": 4.8
+  },
+  {
+    "_id": "65f900ed8c06f461ae61708c",
+    "name": "Sole E25 Elliptical (2023)",
+    "description": "The all new Sole E25 Elliptical sold exclusively at Dick’s Sporting Goods. The brand-new model features a new sleek design an upgraded 7.5” LCD display with connectivity to all Garmin devices. The E25 keeps its solid 15-year pedigree with power incline, articulating pedals, pulse grip HR and an incredibly smooth feel.",
+    "brand": "Sole",
+    "type": "Elliptical Machine",
+    "price": 999.99,
+    "stockQuantity": 6,
+    "images": [
+      "https://dks.scene7.com/is/image/GolfGalaxy/23SLEUSL25LLPTCL2LLP?wid=2000&fmt=pjpeg"
+    ],
+    "specs": {
+      "weight": 200,
+      "material": "Plastic",
+      "color": "Black"
+    },
+    "trendingScore": 3,
+    "topTrending": false,
+    "rating": 3.8
+  },
+  {
+    "_id": "65fe1b93457729f32fdc8664",
+    "name": "Echelon Connect EX-8S Exercise Bike",
+    "description": "workout bike ",
+    "brand": "Echelon",
+    "type": " workout",
+    "price": 2500,
+    "stockQuantity": 10,
+    "images": [
+      "https://dks.scene7.com/is/image/GolfGalaxy/23JVUUCHLNX8SCNNCBKS?wid=2000&fmt=pjpeg",
+      "https://dks.scene7.com/is/image/GolfGalaxy/ECHEX-8S-24C_NOCOLOR_DET?wid=2000&fmt=pjpeg"
+    ],
+    "specs": {
+      "weight": "150 lbs",
+      "color": "Black",
+      "material": "carbon steel"
+    },
+    "trendingScore": 4.6,
+    "topTrending": true,
+    "rating": 4.9,
+    "productId": "0f22d7cf-bf02-466e-ac4c-3fb86bf140c1"
+  },
+  {
+    "_id": "65fe43379db367b45f03064c",
+    "name": "Sole E25 BenchV2 (2023)",
+    "description": "The all new Sole E25 BenchV2 sold exclusively at Dick’s Sporting Goods.",
+    "brand": "Sole",
+    "type": "Bench for workout",
+    "price": 199.99,
+    "stockQuantity": 6,
+    "images": [
+      "https://www.dickssportinggoods.com/p/fitness-gear-pro-utility-bench-21fgeufgprtltybncwgh/21fgeufgprtltybncwgh"
+    ],
+    "specs": {
+      "weightCapacity": "2555 lbs",
+      "strideLength": "20 inches"
+    },
+    "trendingScore": 3,
+    "topTrending": false,
+    "rating": 3.2,
+    "productId": "4834a455-732d-45f5-a2fb-adae7871cfb2"
+  },
+  {
+    "_id": "65fef45142822d030a377dcf",
+    "name": "testLeko E25 BenchV2 (2023)",
+    "description": "The all new Sole E25 BenchV2 sold exclusively at Dick’s Sporting Goods.",
+    "brand": "testLeko",
+    "type": "Bench for workout",
+    "price": 49.995,
+    "stockQuantity": 6,
+    "images": [
+      "https://www.dickssportinggoods.com/p/fitness-gear-pro-utility-bench-21fgeufgprtltybncwgh/21fgeufgprtltybncwgh"
+    ],
+    "specs": {
+      "weightCapacity": "2555 lbs",
+      "strideLength": "20 inches"
+    },
+    "trendingScore": 3,
+    "topTrending": false,
+    "rating": 4.2,
+    "discount": 50,
+    "originalPrice": 99.99
+  },
+  {
+    "_id": "6600e459a79f43a28fe5e636",
+    "name": "test4updatebytype0",
+    "description": "The all new Sole E25 BenchV2 sold exclusively at Dick’s Sporting Goods.",
+    "brand": "test",
+    "type": "typetest",
+    "price": 99.99,
+    "stockQuantity": 6,
+    "images": [
+      "https://www.dickssportinggoods.com/p/fitness-gear-pro-utility-bench-21fgeufgprtltybncwgh/21fgeufgprtltybncwgh"
+    ],
+    "specs": {
+      "weightCapacity": "2555 lbs",
+      "strideLength": "20 inches"
+    },
+    "trendingScore": 3,
+    "topTrending": false,
+    "rating": 4.2,
+    "discount": 0,
+    "originalPrice": 99.99
+  }
+]
