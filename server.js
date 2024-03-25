@@ -10,6 +10,12 @@ const { addProduct } = require('./Team3/UCCreateProduct.js');
 const { updateDiscount } = require('./Team3/UC10DiscountManagement.js');
 const { discountByType } = require('./Team3/UC10DiscountManagement.js');
 const { discountByBrand } = require('./Team3/UC10DiscountManagement.js');
+
+const { updateListings } = require('./Team3/UC8update_listings.js'); 
+const { addProduct } = require('./Team3/UCCreateProduct.js');
+const { updateDiscount } = require('./Team3/UC10DiscountManagement.js');
+const { fetchTopRatedProducts } = require('./Team3/UC10DiscountManagement.js'); 
+
 const { 
     updateUserEmail,
     // this is a change 
@@ -39,17 +45,14 @@ const server = http.createServer(async (req, res) => {
     const decoder = new StringDecoder('utf-8');
     let buffer = '';
 
-    if (req.method === 'POST') {
-        req.on('data', (data) => {
-            buffer += decoder.write(data);
-        });
+    req.on('data', (data) => {
+        buffer += decoder.write(data);
+    });
 
-        req.on('end', async () => {
-            buffer += decoder.end();
-            console.log("Received buffer:", buffer);
+    req.on('end', async () => {
+        buffer += decoder.end();
 
-            // Handle POST requests
-            
+        if (req.method === 'POST') {
             try {
                 const requestBody = JSON.parse(buffer);
                 let result = null;
@@ -127,6 +130,20 @@ const server = http.createServer(async (req, res) => {
                     case 'update-email':
                         result = await updateUserEmail(requestBody.userId, requestBody.newEmail);
                         break;    
+                    case 'update-email':
+                        result = await updateUserEmail(requestBody.userId, requestBody.newEmail);
+                        break;
+                    case 'update-listings':
+                        if (!Array.isArray(requestBody.productIds) ||
+                            typeof requestBody.updateFields !== 'object' ||
+                            requestBody.productIds.some(id => !ObjectId.isValid(id)) ||
+                            (requestBody.unsetFields && !Array.isArray(requestBody.unsetFields))) {
+                            res.writeHead(400, { 'Content-Type': 'application/json' });
+                            res.end(JSON.stringify({ message: 'Invalid input for updating listings' }));
+                            return;  
+                        }
+                        result = await updateListings(requestBody.productIds, requestBody.updateFields, requestBody.unsetFields);
+                        break;
                     case 'update-name':
                         result = await updateUserName(requestBody.userId, requestBody.newName);
                         break;
@@ -165,7 +182,7 @@ const server = http.createServer(async (req, res) => {
                         
         
                     case 'add-product':
-                    result = await addProduct(requestBody);
+                        result = await addProduct(requestBody);
                         break;
 
                     case 'registerUser':
@@ -222,6 +239,12 @@ const server = http.createServer(async (req, res) => {
                         result = await cancelPremiumMembership(requestBody.userId);
                         break;
                               
+                    case 'update-discount':
+                        if (!requestBody._id || !requestBody.discountPercentage) {
+                            throw new Error('Both _id and discountPercentage are required');
+                        }
+                        result = await updateDiscount(requestBody._id, requestBody.discountPercentage);
+                        break;
                     default:
                         throw new Error('Route not found');
                 }
@@ -229,16 +252,25 @@ const server = http.createServer(async (req, res) => {
                 res.writeHead(200, { 'Content-Type': 'application/json' });
                 res.end(JSON.stringify({ message: 'Operation successful', data: result }));
             } catch (error) {
-                console.error("Error parsing JSON:", error);
+                console.error("Error handling POST request:", error);
                 res.writeHead(400, { 'Content-Type': 'application/json' });
-                res.end(JSON.stringify({ message: 'Invalid JSON format', error: error.toString() }));
+                res.end(JSON.stringify({ message: 'Error handling request', error: error.toString() }));
             }
-        });
-    } else {
-        // Default response for non-POST requests or unmatched routes
-        res.writeHead(404, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify({ message: 'Not Found' }));
-    }
+        } else if (req.method === 'GET' && trimmedPath === 'fetch-product-performance') {
+            try {
+                const result = await fetchTopRatedProducts();
+                res.writeHead(200, { 'Content-Type': 'application/json' });
+                res.end(JSON.stringify({ message: 'Operation successful', data: result }));
+            } catch (error) {
+                console.error("Error handling GET request:", error);
+                res.writeHead(400, { 'Content-Type': 'application/json' });
+                res.end(JSON.stringify({ message: 'Error handling request', error: error.toString() }));
+            }
+        } else {
+            res.writeHead(404, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ message: 'Not Found' }));
+        }
+    });
 });
 
 const PORT = 3000;

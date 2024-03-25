@@ -1,53 +1,27 @@
-const { ObjectId } = require('mongodb');
 const { connectDB } = require('../dbConfig.js');
 
-const getProductPerformance = async (productIds) => {
+const fetchTopRatedProducts = async () => {
     const db = await connectDB();
-    const sales = db.collection('sales');
-    const ratings = db.collection('ratings');
+    const products = db.collection('products');
 
-    console.log("Fetching performance data for productIds:", productIds);
+    console.log("Fetching top rated products");
 
     try {
-        const salesDataPromises = productIds.map(id => {
-            if (!ObjectId.isValid(id)) {
-                throw new Error(`Invalid ObjectId: ${id}`);
-            }
-            return sales.aggregate([
-                { $match: { productId: new ObjectId(id) } },
-                { $group: { _id: "$productId", totalSales: { $sum: "$amount" } } }
-            ]).toArray();
-        });
+        const topRatedProducts = await products.find({})
+            .sort({ rating: -1 }) // Sort by rating in descending order
+            .limit(10) // Limit to top 10
+            .toArray();
 
-        const ratingsDataPromises = productIds.map(id => {
-            if (!ObjectId.isValid(id)) {
-                throw new Error(`Invalid ObjectId: ${id}`);
-            }
-            return ratings.aggregate([
-                { $match: { productId: new ObjectId(id) } },
-                { $group: { _id: "$productId", averageRating: { $avg: "$rating" } } }
-            ]).toArray();
-        });
+        console.log("Top 10 rated products fetched successfully");
+        const productIds = topRatedProducts.map(product => product._id.toString());
 
-        const salesDataResults = await Promise.allSettled(salesDataPromises);
-        const ratingsDataResults = await Promise.allSettled(ratingsDataPromises);
+        console.log('Top 10 Rated Products Object IDs:', productIds);
 
-        const performanceData = productIds.map(id => {
-            const salesData = salesDataResults.find(result => result.status === 'fulfilled' && result.value[0]?._id.toString() === id);
-            const ratingsData = ratingsDataResults.find(result => result.status === 'fulfilled' && result.value[0]?._id.toString() === id);
-
-            return {
-                productId: id,
-                totalSales: salesData?.value[0]?.totalSales || 0,
-                averageRating: ratingsData?.value[0]?.averageRating || 0
-            };
-        });
-
-        return performanceData;
+        return productIds;
     } catch (error) {
-        console.error("An error occurred while fetching product performance data:", error);
+        console.error("An error occurred during fetching top rated products:", error);
         throw error;
     }
 };
 
-module.exports = { getProductPerformance };
+module.exports = { fetchTopRatedProducts };
