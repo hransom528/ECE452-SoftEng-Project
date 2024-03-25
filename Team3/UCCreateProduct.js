@@ -15,7 +15,7 @@ async function addProduct(productDetails) {
         // Check if a product with the same name already exists
         const existingProduct = await collection.findOne({ name: productDetails.name });
         if (existingProduct) {
-            throw new Error('Product name already exists. Consider using the update quantity function.');
+            throw new Error(`Product with name ${productDetails.name} already exists. Consider updating quantity for product with _id: ${existingProduct._id}`);
         }
 
     const result = await collection.insertOne(productDetails);
