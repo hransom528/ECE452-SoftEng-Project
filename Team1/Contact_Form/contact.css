@@ -53,6 +53,11 @@ hr {
 .contact-inputs::placeholder{
     color: #a9a9a9;
 }
+.confirmation {
+    padding: 20px;
+    border-radius: 5px;
+    text-align: center;
+}
 button{
     display: flex;
     align-items: center;

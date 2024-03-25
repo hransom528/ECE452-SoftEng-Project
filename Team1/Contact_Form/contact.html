@@ -7,53 +7,61 @@
     </head>
     <body>
         <div class="container">
-            <form action="https://api.web3forms.com/submit" method="POST" class="contact">
+            <form id="contact-form" action="https://api.web3forms.com/submit" method="POST" class="contact">
                 <div class="contact-title">
                     <h2>Questions or Concerns? Get in touch!</h2>
                     <hr>    
                 </div>
-                <input type="hidden" name="access_key" value="930bbc7f-6244-4e81-a0ca-220cb18bb4f8">
+                <input type="hidden" name="access_key" value="b1adafe1-b5e1-46c3-aac0-e6b21877e557">
                 <input type="text" id="name" name="name" placeholder="Name" class="contact-inputs" required>
                 <input type="email" id="email" name="email" placeholder="Email Address" class="contact-inputs" required>
                 <textarea id="message" name="message" placeholder="How can we help you?" class="contact-inputs" required></textarea>
                 <button type="submit">Submit <img src="assets/arrow_icon.png"></button>
             </form>
-            <div id="confirmationMessage" style="display:none;">
-                <p>Thank you for reaching out. We will get back to you within 24-72 business hours.</p>
-            </div>            
-        </div>
+            <div id="confirmation-message" class="confirmation" style="display: none;">
+                <!-- Customized confirmation message will be injected here -->
+            </div>
+
+        </form>
+        
+        <script src="https://web3forms.com/client/script.js" async defer></script>
+        
         <script>
-            document.querySelector('.contact').addEventListener('submit', function(e) {
-                e.preventDefault(); // Prevent the default form submission
-            
-                const form = this;
-                const formData = new FormData(form);
-            
-                // Post the form data to the server
-                fetch('https://api.web3forms.com/submit', {
+        const form = document.getElementById('contact-form');
+        const result = document.getElementById('confirmation-message');
+        
+        form.addEventListener('submit', function(e) {
+          e.preventDefault();
+          const formData = new FormData(form);
+          const object = Object.fromEntries(formData);
+          const json = JSON.stringify(object);
+          result.innerHTML = "Please wait..."
+        
+            fetch('https://api.web3forms.com/submit', {
                     method: 'POST',
-                    body: formData,
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: json
                 })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        // Hide the form
-                        form.style.display = 'none';
-            
-                        // Show the confirmation message
-                        document.getElementById('confirmationMessage').style.display = 'block';
-            
-                        // Here you could also implement creating a support ticket if your backend supports it.
-                    } else {
-                        // Handle the error. You can show a message to the user.
-                        alert('There was an error submitting your form. Please try again.');
+                .then(async (response) => {
+                    let json = await response.json();
+                    if (response.status == 200) {
+                        form.style.display = 'none'; // Hide the form
+                        result.style.display = 'block'; // Show the confirmation message
+                        result.innerHTML = '<h2>Thank you!</h2><p>Your message has been sent. We will get back to you soon.</p>';
+                        // Add any additional styling you need here
                     }
                 })
                 .catch(error => {
-                    console.error('Error:', error);
-                    alert('There was an error submitting your form. Please try again.');
+                    console.log(error);
+                    result.innerHTML = "Something went wrong!";
+                })
+                .then(function() {
+                    form.reset();
                 });
-            });
-            </script>            
+        });
+        </script>
     </body>
 </html>
