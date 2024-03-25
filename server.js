@@ -10,11 +10,7 @@ const { addProduct } = require('./Team3/UCCreateProduct.js');
 const { updateDiscount } = require('./Team3/UC10DiscountManagement.js');
 const { discountByType } = require('./Team3/UC10DiscountManagement.js');
 const { discountByBrand } = require('./Team3/UC10DiscountManagement.js');
-
-const { updateListings } = require('./Team3/UC8update_listings.js'); 
-const { addProduct } = require('./Team3/UCCreateProduct.js');
-const { updateDiscount } = require('./Team3/UC10DiscountManagement.js');
-const { fetchTopRatedProducts } = require('./Team3/UC10DiscountManagement.js'); 
+const { fetchTopRatedProducts } = require('./Team3/UC9_Product_Performace_Insight.js'); 
 
 const { 
     updateUserEmail,

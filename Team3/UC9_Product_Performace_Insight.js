@@ -1,5 +1,5 @@
 const { connectDB } = require('../dbConfig.js');
-
+require('dotenv').config();
 const fetchTopRatedProducts = async () => {
     const db = await connectDB();
     const products = db.collection('products');
