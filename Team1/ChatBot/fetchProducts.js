@@ -1,13 +1,13 @@
 const fs = require("fs");
-const { connectDB } = require("../../dbConfig"); // Update the path to where your connectDB module is located
+const { connectDB } = require("../../dbConfig");
 
 async function fetchAllProducts() {
   const db = await connectDB();
   const collection = db.collection("products");
 
   try {
-    // Fetch all products
-    const products = await collection.find({}).toArray();
+    // Fetch all products but exclude the _id and images fields
+    const products = await collection.find({}, { projection: { _id: 0, images: 0 } }).toArray();
 
     // Save to a JSON file
     fs.writeFile("products.json", JSON.stringify(products, null, 2), (err) => {
