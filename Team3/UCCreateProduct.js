@@ -12,6 +12,12 @@ async function addProduct(productDetails) {
     const db = await connectDB();
     const collection = db.collection('products');
 
+        // Check if a product with the same name already exists
+        const existingProduct = await collection.findOne({ name: productDetails.name });
+        if (existingProduct) {
+            throw new Error('Product name already exists. Consider using the update quantity function.');
+        }
+
     const result = await collection.insertOne(productDetails);
     console.log(`A new product was inserted with the _id: ${result.insertedId}`);
 
