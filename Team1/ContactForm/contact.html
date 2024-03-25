@@ -15,6 +15,7 @@
                 <input type="hidden" name="access_key" value="b1adafe1-b5e1-46c3-aac0-e6b21877e557">
                 <input type="text" id="name" name="name" placeholder="Name" class="contact-inputs" required>
                 <input type="email" id="email" name="email" placeholder="Email Address" class="contact-inputs" required>
+                <input type="text" id="subject" name="subject" placeholder="Subject" class="contact-inputs" required>
                 <textarea id="message" name="message" placeholder="How can we help you?" class="contact-inputs" required></textarea>
                 <button type="submit">Submit <img src="assets/arrow_icon.png"></button>
             </form>
@@ -33,6 +34,11 @@
         form.addEventListener('submit', function(e) {
           e.preventDefault();
           const formData = new FormData(form);
+
+          const userSubject = formData.get('subject');
+          const fullSubject = 'Support Inquiry: ' + userSubject;
+          formData.set('subject', fullSubject);
+
           const object = Object.fromEntries(formData);
           const json = JSON.stringify(object);
           result.innerHTML = "Please wait..."
