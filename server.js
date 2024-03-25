@@ -7,6 +7,8 @@ const { createStripeCustomerAndUpdateDB, verifyCardAndUpdateDB } = require('./Te
 const {updateListings } = require('./Team3/UC8update_listings.js'); 
 const { addProduct } = require('./Team3/UCCreateProduct.js');
 const { updateDiscount } = require('./Team3/UC10DiscountManagement.js');
+const { discountByType } = require('./Team3/UC10DiscountManagement.js');
+const { discountByBrand } = require('./Team3/UC10DiscountManagement.js');
 const { 
     updateUserEmail,
     // this is a change 
@@ -126,6 +128,20 @@ const server = http.createServer(async (req, res) => {
                             }
                             result = await updateDiscount(requestBody._id, requestBody.discountPercentage);
                         break;
+                    case 'discount-by-brand':
+                            if (!requestBody.brand || !requestBody.discountPercentage) {
+                                throw new Error('Both brand and discountPercentage are required');
+                            }
+                            result = await discountByBrand(requestBody.brand, requestBody.discountPercentage);
+                        break;
+                        
+                    case 'discount-by-type':
+                            if (!requestBody.type || !requestBody.discountPercentage) {
+                                throw new Error('Both type and discountPercentage are required');
+                            }
+                            result = await discountByType(requestBody.type, requestBody.discountPercentage);
+                        break;
+                        
         
                     case 'add-product':
                     result = await addProduct(requestBody);

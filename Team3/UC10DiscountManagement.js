@@ -42,7 +42,70 @@ async function updateDiscount(_id, discountPercentage) {
     };
 }
 
+async function discountByBrand(brand, discountPercentage) {
+    const db = await connectDB();
+    const collection = db.collection('products');
+
+    // Update all products of the specified brand with the new discount
+    const result = await collection.updateMany(
+        { brand: brand },
+        [
+            {
+                $set: {
+                    discount: discountPercentage,
+                    originalPrice: { $ifNull: ["$originalPrice", "$price"] }, // Preserve the original price if it exists
+                    price: {
+                        $multiply: [
+                            { $ifNull: ["$originalPrice", "$price"] }, // Apply discount on originalPrice if it exists
+                            (100 - discountPercentage) / 100
+                        ]
+                    }
+                }
+            }
+        ]
+    );
+
+    return {
+        message: `Discount updated for all products of brand ${brand}.`,
+        matchedCount: result.matchedCount,
+        modifiedCount: result.modifiedCount
+    };
+}
+
+async function discountByType(type, discountPercentage) {
+    const db = await connectDB();
+    const collection = db.collection('products');
+
+    // Update all products of the specified type with the new discount
+    const result = await collection.updateMany(
+        { type: type },
+        [
+            {
+                $set: {
+                    discount: discountPercentage,
+                    originalPrice: { $ifNull: ["$originalPrice", "$price"] }, // Preserve the original price if it exists
+                    price: {
+                        $multiply: [
+                            { $ifNull: ["$originalPrice", "$price"] }, // Apply discount on originalPrice if it exists
+                            (100 - discountPercentage) / 100
+                        ]
+                    }
+                }
+            }
+        ]
+    );
+
+    return {
+        message: `Discount updated for all products of type ${type}.`,
+        matchedCount: result.matchedCount,
+        modifiedCount: result.modifiedCount
+    };
+}
+
+
 module.exports = {
-    updateDiscount
+    updateDiscount,
+    discountByBrand,
+    discountByType
 };
 
