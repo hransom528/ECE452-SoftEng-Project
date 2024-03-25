@@ -123,20 +123,20 @@ const server = http.createServer(async (req, res) => {
                         break;
                     case 'update-discount':
                             // Make sure requestBody has the necessary fields
-                            if (!requestBody._id || !requestBody.discountPercentage) {
+                            if (!requestBody._id || typeof requestBody.discountPercentage === 'undefined') {
                                 throw new Error('Both _id and discountPercentage are required');
                             }
                             result = await updateDiscount(requestBody._id, requestBody.discountPercentage);
                         break;
                     case 'discount-by-brand':
-                            if (!requestBody.brand || !requestBody.discountPercentage) {
+                            if (!requestBody.brand || typeof requestBody.discountPercentage === 'undefined') {
                                 throw new Error('Both brand and discountPercentage are required');
                             }
                             result = await discountByBrand(requestBody.brand, requestBody.discountPercentage);
                         break;
                         
                     case 'discount-by-type':
-                            if (!requestBody.type || !requestBody.discountPercentage) {
+                            if (!requestBody.type || typeof requestBody.discountPercentage === 'undefined') {
                                 throw new Error('Both type and discountPercentage are required');
                             }
                             result = await discountByType(requestBody.type, requestBody.discountPercentage);

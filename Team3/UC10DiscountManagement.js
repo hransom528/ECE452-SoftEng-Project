@@ -2,9 +2,7 @@ const { ObjectId } = require('mongodb');
 const { connectDB } = require('../dbConfig'); // Ensure this path matches your project structure
 
 async function updateDiscount(_id, discountPercentage) {
-    if (!_id || discountPercentage == null) {
-        throw new Error('\'_id\' and \'discountPercentage\' are required');
-    }
+
 
     const db = await connectDB();
     const collection = db.collection('products');
@@ -43,6 +41,7 @@ async function updateDiscount(_id, discountPercentage) {
 }
 
 async function discountByBrand(brand, discountPercentage) {
+
     const db = await connectDB();
     const collection = db.collection('products');
 
@@ -73,6 +72,7 @@ async function discountByBrand(brand, discountPercentage) {
 }
 
 async function discountByType(type, discountPercentage) {
+
     const db = await connectDB();
     const collection = db.collection('products');
 
