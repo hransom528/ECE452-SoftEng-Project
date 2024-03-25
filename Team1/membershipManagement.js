@@ -1,8 +1,6 @@
 const { connectDB } = require('../dbConfig');
 const { ObjectId } = require('mongodb');
 
-// Will implement Stripe validation later. For now, assuming payment is valid.
-
 async function getUserById(userId) {
     const db = await connectDB();
     const collection = db.collection('users');
