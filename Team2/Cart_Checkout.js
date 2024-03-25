@@ -1,3 +1,9 @@
+
+//Stages changes: git add . or git add <file>
+//git restore <file> doesn't save 
+//git commit -m 'comment of what we'
+//git push origin main
+//git pull
 const { MongoClient } = require('mongodb');
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
