@@ -9,8 +9,8 @@ const fetchTopRatedProducts = async () => {
 
     try {
         const topRatedProducts = await products.find({})
-            .sort({ rating: -1 }) // Sort by rating in descending order
-            .limit(10) // Limit to top 10
+            .sort({ rating: -1 })
+            .limit(10)
             .toArray();
 
         console.log("Top 10 rated products fetched successfully");
@@ -38,7 +38,11 @@ const fetchTopRatedProductsByBrand = async (brand) => {
             .toArray();
 
         console.log(`Top 5 rated products fetched successfully for brand: ${brand}`);
-        return topRatedProducts;
+        const productIds = topRatedProducts.map(product => product._id.toString());
+
+        console.log(`Top 5 Rated Products by Brand '${brand}' Object IDs:`, productIds);
+
+        return productIds;
     } catch (error) {
         console.error(`An error occurred during fetching top rated products for brand: ${brand}:`, error);
         throw error;
@@ -58,7 +62,11 @@ const fetchTopRatedProductsByType = async (type) => {
             .toArray();
 
         console.log(`Top 5 rated products fetched successfully for type: ${type}`);
-        return topRatedProducts;
+        const productIds = topRatedProducts.map(product => product._id.toString());
+
+        console.log(`Top 5 Rated Products by Type '${type}' Object IDs:`, productIds);
+
+        return productIds;
     } catch (error) {
         console.error(`An error occurred during fetching top rated products for type: ${type}:`, error);
         throw error;
