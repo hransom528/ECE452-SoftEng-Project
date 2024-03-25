@@ -119,6 +119,14 @@ const server = http.createServer(async (req, res) => {
                     case 'update-shipping-address':
                         result = await updateUserShippingAddress(requestBody.userId, requestBody.addressId, requestBody.updatedAddress);
                         break;
+                    case 'update-discount':
+                            // Make sure requestBody has the necessary fields
+                            if (!requestBody._id || !requestBody.discountPercentage) {
+                                throw new Error('Both _id and discountPercentage are required');
+                            }
+                            result = await updateDiscount(requestBody._id, requestBody.discountPercentage);
+                        break;
+        
                     case 'add-product':
                     result = await addProduct(requestBody);
                         break;
