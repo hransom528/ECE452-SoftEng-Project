@@ -1,5 +1,6 @@
 const { connectDB } = require('../dbConfig.js');
 require('dotenv').config();
+
 const fetchTopRatedProducts = async () => {
     const db = await connectDB();
     const products = db.collection('products');
@@ -24,4 +25,48 @@ const fetchTopRatedProducts = async () => {
     }
 };
 
-module.exports = { fetchTopRatedProducts };
+const fetchTopRatedProductsByBrand = async (brand) => {
+    const db = await connectDB();
+    const products = db.collection('products');
+
+    console.log(`Fetching top rated products for brand: ${brand}`);
+
+    try {
+        const topRatedProducts = await products.find({ brand })
+            .sort({ rating: -1 })
+            .limit(5)
+            .toArray();
+
+        console.log(`Top 5 rated products fetched successfully for brand: ${brand}`);
+        return topRatedProducts;
+    } catch (error) {
+        console.error(`An error occurred during fetching top rated products for brand: ${brand}:`, error);
+        throw error;
+    }
+};
+
+const fetchTopRatedProductsByType = async (type) => {
+    const db = await connectDB();
+    const products = db.collection('products');
+
+    console.log(`Fetching top rated products for type: ${type}`);
+
+    try {
+        const topRatedProducts = await products.find({ type })
+            .sort({ rating: -1 })
+            .limit(5)
+            .toArray();
+
+        console.log(`Top 5 rated products fetched successfully for type: ${type}`);
+        return topRatedProducts;
+    } catch (error) {
+        console.error(`An error occurred during fetching top rated products for type: ${type}:`, error);
+        throw error;
+    }
+};
+
+module.exports = {
+    fetchTopRatedProducts,
+    fetchTopRatedProductsByBrand,
+    fetchTopRatedProductsByType
+};
