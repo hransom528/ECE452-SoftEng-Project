@@ -49,5 +49,39 @@ const updateListings = async (productIds, updateFields, removeFields = []) => {
         throw error;
     }
 };
+const deleteListings = async (productIds) => {
+    const db = await connectDB();
+    const products = db.collection('products');
 
-module.exports = { updateListings };
+    console.log("Deleting productIds:", productIds);
+
+    try {
+        const deletions = productIds.map(id => {
+            if (!ObjectId.isValid(id)) {
+                throw new Error(`Invalid ObjectId: ${id}`);
+            }
+            const deletePromise = products.deleteOne({ _id: new ObjectId(id) });
+
+            deletePromise.catch(err => {
+                console.error(`Error deleting document with _id ${id}:`, err);
+            });
+
+            return deletePromise;
+        });
+
+        const results = await Promise.allSettled(deletions);
+        const failedDeletions = results.filter(result => result.status === 'rejected');
+        if (failedDeletions.length > 0) {
+            console.error("Some deletions failed:", failedDeletions);
+        }
+
+        const successfulDeletions = results.filter(result => result.status === 'fulfilled');
+        return successfulDeletions.map(result => result.value);
+    } catch (error) {
+        console.error("An error occurred during the deletion operation:", error);
+        throw error;
+    }
+};
+
+
+module.exports = { updateListings,deleteListings };

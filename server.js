@@ -5,6 +5,7 @@ const url = require('url');
 const { StringDecoder } = require('string_decoder');
 const { createStripeCustomerAndUpdateDB, verifyCardAndUpdateDB } = require('./Team3/stripe.js');
 const {updateListings } = require('./Team3/UC8update_listings.js'); 
+const {deleteListings  } = require('./Team3/UC8update_listings.js'); 
 const { addProduct } = require('./Team3/UCCreateProduct.js');
 const { updateDiscount } = require('./Team3/UC10DiscountManagement.js');
 const { discountByType } = require('./Team3/UC10DiscountManagement.js');
@@ -70,6 +71,26 @@ const server = http.createServer(async (req, res) => {
                         
                             result = await updateListings(requestBody.productIds, requestBody.updateFields, requestBody.unsetFields); // Pass the unsetFields as well
                             break;
+                            case 'delete-listings':
+                                console.log("Received productIds for deletion:", requestBody.productIds);
+                                if (!Array.isArray(requestBody.productIds) || 
+                                    requestBody.productIds.some(id => !ObjectId.isValid(id))) {
+                                    res.writeHead(400, { 'Content-Type': 'application/json' });
+                                    res.end(JSON.stringify({ message: 'Invalid input for deleting listings' }));
+                                    return;
+                                }
+                                try {
+                                    const result = await deleteListings(requestBody.productIds);
+                                    // Assuming deleteListings function returns the result of deletion operation,
+                                    // you can further process this result or directly send a success response
+                                    res.writeHead(200, { 'Content-Type': 'application/json' });
+                                    res.end(JSON.stringify({ message: 'Listings deleted successfully', result }));
+                                } catch (error) {
+                                    console.error("An error occurred during the deletion operation:", error);
+                                    res.writeHead(500, { 'Content-Type': 'application/json' });
+                                    res.end(JSON.stringify({ message: 'Internal server error' }));
+                                }
+                                return;                            
                             case 'create-stripe-customer':
                                 const { userObjectId, email, name } = requestBody;
                                 createStripeCustomerAndUpdateDB(userObjectId, email, name)
