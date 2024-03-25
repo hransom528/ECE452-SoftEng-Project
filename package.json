@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "@google-cloud/aiplatform": "^3.15.0",
     "@google-cloud/vertexai": "^0.5.0",
     "@google/generative-ai": "^0.3.1",
     "dotenv": "^16.4.5",
