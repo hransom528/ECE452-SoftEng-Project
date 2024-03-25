@@ -3,14 +3,10 @@ const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const { MongoClient, ObjectId } = require('mongodb');
 const { connectDB } = require('../dbConfig.js');
 const mongoURI = process.env.MONGO_URI;
-
-
-
 // Function to create a new Stripe customer and update the MongoDB database
 async function createStripeCustomerAndUpdateDB(userObjectId, email, name) {
   const db = await connectDB();
   const users = db.collection('users');
-
   // First, check if the user document already has a stripeCustomerId
   const existingUser = await users.findOne({ _id: new ObjectId(userObjectId) });
 
@@ -38,40 +34,53 @@ async function createStripeCustomerAndUpdateDB(userObjectId, email, name) {
 }
 
 // Function to verify card details and update the MongoDB database
-async function verifyCardAndUpdateDB(userObjectId, stripeCustomerId, cardDetails) {
-    const db = await connectDB();
-    const users = db.collection('users'); // Your users collection name
+async function verifyCardAndUpdateDB(userObjectId, stripeCustomerId, stripeToken) {
+  const db = await connectDB();
+  const users = db.collection('users');
 
-    // Create a payment method for the provided card details
-    const paymentMethod = await stripe.paymentMethods.create({
-        type: 'card',
-        card: {
-            number: cardDetails.number,
-            exp_month: cardDetails.exp_month,
-            exp_year: cardDetails.exp_year,
-            cvc: cardDetails.cvc
-        }
-    });
+  try {
+      console.log("Verifying card details...");
+      console.log("User Object ID:", userObjectId);
+      console.log("Stripe Customer ID:", stripeCustomerId);
+      console.log("Stripe Token:", stripeToken);
 
-    // Attach the payment method to the Stripe customer
-    await stripe.paymentMethods.attach(paymentMethod.id, {
-        customer: stripeCustomerId
-    });
+      // Create a payment method using the provided token
+      const paymentMethod = await stripe.paymentMethods.create({
+          type: 'card',
+          card: {
+              token: stripeToken
+          }
+      });
 
-    // Update the Stripe customer to have the new payment method as default
-    await stripe.customers.update(stripeCustomerId, {
-        invoice_settings: {
-            default_payment_method: paymentMethod.id
-        }
-    });
+      console.log("Payment method created:", paymentMethod);
 
-    // Update the user document in MongoDB with the new payment method ID
-    await users.updateOne(
-        { _id: new ObjectId(userObjectId) },
-        { $set: { paymentMethodId: paymentMethod.id } }
-    );
+      // Attach the payment method to the Stripe customer
+      await stripe.paymentMethods.attach(paymentMethod.id, {
+          customer: stripeCustomerId
+      });
 
-    return { paymentMethodId: paymentMethod.id };
+      console.log("Payment method attached to customer");
+
+      // Update the Stripe customer to have the new payment method as default
+      await stripe.customers.update(stripeCustomerId, {
+          invoice_settings: {
+              default_payment_method: paymentMethod.id
+          }
+      });
+      console.log("Default payment method updated for customer");
+      // Update the user document in MongoDB with the new payment method ID
+      await users.updateOne(
+          { _id: new ObjectId(userObjectId) },
+          { $set: { paymentMethodId: paymentMethod.id } }
+      );
+
+      console.log("User document updated with payment method ID");
+
+      return { success: true, paymentMethodId: paymentMethod.id };
+  } catch (error) {
+      console.error("Error verifying card details:", error);
+      throw error;
+  }
 }
 
 module.exports = {

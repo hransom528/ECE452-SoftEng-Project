@@ -9,6 +9,7 @@ const { addProduct } = require('./Team3/UCCreateProduct.js');
 const { updateDiscount } = require('./Team3/UC10DiscountManagement.js');
 const { 
     updateUserEmail,
+    // this is a change 
     updateUserName,
     updateUserPhoneNumber,
     updateUserPremiumStatus,
@@ -87,19 +88,18 @@ const server = http.createServer(async (req, res) => {
                             // Add new case for verifying card details
                             case 'verify-card-details':
                                 try {
-                                    const { userObjectId, stripeCustomerId, cardDetails } = requestBody;
-                                    const verifyResult = await verifyCardAndUpdateDB(userObjectId, stripeCustomerId, cardDetails);
+                                    const { userObjectId, stripeCustomerId, stripeToken } = requestBody;
+                                    const verifyResult = await verifyCardAndUpdateDB(userObjectId, stripeCustomerId, stripeToken);
                                     res.writeHead(200, { 'Content-Type': 'application/json' });
                                     res.end(JSON.stringify({ success: true, data: verifyResult }));
-                                    return; // Exit the function after sending the response
                                 } catch (error) {
                                     console.error("Error verifying card details:", error);
                                     if (!res.headersSent) {
                                         res.writeHead(500, { 'Content-Type': 'application/json' });
                                         res.end(JSON.stringify({ success: false, message: 'Failed to verify card details', error: error.message }));
                                     }
-                                    return; // Exit the function after sending the error response
                                 }
+                                return; // Exit the function after handling the request
                     // userProfile.js
                     case 'update-email':
                         result = await updateUserEmail(requestBody.userId, requestBody.newEmail);
@@ -119,6 +119,14 @@ const server = http.createServer(async (req, res) => {
                     case 'update-shipping-address':
                         result = await updateUserShippingAddress(requestBody.userId, requestBody.addressId, requestBody.updatedAddress);
                         break;
+                    case 'update-discount':
+                            // Make sure requestBody has the necessary fields
+                            if (!requestBody._id || !requestBody.discountPercentage) {
+                                throw new Error('Both _id and discountPercentage are required');
+                            }
+                            result = await updateDiscount(requestBody._id, requestBody.discountPercentage);
+                        break;
+        
                     case 'add-product':
                     result = await addProduct(requestBody);
                         break;
@@ -200,3 +208,6 @@ const PORT = 3000;
 server.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
 });
+
+
+// this a change

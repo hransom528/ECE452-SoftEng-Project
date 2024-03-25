@@ -7,8 +7,8 @@
     </head>
     <body>
         <div class="container">
-            <form action="https://api.web3forms.com/submit" method="POST" class="contact-left">
-                <div class="contact-left-title">
+            <form action="https://api.web3forms.com/submit" method="POST" class="contact">
+                <div class="contact-title">
                     <h2>Questions or Concerns? Get in touch!</h2>
                     <hr>    
                 </div>
@@ -18,7 +18,42 @@
                 <textarea id="message" name="message" placeholder="How can we help you?" class="contact-inputs" required></textarea>
                 <button type="submit">Submit <img src="assets/arrow_icon.png"></button>
             </form>
-            <div class="contact-right"></div>
-                <img src="">
+            <div id="confirmationMessage" style="display:none;">
+                <p>Thank you for reaching out. We will get back to you within 24-72 business hours.</p>
+            </div>            
+        </div>
+        <script>
+            document.querySelector('.contact').addEventListener('submit', function(e) {
+                e.preventDefault(); // Prevent the default form submission
+            
+                const form = this;
+                const formData = new FormData(form);
+            
+                // Post the form data to the server
+                fetch('https://api.web3forms.com/submit', {
+                    method: 'POST',
+                    body: formData,
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Hide the form
+                        form.style.display = 'none';
+            
+                        // Show the confirmation message
+                        document.getElementById('confirmationMessage').style.display = 'block';
+            
+                        // Here you could also implement creating a support ticket if your backend supports it.
+                    } else {
+                        // Handle the error. You can show a message to the user.
+                        alert('There was an error submitting your form. Please try again.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('There was an error submitting your form. Please try again.');
+                });
+            });
+            </script>            
     </body>
 </html>
