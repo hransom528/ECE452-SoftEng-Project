@@ -74,6 +74,15 @@ async function askForProductName() {
     });
 }
 
+// Testing
+async function test() {
+    const productName = await getProductByName('Fitness Gear Olympic Curl Bar');
+    console.log(productName);
+}
+
+test();
+
+
 module.exports = {
     getProductByName,
     reviewProduct,
