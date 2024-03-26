@@ -8,6 +8,17 @@ async function connectDB() {
     try {
         await client.connect();
         console.log("Connected successfully to MongoDB");
+        return client.db('website');
+    } catch (error) {
+        console.error("Could not connect to MongoDB", error);
+        process.exit(1);
+    }
+}
+
+async function connectDBandClose() {
+    try {
+        await client.connect();
+        console.log("Connected successfully to MongoDB");
         const db = client.db('website');
         return { db, client };  // Return both db and client
     } catch (error) {
@@ -16,4 +27,4 @@ async function connectDB() {
     }
 }
 
-module.exports = { connectDB };
+module.exports = { connectDB, connectDBandClose };
