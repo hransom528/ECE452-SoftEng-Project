@@ -23,7 +23,7 @@ const {
 const {
     fetchTopRatedProductsByType,
 } = require("./Team3/UC9_Product_Performace_Insight.js");
-const { addToCart, removeFromCart } = require("./Team2/Cart.js");
+const { addToCart, removeFromCart, getCartDetails } = require("./Team2/Cart.js");
 
 const {
     updateUserEmail,
@@ -623,6 +623,27 @@ const server = http.createServer(async (req, res) => {
                             })
                         );
                         break;
+                    case "fetch-product-details":
+                        const productId = parsedUrl.query.productId; // Make sure 'parsedUrl' is defined earlier where you parse the request URL
+
+                        if (!ObjectId.isValid(productId)) {
+                            res.writeHead(400, { "Content-Type": "application/json" });
+                            res.end(JSON.stringify({ message: "Invalid product ID" }));
+                            break;
+                        }
+
+                        try {
+                            result = await fetchProductDetails(productId); // Assuming fetchProductDetails is an async function you've defined to fetch product details
+                            res.writeHead(200, { "Content-Type": "application/json" });
+                            res.end(JSON.stringify({ message: "Product details fetched successfully", data: result }));
+                        } catch (error) {
+                            console.error("Error fetching product details:", error);
+                            res.writeHead(500, { "Content-Type": "application/json" });
+                            res.end(JSON.stringify({ message: "Error fetching product details", error: error.toString() }));
+                        }
+                        break;
+                    
+                
 
           case "fetch-product-performance":
             result = await fetchTopRatedProducts();
