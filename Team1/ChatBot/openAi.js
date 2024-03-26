@@ -7,7 +7,7 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
-async function getResponseFromOpenAI(prompt) {
+async function getResponseFromOpenAI(body) {
   // waiting for products from database to be retrieved
   await fetchAllProducts();
 
@@ -15,7 +15,7 @@ async function getResponseFromOpenAI(prompt) {
   const jsonData = await fs.readFile("Team1/ChatBot/products.json", "utf8");
 
   // Create the full prompt including instructions on how the model should respond
-  const fullPrompt = `Here is some data: ${jsonData}\n\n${prompt}`;
+  const fullPrompt = `Here is some data: ${jsonData}\n\n${body.prompt}`;
 
   try {
     console.log("AI is thinking...");
@@ -33,7 +33,8 @@ async function getResponseFromOpenAI(prompt) {
         },
       ],
     });
-    console.log(response.choices[0].message.content);
+    return response.choices[0].message.content;
+    // console.log(response.choices[0].message.content);
   } catch (error) {
     console.error("Error getting response from OpenAI:", error);
   }
@@ -41,7 +42,7 @@ async function getResponseFromOpenAI(prompt) {
 
 // Replace with your actual prompt and data
 // const myPrompt = "Which product has the highest price?";
-const myPrompt = "What product do you think is the best for me to gain muscle?";
+// const myPrompt = "What product do you think is the best for me to gain muscle?";
 
 // Assuming you want to include myData as part of the conversation context:
-getResponseFromOpenAI(myPrompt);
+module.exports = { getResponseFromOpenAI };
