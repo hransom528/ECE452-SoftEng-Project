@@ -12,4 +12,4 @@
 
 ## Summary of Code Files
 - **Product_Search**: Searches the product database based on user query 
-- 
+- **Filter_Search**: Based on the filter criteria provided in request body, returns matching products in database
