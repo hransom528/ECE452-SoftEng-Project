@@ -499,17 +499,32 @@ const server = http.createServer(async (req, res) => {
           })
         );
       }
-    } else if (
-      req.method === "GET" &&
-      trimmedPath === "fetch-product-performance"
-    ) {
+    } 
+    else if (req.method === "GET") {
       try {
-        const result = await fetchTopRatedProducts();
-        res.writeHead(200, { "Content-Type": "application/json" });
-        res.end(
+        const requestBody = JSON.parse(buffer);
+        let result = null;
+
+        switch (trimmedPath) {
+          case "fetch-product-performance":
+            try {
+              result = await fetchTopRatedProducts();
+            } catch (error) {
+              console.error("Error handling GET request:", error);
+              res.writeHead(400, { "Content-Type": "application/json" });
+              res.end(
+                JSON.stringify({
+                  message: "Error handling request",
+                  error: error.toString(),
+                })
+              );
+            }
+          } 
+          res.writeHead(200, { "Content-Type": "application/json" });
+          res.end(
           JSON.stringify({ message: "Operation successful", data: result })
         );
-      } catch (error) {
+      }catch (error) {
         console.error("Error handling GET request:", error);
         res.writeHead(400, { "Content-Type": "application/json" });
         res.end(
@@ -518,12 +533,11 @@ const server = http.createServer(async (req, res) => {
             error: error.toString(),
           })
         );
-      }
+      }  
     } else {
       res.writeHead(404, { "Content-Type": "application/json" });
       res.end(JSON.stringify({ message: "Not Found" }));
-    }
-  });
+    }});
 });
 
 const PORT = 3000;
