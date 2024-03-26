@@ -23,7 +23,7 @@ const {
 const {
   fetchTopRatedProductsByType,
 } = require("./Team3/UC9_Product_Performace_Insight.js");
-const { addToCart, removeFromCart } = require("./Team2/Cart.js");
+const { addToCart, removeFromCart, getCartDetails } = require("./Team2/Cart.js");
 
 const {
   updateUserProfile,
@@ -624,17 +624,17 @@ const server = http.createServer(async (req, res) => {
         const requestBody = JSON.parse(buffer);
         let result = null;
 
-        switch (trimmedPath) {
-          case "filterCatalog":
-            result = await productFilterQuery(requestBody);
-            res.writeHead(200, { "Content-Type": "application/json" });
-            res.end(
-              JSON.stringify({
-                message: "Products filtered succesfully",
-                data: result,
-              })
-            );
-            break;
+                switch (trimmedPath) {
+                    case "filterCatalog":
+                        result = await productFilterQuery(requestBody);
+                        res.writeHead(200, { "Content-Type": "application/json" });
+                        res.end(
+                            JSON.stringify({
+                                message: "Products filtered succesfully",
+                                data: result,
+                            })
+                        );
+                        break;
 
           case "fetch-product-performance":
             result = await fetchTopRatedProducts();
