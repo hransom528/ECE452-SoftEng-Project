@@ -5,10 +5,16 @@ const url = require('url');
 const { StringDecoder } = require('string_decoder');
 const { createStripeCustomerAndUpdateDB, verifyCardAndUpdateDB } = require('./Team3/stripe.js');
 const {updateListings } = require('./Team3/UC8update_listings.js'); 
+const {deleteListings  } = require('./Team3/UC8update_listings.js'); 
 const { addProduct } = require('./Team3/UCCreateProduct.js');
 const { updateDiscount } = require('./Team3/UC10DiscountManagement.js');
 const { discountByType } = require('./Team3/UC10DiscountManagement.js');
 const { discountByBrand } = require('./Team3/UC10DiscountManagement.js');
+const { fetchTopRatedProducts } = require('./Team3/UC9_Product_Performace_Insight.js'); 
+const { fetchTopRatedProductsByBrand } = require('./Team3/UC9_Product_Performace_Insight.js'); 
+const { fetchTopRatedProductsByType } = require('./Team3/UC9_Product_Performace_Insight.js'); 
+
+
 const { 
     updateUserEmail,
     // this is a change 
@@ -38,22 +44,21 @@ const server = http.createServer(async (req, res) => {
     const decoder = new StringDecoder('utf-8');
     let buffer = '';
 
-    if (req.method === 'POST') {
-        req.on('data', (data) => {
-            buffer += decoder.write(data);
-        });
+    req.on('data', (data) => {
+        buffer += decoder.write(data);
+    });
 
-        req.on('end', async () => {
-            buffer += decoder.end();
-            console.log("Received buffer:", buffer);
+    req.on('end', async () => {
+        buffer += decoder.end();
 
-            // Handle POST requests
-            
+        if (req.method === 'POST') {
             try {
                 const requestBody = JSON.parse(buffer);
                 let result = null;
 
                 switch (trimmedPath) {
+
+                    
                     case 'update-listings':
                             console.log("Received productIds for update:", requestBody.productIds);
                             console.log("Received update fields:", requestBody.updateFields);
@@ -70,6 +75,26 @@ const server = http.createServer(async (req, res) => {
                         
                             result = await updateListings(requestBody.productIds, requestBody.updateFields, requestBody.unsetFields); // Pass the unsetFields as well
                             break;
+                            case 'delete-listings':
+                                console.log("Received productIds for deletion:", requestBody.productIds);
+                                if (!Array.isArray(requestBody.productIds) || 
+                                    requestBody.productIds.some(id => !ObjectId.isValid(id))) {
+                                    res.writeHead(400, { 'Content-Type': 'application/json' });
+                                    res.end(JSON.stringify({ message: 'Invalid input for deleting listings' }));
+                                    return;
+                                }
+                                try {
+                                    const result = await deleteListings(requestBody.productIds);
+                                    // Assuming deleteListings function returns the result of deletion operation,
+                                    // you can further process this result or directly send a success response
+                                    res.writeHead(200, { 'Content-Type': 'application/json' });
+                                    res.end(JSON.stringify({ message: 'Listings deleted successfully', result }));
+                                } catch (error) {
+                                    console.error("An error occurred during the deletion operation:", error);
+                                    res.writeHead(500, { 'Content-Type': 'application/json' });
+                                    res.end(JSON.stringify({ message: 'Internal server error' }));
+                                }
+                                return;                            
                             case 'create-stripe-customer':
                                 const { userObjectId, email, name } = requestBody;
                                 createStripeCustomerAndUpdateDB(userObjectId, email, name)
@@ -106,6 +131,20 @@ const server = http.createServer(async (req, res) => {
                     case 'update-email':
                         result = await updateUserEmail(requestBody.userId, requestBody.newEmail);
                         break;    
+                    case 'update-email':
+                        result = await updateUserEmail(requestBody.userId, requestBody.newEmail);
+                        break;
+                    case 'update-listings':
+                        if (!Array.isArray(requestBody.productIds) ||
+                            typeof requestBody.updateFields !== 'object' ||
+                            requestBody.productIds.some(id => !ObjectId.isValid(id)) ||
+                            (requestBody.unsetFields && !Array.isArray(requestBody.unsetFields))) {
+                            res.writeHead(400, { 'Content-Type': 'application/json' });
+                            res.end(JSON.stringify({ message: 'Invalid input for updating listings' }));
+                            return;  
+                        }
+                        result = await updateListings(requestBody.productIds, requestBody.updateFields, requestBody.unsetFields);
+                        break;
                     case 'update-name':
                         result = await updateUserName(requestBody.userId, requestBody.newName);
                         break;
@@ -144,7 +183,7 @@ const server = http.createServer(async (req, res) => {
                         
         
                     case 'add-product':
-                    result = await addProduct(requestBody);
+                        result = await addProduct(requestBody);
                         break;
 
                     case 'registerUser':
@@ -201,23 +240,73 @@ const server = http.createServer(async (req, res) => {
                         result = await cancelPremiumMembership(requestBody.userId);
                         break;
                               
+                    case 'update-discount':
+                        if (!requestBody._id || !requestBody.discountPercentage) {
+                            throw new Error('Both _id and discountPercentage are required');
+                        }
+                        result = await updateDiscount(requestBody._id, requestBody.discountPercentage);
+                        break;
                     default:
                         throw new Error('Route not found');
+
+                        case 'fetch-top-rated-products-by-brand':
+                            if (!requestBody.brand) {
+                                res.writeHead(400, { 'Content-Type': 'application/json' });
+                                res.end(JSON.stringify({ message: 'Brand is required' }));
+                                return;
+                            }
+                            try {
+                                const brandResults = await fetchTopRatedProductsByBrand(requestBody.brand);
+                                res.writeHead(200, { 'Content-Type': 'application/json' });
+                                res.end(JSON.stringify({ message: 'Top rated products by brand fetched successfully', data: brandResults }));
+                            } catch (error) {
+                                console.error("Error fetching top rated products by brand:", error);
+                                res.writeHead(500, { 'Content-Type': 'application/json' });
+                                res.end(JSON.stringify({ message: 'Error fetching products by brand', error: error.toString() }));
+                            }
+                            break;
+                        
+                        case 'fetch-top-rated-products-by-type':
+                            if (!requestBody.type) {
+                                res.writeHead(400, { 'Content-Type': 'application/json' });
+                                res.end(JSON.stringify({ message: 'Type is required' }));
+                                return;
+                            }
+                            try {
+                                const typeResults = await fetchTopRatedProductsByType(requestBody.type);
+                                res.writeHead(200, { 'Content-Type': 'application/json' });
+                                res.end(JSON.stringify({ message: 'Top rated products by type fetched successfully', data: typeResults }));
+                            } catch (error) {
+                                console.error("Error fetching top rated products by type:", error);
+                                res.writeHead(500, { 'Content-Type': 'application/json' });
+                                res.end(JSON.stringify({ message: 'Error fetching products by type', error: error.toString() }));
+                            }
+                            break;
+                        
                 }
 
                 res.writeHead(200, { 'Content-Type': 'application/json' });
                 res.end(JSON.stringify({ message: 'Operation successful', data: result }));
             } catch (error) {
-                console.error("Error parsing JSON:", error);
+                console.error("Error handling POST request:", error);
                 res.writeHead(400, { 'Content-Type': 'application/json' });
-                res.end(JSON.stringify({ message: 'Invalid JSON format', error: error.toString() }));
+                res.end(JSON.stringify({ message: 'Error handling request', error: error.toString() }));
             }
-        });
-    } else {
-        // Default response for non-POST requests or unmatched routes
-        res.writeHead(404, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify({ message: 'Not Found' }));
-    }
+        } else if (req.method === 'GET' && trimmedPath === 'fetch-product-performance') {
+            try {
+                const result = await fetchTopRatedProducts();
+                res.writeHead(200, { 'Content-Type': 'application/json' });
+                res.end(JSON.stringify({ message: 'Operation successful', data: result }));
+            } catch (error) {
+                console.error("Error handling GET request:", error);
+                res.writeHead(400, { 'Content-Type': 'application/json' });
+                res.end(JSON.stringify({ message: 'Error handling request', error: error.toString() }));
+            }
+        } else {
+            res.writeHead(404, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ message: 'Not Found' }));
+        }
+    });
 });
 
 const PORT = 3000;
