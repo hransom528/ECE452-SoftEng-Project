@@ -1,4 +1,4 @@
-const { connectDB } = require('../dbConfig'); // Assuming the first file is in the same directory
+const { connectDB } = require('../dbConfig.js'); // Assuming the first file is in the same directory
 const readline = require('readline');
 
 // Create interface for user input
