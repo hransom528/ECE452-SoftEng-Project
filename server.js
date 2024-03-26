@@ -46,7 +46,9 @@ const {
 } = require("./Team1/Reg_lgn/oAuthHandler");
 const { getResponseFromOpenAI } = require("./Team1/ChatBot/openAi");
 
-const { productFilterQuery} = require("./Team4/Filter_Search.js");
+//const { productFilterQuery} = require("./Team4/Filter_Search.js");
+//const { productFilterQuery} = require("./Team4/Filter_Search.js");
+const {checkout} = require('./Team2/Checkout.js');
 
 // Initialize chat instance before starting server
 let chatInstance = null;
