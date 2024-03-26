@@ -58,8 +58,8 @@ const productSchema = new mongoose.Schema({
     });
     
 
-const Product = mongoose.model('Product', productSchema,'product');
-const Cart = mongoose.model('Cart', cartSchema, 'Carts');
+const Product = mongoose.model('Product', productSchema);
+const Cart = mongoose.model('Cart', cartSchema, 'carts');
 
 async function getProductPrice(productId) {
     const product = await Product.findById(productId); // Use the Product model to find the product by ID
