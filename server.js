@@ -420,6 +420,7 @@ const server = http.createServer(async (req, res) => {
                   // For example: user: result.user, token: result.token, etc.
                 })
               );
+              responseSent = true;
             } catch (loginError) {
               // handling login errors
               res.writeHead(400, { "Content-Type": "application/json" });
@@ -444,7 +445,7 @@ const server = http.createServer(async (req, res) => {
 
             await getResponseFromOpenAI(requestBody)
               .then((response) => {
-                console.log("AI Response:", response); // Debugging line
+                // console.log("AI Response:", response);
                 res.writeHead(200, { "Content-Type": "application/json" });
                 res.end(
                   JSON.stringify({
