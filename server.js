@@ -234,7 +234,6 @@ const server = http.createServer(async (req, res) => {
           case "update-shipping-address":
             result = await updateUserShippingAddress(requestBody);
             break;
-    
 
           case "update-listings":
             if (
@@ -380,6 +379,13 @@ const server = http.createServer(async (req, res) => {
 
               //use the info we got to finish registering the user
               result = await registerUser(userInfo, requestBody);
+              res.writeHead(400, { "Content-Type": "application/json" });
+              res.end(
+                JSON.stringify({
+                  message: result,
+                })
+              );
+              responseSent = true;
             } catch (oauthError) {
               // handling auth errors
               res.writeHead(400, { "Content-Type": "application/json" });
@@ -389,6 +395,7 @@ const server = http.createServer(async (req, res) => {
                   error: oauthError.message,
                 })
               );
+              responseSent = true;
               return;
             }
             break;
@@ -434,7 +441,7 @@ const server = http.createServer(async (req, res) => {
             }
             break;
 
-          case "chatWith-AI":
+          case "talkToAI":
             // Ensure body contains 'prompt'
             if (!requestBody.prompt) {
               res.writeHead(400, { "Content-Type": "application/json" });

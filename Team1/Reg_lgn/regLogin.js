@@ -17,6 +17,10 @@ async function registerUser(userInfo, requestBody) {
         message: "User exists. Logging you in!",
         userId: existingUser._id,
       };
+    } else if (requestBody.AcceptTerms.toLowerCase() !== "yes") {
+      const ToUser =
+        "Please Accepts our Terms and Conditions to continue registering.";
+      return { ToUser };
     } else {
       // If the user is new, create a new user object including the data from Google
       const newUser = {
@@ -33,9 +37,9 @@ async function registerUser(userInfo, requestBody) {
       // Insert the new user into the database
       const result = await usersCollection.insertOne(newUser);
       return {
-        success: true,
-        message: "User registered successfully.",
-        userId: result.insertedId,
+        RegistrationStatus: "Success",
+        Message: "Welcome to the Gym Haven Website",
+        Info: `Created with ID: ${result.insertedId}`,
       };
     }
   } catch (error) {
