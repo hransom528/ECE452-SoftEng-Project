@@ -8,7 +8,7 @@ const openai = new OpenAI({
 });
 
 async function getResponseFromOpenAI(body) {
-  // waiting for products from database to be retrieved
+  // Waiting for products from the database to be retrieved
   await fetchAllProducts();
 
   // Prepare your data as a stringified JSON
@@ -25,7 +25,7 @@ async function getResponseFromOpenAI(body) {
         {
           role: "system",
           content:
-            "You are a helpful assistant. Provide concise, accurate answers based on the data provided. I want you to respond as if you are apart of our team, do not say 'based on the data inputted', instead it would be better to say something like 'based on our companies data...'. If the data does not contain the information needed to answer the question, state that the information is not available.",
+            "You are a helpful assistant. Provide concise, accurate answers based on the data provided. I want you to respond as if you are a part of our team, do not say 'based on the data inputted', instead it would be better to say something like 'based on our company's data...'. If the data does not contain the information needed to answer the question, state that the information is not available.",
         },
         {
           role: "user",
@@ -33,10 +33,16 @@ async function getResponseFromOpenAI(body) {
         },
       ],
     });
-    return response.choices[0].message.content;
-    // console.log(response.choices[0].message.content);
+    // Ensure there's a response to return
+    if (response && response.choices && response.choices.length > 0) {
+      console.log("AI is done thinking!");
+      return response.choices[0].message.content;
+    } else {
+      throw new Error("No response from OpenAI.");
+    }
   } catch (error) {
     console.error("Error getting response from OpenAI:", error);
+    throw error; // Rethrow the error to be caught by the caller
   }
 }
 

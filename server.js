@@ -1,21 +1,29 @@
-require('dotenv').config();
-const { ObjectId } = require('mongodb');
-const http = require('http');
-const url = require('url');
-const { StringDecoder } = require('string_decoder');
-const { createStripeCustomerAndUpdateDB, 
-    verifyCardAndUpdateDB,
-    createPaymentAndProcessing} = require('./Team3/stripe.js');
-const {updateListings } = require('./Team3/UC8update_listings.js'); 
-const {deleteListings  } = require('./Team3/UC8update_listings.js'); 
-const { addProduct } = require('./Team3/UCCreateProduct.js');
-const { updateDiscount } = require('./Team3/UC10DiscountManagement.js');
-const { discountByType } = require('./Team3/UC10DiscountManagement.js');
-const { discountByBrand } = require('./Team3/UC10DiscountManagement.js');
-const { fetchTopRatedProducts } = require('./Team3/UC9_Product_Performace_Insight.js'); 
-const { fetchTopRatedProductsByBrand } = require('./Team3/UC9_Product_Performace_Insight.js'); 
-const { fetchTopRatedProductsByType } = require('./Team3/UC9_Product_Performace_Insight.js'); 
-const {addToCart, removeFromCart} = require('./Team2/Cart.js');
+require("dotenv").config();
+const { ObjectId } = require("mongodb");
+const http = require("http");
+const url = require("url");
+const { StringDecoder } = require("string_decoder");
+const {
+  createStripeCustomerAndUpdateDB,
+  verifyCardAndUpdateDB,
+  createPaymentAndProcessing,
+} = require("./Team3/stripe.js");
+const { updateListings } = require("./Team3/UC8update_listings.js");
+const { deleteListings } = require("./Team3/UC8update_listings.js");
+const { addProduct } = require("./Team3/UCCreateProduct.js");
+const { updateDiscount } = require("./Team3/UC10DiscountManagement.js");
+const { discountByType } = require("./Team3/UC10DiscountManagement.js");
+const { discountByBrand } = require("./Team3/UC10DiscountManagement.js");
+const {
+  fetchTopRatedProducts,
+} = require("./Team3/UC9_Product_Performace_Insight.js");
+const {
+  fetchTopRatedProductsByBrand,
+} = require("./Team3/UC9_Product_Performace_Insight.js");
+const {
+  fetchTopRatedProductsByType,
+} = require("./Team3/UC9_Product_Performace_Insight.js");
+const { addToCart, removeFromCart } = require("./Team2/Cart.js");
 
 const {
   updateUserEmail,
@@ -40,6 +48,7 @@ const { getResponseFromOpenAI } = require("./Team1/ChatBot/openAi");
 
 // Initialize chat instance before starting server
 let chatInstance = null;
+let responseSent = false;
 startChat()
   .then((chat) => {
     chatInstance = chat;
@@ -66,6 +75,13 @@ const server = http.createServer(async (req, res) => {
         let result = null;
 
         switch (trimmedPath) {
+          
+          case 'checkout':
+                        const { userId, cartId, address, paymentToken } = requestBody;
+                        await checkout(userId, cartId, address, paymentToken);
+                        result = { message: 'Checkout successful' };
+                        break;
+
           case "update-listings":
             console.log(
               "Received productIds for update:",
@@ -185,7 +201,7 @@ const server = http.createServer(async (req, res) => {
               }
             }
             return; // Exit the function after handling the request
-       
+
           // userProfile.js
           case "update-email":
             result = await updateUserEmail(
@@ -253,20 +269,23 @@ const server = http.createServer(async (req, res) => {
             );
             break;
 
-            
           case "add-to-cart":
             if (!ObjectId.isValid(requestBody.userId) ||
                 !ObjectId.isValid(requestBody.productId) ||
                 typeof requestBody.quantity !== 'number' ||
                 requestBody.quantity < 1) {
                 res.writeHead(400, { 'Content-Type': 'application/json' });
-                res.end(JSON.stringify({message: 'Invalid input for adding to cart' }));
-                break; // Exit the function here to prevent further execution
+                res.end(JSON.stringify({ message: 'Invalid input for adding to cart' }));
+                return; // Exit the function here to prevent further execution
             }
-        
+
             // Call addToCart function
-            result = await addToCart(requestBody.userId, requestBody.productId, requestBody.quantity);
-            res.writeHead(200, { 'Content-Type': 'application/json' });
+            result = await addToCart(
+              requestBody.userId,
+              requestBody.productId,
+              requestBody.quantity
+            );
+            res.writeHead(200, { "Content-Type": "application/json" });
             res.end(JSON.stringify(result)); // Send back the updated cart
             return; // Make sure to return here to stop further execution and prevent additional responses
         
@@ -277,7 +296,7 @@ const server = http.createServer(async (req, res) => {
                     requestBody.quantityToRemove < 1) {
                     res.writeHead(400, { 'Content-Type': 'application/json' });
                     res.end(JSON.stringify({ message: 'Invalid input for removing from cart' }));
-                    break; // Exit this case block, ensuring no further code in this case is executed
+                    return; // Exit this case block, ensuring no further code in this case is executed
                 }
             
                 // Assuming removeFromCart function is defined and properly handles the logic
@@ -295,10 +314,7 @@ const server = http.createServer(async (req, res) => {
 
 
 
-            //break here
-
-
-
+          //break here
 
           case "update-discount":
             // Make sure requestBody has the necessary fields
@@ -410,18 +426,27 @@ const server = http.createServer(async (req, res) => {
 
           case "chatWith-AI":
             // Ensure body contains 'prompt'
-            if (!body.prompt) {
+            if (!requestBody.prompt) {
               res.writeHead(400, { "Content-Type": "application/json" });
               res.end(JSON.stringify({ message: "Prompt is required" }));
+              responseSent = true;
               break;
             }
 
-            getResponseFromOpenAI(body)
+            await getResponseFromOpenAI(requestBody)
               .then((response) => {
+                console.log("AI Response:", response); // Debugging line
                 res.writeHead(200, { "Content-Type": "application/json" });
-                res.end(JSON.stringify({ message: response }));
+                res.end(
+                  JSON.stringify({
+                    message: "Operation successful",
+                    data: response,
+                  })
+                );
+                responseSent = true;
               })
               .catch((error) => {
+                console.log("Error interacting with AI:", error); // Debugging line
                 res.writeHead(500, { "Content-Type": "application/json" });
                 res.end(
                   JSON.stringify({
@@ -429,6 +454,7 @@ const server = http.createServer(async (req, res) => {
                     error: error.toString(),
                   })
                 );
+                responseSent = true;
               });
 
             break;
@@ -553,10 +579,14 @@ const server = http.createServer(async (req, res) => {
             break;
         }
 
-        res.writeHead(200, { "Content-Type": "application/json" });
-        res.end(
-          JSON.stringify({ message: "Operation successful", data: result })
-        );
+        if (!responseSent) {
+          // Check the flag
+          // Only run this if no response has been sent yet
+          res.writeHead(200, { "Content-Type": "application/json" });
+          res.end(
+            JSON.stringify({ message: "Operation successful", data: result })
+          );
+        }
       } else if (req.method === "GET") {
         const requestBody = JSON.parse(buffer);
         let result = null;
@@ -586,10 +616,6 @@ const server = http.createServer(async (req, res) => {
                 res.writeHead(404, { "Content-Type": "application/json" });
                 res.end(JSON.stringify({ message: "Not Found" }));
             }
-
-           
-
-            
         } catch (error) {
             console.error("Error handling request:", error);
             if (!res.headersSent) {
