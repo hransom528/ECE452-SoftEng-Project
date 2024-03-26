@@ -58,16 +58,22 @@ const productSchema = new mongoose.Schema({
     });
     
 
-const Product = mongoose.model('Product', productSchema, 'products')
-const Cart = mongoose.model('Cart', cartSchema, 'carts');
+const Product = mongoose.model('Product', productSchema,'product');
+const Cart = mongoose.model('Cart', cartSchema, 'Carts');
 
 async function getProductPrice(productId) {
     const product = await Product.findById(productId); // Use the Product model to find the product by ID
-    if (!product) throw new Error("Product not found");
-    return product.price; // Return the price field of the product
+    
+    // Check if the product was found
+    if (!product) {
+        // Return a default price if the product is not found
+        const defaultPrice = 0; // Set your desired default price here
+        return defaultPrice;
+    }
+
+    // Return the price field of the product if found
+    return product.price;
 }
-
-
 
 
 async function addToCart(userId, productId, quantity) {
