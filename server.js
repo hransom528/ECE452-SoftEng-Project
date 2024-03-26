@@ -219,19 +219,23 @@ const server = http.createServer(async (req, res) => {
               responseSent = true;
             }
             break;
+          case "update-email":
+            result = await updateUserEmail(requestBody);
+            break;
+          case "update-name":
+            result = await updateUserName(requestBody);
+            break;
+          case "update-premium-status":
+            result = await updateUserPremiumStatus(requestBody);
+            break;
+          case "add-shipping-address":
+            result = await addUserShippingAddress(requestBody);
+            break;
+          case "update-shipping-address":
+            result = await updateUserShippingAddress(requestBody);
+            break;
+    
 
-          case "update-email":
-            result = await updateUserEmail(
-              requestBody.userId,
-              requestBody.newEmail
-            );
-            break;
-          case "update-email":
-            result = await updateUserEmail(
-              requestBody.userId,
-              requestBody.newEmail
-            );
-            break;
           case "update-listings":
             if (
               !Array.isArray(requestBody.productIds) ||
@@ -253,37 +257,6 @@ const server = http.createServer(async (req, res) => {
               requestBody.productIds,
               requestBody.updateFields,
               requestBody.unsetFields
-            );
-            break;
-          case "update-name":
-            result = await updateUserName(
-              requestBody.userId,
-              requestBody.newName
-            );
-            break;
-          case "update-phone-number":
-            result = await updateUserPhoneNumber(
-              requestBody.userId,
-              requestBody.newPhoneNumber
-            );
-            break;
-          case "update-premium-status":
-            result = await updateUserPremiumStatus(
-              requestBody.userId,
-              requestBody.isPremium
-            );
-            break;
-          case "add-shipping-address":
-            result = await addUserShippingAddress(
-              requestBody.userId,
-              requestBody.newAddress
-            );
-            break;
-          case "update-shipping-address":
-            result = await updateUserShippingAddress(
-              requestBody.userId,
-              requestBody.addressId,
-              requestBody.updatedAddress
             );
             break;
 

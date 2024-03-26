@@ -88,7 +88,13 @@ async function updateUserProfile(requestBody) {
     }
 }
 
-async function updateUserEmail(userId, newEmail) {
+async function updateUserEmail(requestBody) {
+    const { userId, newEmail, accToken } = requestBody;
+    
+    // Validate the access token and get user info
+    const userInfo = await validateAccessTokenAndGetUserInfo(accToken);
+    
+
     if (!userId || !newEmail) {
         throw new Error('userId and newEmail are required');
     }
@@ -113,7 +119,12 @@ async function updateUserEmail(userId, newEmail) {
     return result;
 }
 
-async function updateUserName(userId, newName) {
+async function updateUserName(requestBody) {
+    const { userId, newName, accToken } = requestBody;
+    
+    // Validate the access token and get user info
+    const userInfo = await validateAccessTokenAndGetUserInfo(accToken);
+
     if (!userId || !newName) {
         throw new Error('userId and newName are required');
     }
@@ -132,7 +143,12 @@ async function updateUserName(userId, newName) {
     return result;
 }
 
-async function updateUserPremiumStatus(userId, isPremium) {
+async function updateUserPremiumStatus(requestBody) {
+    const { userId, isPremium, accToken } = requestBody;
+    
+    // Validate the access token and get user info
+    const userInfo = await validateAccessTokenAndGetUserInfo(accToken);
+
     if (!userId || isPremium === undefined) {
         throw new Error('userId and isPremium status are required');
     }
@@ -151,7 +167,12 @@ async function updateUserPremiumStatus(userId, isPremium) {
     return result;
 }
 
-async function addUserShippingAddress(userId, newAddress) {
+async function addUserShippingAddress(requestBody) {
+    const { userId, newAddress, accToken } = requestBody;
+    
+    // Validate the access token and get user info
+    const userInfo = await validateAccessTokenAndGetUserInfo(accToken);
+
     if (!userId || !newAddress) {
         throw new Error('userId and newAddress are required');
     }
@@ -173,7 +194,12 @@ async function addUserShippingAddress(userId, newAddress) {
     return result;
 }
 
-async function updateUserShippingAddress(userId, addressId, updatedAddress) {
+async function updateUserShippingAddress(requestBody) {
+    const { userId, addressId, updatedAddress, accToken } = requestBody;
+    
+    // Validate the access token and get user info
+    const userInfo = await validateAccessTokenAndGetUserInfo(accToken);
+
     if (!userId || !addressId || !updatedAddress) {
         throw new Error('userId, addressId, and updatedAddress are required');
     }
