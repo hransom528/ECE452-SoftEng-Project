@@ -56,16 +56,35 @@ async function retrieveShipment(req, res, db) {
     }
 }
 
-// Buy a shipment
-async function buyShipment(req, res) {
-    // Implement purchase logic here
-    res.status(200).send('Shipment purchased successfully');
-}
-
 // Track a shipment
-async function trackShipment(req, res) {
-    // Implement tracking logic here
-    res.status(200).send('Tracking information');
+async function trackShipment(req, res, db) {
+    try {
+        const shipmentId = req.params.id;
+        const shipmentsCollection = db.collection('shipments');
+        
+        // Find the shipment by ID
+        const shipment = await shipmentsCollection.findOne({ _id: ObjectId(shipmentId) });
+        
+        // Check if shipment exists
+        if (!shipment) {
+            res.status(404).send('Shipment not found');
+            return;
+        }
+        
+        // Check if shipment is available for tracking
+        if (shipment.status !== 'shipped') {
+            res.status(400).send('Shipment is not available for tracking');
+            return;
+        }
+        
+        // Fetch tracking information from shipment object
+        const trackingInfo = shipment.trackingInfo;
+        
+        res.status(200).json(trackingInfo);
+    } catch (error) {
+        console.error('Error tracking shipment:', error);
+        res.status(500).send('Internal Server Error');
+    }
 }
 
 module.exports = {
@@ -73,6 +92,5 @@ module.exports = {
     listShipments,
     createShipment,
     retrieveShipment,
-    buyShipment,
     trackShipment
 };
