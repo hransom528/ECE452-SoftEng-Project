@@ -34,7 +34,6 @@ const {
     addUserShippingAddress,
     updateUserShippingAddress,
 } = require("./Team1/userProfile");
-const { startChat } = require("./Team1/chatSupport.js");
 const {
     createPremiumMembership,
     cancelPremiumMembership,
@@ -49,15 +48,6 @@ const { getResponseFromOpenAI } = require("./Team1/ChatBot/openAi");
 //const { productFilterQuery} = require("./Team4/Filter_Search.js") other changes;
 //const { productFilterQuery} = require("./Team4/Filter_Search.js");
 const {checkout} = require('./Team2/Checkout.js');
-
-// Initialize chat instance before starting server
-let chatInstance = null;
-let responseSent = false;
-startChat()
-    .then((chat) => {
-        chatInstance = chat;
-    })
-    .catch((error) => console.error("Failed to start chat:", error));
 
 const server = http.createServer(async (req, res) => {
     const parsedUrl = url.parse(req.url, true);
@@ -477,33 +467,6 @@ const server = http.createServer(async (req, res) => {
                                 responseSent = true;
                             });
 
-                        break;
-
-                    // chatSupport.js
-                    case "send-chat-message":
-                        if (!chatInstance) {
-                            res.writeHead(503, { "Content-Type": "application/json" });
-                            res.end(
-                                JSON.stringify({ message: "Chat service is not available" })
-                            );
-                            return;
-                        }
-                        try {
-                            const chatResponse = await chatInstance.handleIncomingMessage(
-                                requestBody.message
-                            );
-                            result = { reply: chatResponse };
-                        } catch (error) {
-                            console.error("Error during chat message handling:", error);
-                            res.writeHead(500, { "Content-Type": "application/json" });
-                            res.end(
-                                JSON.stringify({
-                                    message: "Failed to handle chat message",
-                                    error: error.toString(),
-                                })
-                            );
-                            return;
-                        }
                         break;
 
                     // membershipManagement.js
