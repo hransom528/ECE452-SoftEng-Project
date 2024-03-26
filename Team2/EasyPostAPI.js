@@ -5,7 +5,7 @@ const mongoURI = process.env.MONGO_URI;
 // Connect to MongoDB
 async function connectToMongoDB() {
     try {
-        const client = await MongoClient.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true });
+        const client = await MongoClient.connect(mongoURI);
         console.log('Connected to MongoDB');
         return client.db(); // Returns the default database
     } catch (error) {

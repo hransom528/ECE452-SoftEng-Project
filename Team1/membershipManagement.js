@@ -1,5 +1,6 @@
 const { connectDB } = require('../dbConfig');
 const { ObjectId } = require('mongodb');
+const { verifyCardAndUpdateDB } = require('../Team3/stripe.js'); // Adjust the path as necessary
 
 async function getUserById(userId) {
     const db = await connectDB();
@@ -21,17 +22,17 @@ async function updateUserPremiumStatus(userId, isPremium) {
 }
 
 
-async function createPremiumMembership(userId, paymentMethodId) {
+async function createPremiumMembership(userId, stripeCustomerId, stripeToken) {
     const user = await getUserById(userId);
 
+    // Check if the user is already a premium member
     if (user.isPremium) {
-        console.log("User is already a premium member.");
         return { success: false, message: "User is already a premium member." };
     }
 
     // Verify the card with the payment method ID and user's Stripe ID
     try {
-        const verificationResult = await verifyCard(paymentMethodId, user.stripeId);
+        const verificationResult = await verifyCardAndUpdateDB(userId, stripeCustomerId, stripeToken);
 
         if (verificationResult.success) {
             // If card verification is successful, update user's premium status
@@ -58,14 +59,15 @@ async function createPremiumMembership(userId, paymentMethodId) {
 async function cancelPremiumMembership(userId) {
     const user = await getUserById(userId);
 
+    // Check if the user is not a premium member
     if (!user.isPremium) {
-        console.log("User is not a premium member.");
-        return false; // Indicates no action was taken since the user is not premium
+        return { success: false, message: "User is not a premium member." };
     }
 
     const updateSucceeded = await updateUserPremiumStatus(userId, false);
     if (updateSucceeded) {
         console.log("Cancelled premium membership for user", userId);
+        return { success: true, message: "Premium membership cancelled successfully." };
         return true; // Indicates successful update
     } else {
         console.error("Failed to update user's premium status");

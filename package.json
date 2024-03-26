@@ -3,6 +3,7 @@
     "@google-cloud/aiplatform": "^3.15.0",
     "@google-cloud/vertexai": "^0.5.0",
     "@google/generative-ai": "^0.3.1",
+    "ai": "^3.0.14",
     "dotenv": "^16.4.5",
     "google-auth-library": "^9.7.0",
     "googleapis": "^133.0.0",
