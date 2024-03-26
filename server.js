@@ -13,6 +13,7 @@ const { discountByBrand } = require('./Team3/UC10DiscountManagement.js');
 const { fetchTopRatedProducts } = require('./Team3/UC9_Product_Performace_Insight.js'); 
 const { fetchTopRatedProductsByBrand } = require('./Team3/UC9_Product_Performace_Insight.js'); 
 const { fetchTopRatedProductsByType } = require('./Team3/UC9_Product_Performace_Insight.js'); 
+const { addToCart } = require('./Team2/Cart.js')
 
 
 const { 
@@ -282,6 +283,23 @@ const server = http.createServer(async (req, res) => {
                                 res.end(JSON.stringify({ message: 'Error fetching products by type', error: error.toString() }));
                             }
                             break;
+
+                        case 'add-to-cart':
+                            if (!ObjectId.isValid(requestBody.userId) ||
+                                !ObjectId.isValid(requestBody.productId) ||
+                                typeof requestBody.quantity !== 'number' ||
+                                requestBody.quantity < 1) {
+                                res.writeHead(400, { 'Content-Type': 'application/json' });
+                                res.end(JSON.stringify({ message: 'Invalid input for adding to cart' }));
+                                return;
+                            }
+        
+                                // Call addToCart function
+                            result = await addToCart(requestBody.userId, requestBody.productId, requestBody.quantity);
+                            res.writeHead(200, { 'Content-Type': 'application/json' });
+                            res.end(JSON.stringify(result));
+                            return;
+                          
                         
                 }
 
