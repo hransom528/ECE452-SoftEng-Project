@@ -277,7 +277,7 @@ const server = http.createServer(async (req, res) => {
                     requestBody.quantityToRemove < 1) {
                     res.writeHead(400, { 'Content-Type': 'application/json' });
                     res.end(JSON.stringify({ message: 'Invalid input for removing from cart' }));
-                    return; // Exit this case block, ensuring no further code in this case is executed
+                    break; // Exit this case block, ensuring no further code in this case is executed
                 }
             
                 // Assuming removeFromCart function is defined and properly handles the logic
@@ -586,6 +586,10 @@ const server = http.createServer(async (req, res) => {
                 res.writeHead(404, { "Content-Type": "application/json" });
                 res.end(JSON.stringify({ message: "Not Found" }));
             }
+
+           
+
+            
         } catch (error) {
             console.error("Error handling request:", error);
             if (!res.headersSent) {
