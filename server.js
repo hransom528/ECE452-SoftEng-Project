@@ -13,7 +13,7 @@ const { discountByBrand } = require('./Team3/UC10DiscountManagement.js');
 const { fetchTopRatedProducts } = require('./Team3/UC9_Product_Performace_Insight.js'); 
 const { fetchTopRatedProductsByBrand } = require('./Team3/UC9_Product_Performace_Insight.js'); 
 const { fetchTopRatedProductsByType } = require('./Team3/UC9_Product_Performace_Insight.js'); 
-const {addToCart} = require('./Team2/Cart.js');
+const {addToCart, removeFromCart} = require('./Team2/Cart.js');
 
 const {
   updateUserEmail,
@@ -34,7 +34,7 @@ const {
   getAccessTokenFromCode,
   getUserInfo,
 } = require("./Team1/Reg_lgn/oAuthHandler");
-const { addToCart } = require('./Team2/Cart.js');
+
 
 
 // Initialize chat instance before starting server
@@ -184,23 +184,7 @@ const server = http.createServer(async (req, res) => {
               }
             }
             return; // Exit the function after handling the request
-
-          case 'add-to-cart':
-                if (!ObjectId.isValid(requestBody.userId) ||
-                    !ObjectId.isValid(requestBody.productId) ||
-                    typeof requestBody.quantity !== 'number' ||
-                    requestBody.quantity < 1) {
-                    res.writeHead(400, { 'Content-Type': 'application/json' });
-                    res.end(JSON.stringify({ message: 'Invalid input for adding to cart' }));
-                    return; // Exit the function here to prevent further execution
-                }
-            
-                // Call addToCart function
-                result = await addToCart(requestBody.userId, requestBody.productId, requestBody.quantity);
-                res.writeHead(200, { 'Content-Type': 'application/json' });
-                res.end(JSON.stringify(result)); // Send back the updated cart
-                return; // Make sure to return here to stop further execution and prevent additional responses
-                
+       
           // userProfile.js
           case "update-email":
             result = await updateUserEmail(
@@ -267,6 +251,54 @@ const server = http.createServer(async (req, res) => {
               requestBody.updatedAddress
             );
             break;
+
+            
+          case "add-to-cart":
+            if (!ObjectId.isValid(requestBody.userId) ||
+                !ObjectId.isValid(requestBody.productId) ||
+                typeof requestBody.quantity !== 'number' ||
+                requestBody.quantity < 1) {
+                res.writeHead(400, { 'Content-Type': 'application/json' });
+                res.end(JSON.stringify({ message: 'Invalid input for adding to cart' }));
+                return; // Exit the function here to prevent further execution
+            }
+        
+            // Call addToCart function
+            result = await addToCart(requestBody.userId, requestBody.productId, requestBody.quantity);
+            res.writeHead(200, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify(result)); // Send back the updated cart
+            return; // Make sure to return here to stop further execution and prevent additional responses
+        
+          case 'remove-from-cart':
+                if (!ObjectId.isValid(requestBody.userId) ||
+                    !ObjectId.isValid(requestBody.productId) ||
+                    typeof requestBody.quantityToRemove !== 'number' ||
+                    requestBody.quantityToRemove < 1) {
+                    res.writeHead(400, { 'Content-Type': 'application/json' });
+                    res.end(JSON.stringify({ message: 'Invalid input for removing from cart' }));
+                    return; // Exit this case block, ensuring no further code in this case is executed
+                }
+            
+                // Assuming removeFromCart function is defined and properly handles the logic
+                try {
+                    const result = await removeFromCart(requestBody.userId, requestBody.productId, requestBody.quantityToRemove);
+                    res.writeHead(200, { 'Content-Type': 'application/json' });
+                    res.end(JSON.stringify(result)); // Send back the updated cart
+                } catch (error) {
+                    console.error("Error removing item from cart:", error);
+                    res.writeHead(500, { 'Content-Type': 'application/json' });
+                    res.end(JSON.stringify({ message: 'Error handling request', error: error.toString() }));
+                }
+                return;
+       
+
+
+
+            //break here
+
+
+
+
           case "update-discount":
             // Make sure requestBody has the necessary fields
             if (
