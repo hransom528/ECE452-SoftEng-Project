@@ -508,10 +508,10 @@ const server = http.createServer(async (req, res) => {
 
                     // membershipManagement.js
                     case "create-premium-membership":
-                        if (!requestBody.userId) {
-                            throw new Error("Missing userId for creating premium membership");
+                        if (!requestBody.userId || !requestBody.stripeCustomerId || !requestBody.stripeToken) {
+                            throw new Error("Missing required parameters for creating premium membership");
                         }
-                        result = await createPremiumMembership(requestBody.userId);
+                        result = await createPremiumMembership(requestBody.userId, requestBody.stripeCustomerId, requestBody.stripeToken);
                         break;
                     case "cancel-premium-membership":
                         if (!requestBody.userId) {

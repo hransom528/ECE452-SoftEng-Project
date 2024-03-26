@@ -11,7 +11,7 @@ async function connectToMongo() {
             throw new Error('MongoDB URI is not provided');
         }
 
-        const client = await MongoClient.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true });
+        const client = await MongoClient.connect(mongoURI);
         const db = client.db();
         return db;
     } catch (error) {
