@@ -1,9 +1,7 @@
 require('dotenv').config();
-
 const { MongoClient } = require('mongodb');
 const mongoURI = process.env.MONGO_URI;
 const client = new MongoClient(mongoURI);
-
 async function connectDB() {
     try {
         await client.connect();
@@ -14,7 +12,6 @@ async function connectDB() {
         process.exit(1);
     }
 }
-
 async function connectDBandClose() {
     try {
         await client.connect();
@@ -26,5 +23,4 @@ async function connectDBandClose() {
         process.exit(1);
     }
 }
-
 module.exports = { connectDB, connectDBandClose };
