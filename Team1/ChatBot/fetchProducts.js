@@ -1,8 +1,8 @@
 const fs = require("fs");
-const { connectDB } = require("../../dbConfig");
+const { connectDBandClose } = require("../../dbConfig");
 
 async function fetchAllProducts() {
-  const { db, client } = await connectDB();
+  const { db, client } = await connectDBandClose();
   const collection = db.collection("products");
 
   try {
