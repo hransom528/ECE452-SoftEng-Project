@@ -83,7 +83,39 @@ async function verifyCardAndUpdateDB(userObjectId, stripeCustomerId, stripeToken
   }
 }
 
+// Function to make and process a payment for a Stripe customer using a specific payment method
+async function createPaymentAndProcessing(stripeCustomerId, paymentMethodId, amountInDollars) {
+  try {
+    console.log("Creating and processing payment...");
+    console.log("Stripe Customer ID:", stripeCustomerId);
+    console.log("Payment Method ID:", paymentMethodId);
+    console.log("Amount in USD:", amountInDollars);
+
+    // Convert amount from dollars to cents for Stripe
+    const amountInCents = Math.round(amountInDollars * 100); // Ensures amount is in whole cents
+
+    // Create a payment intent
+    const paymentIntent = await stripe.paymentIntents.create({
+        amount: amountInCents, // Now using the converted amount
+        currency: 'usd', // Specify the currency
+        customer: stripeCustomerId,
+        payment_method: paymentMethodId,
+        off_session: true, // Assuming the customer is not present
+        confirm: true, // Confirm the payment at the time of creation
+    });
+
+    console.log("Payment intent created:", paymentIntent);
+
+    return { success: true, paymentIntentId: paymentIntent.id, status: paymentIntent.status };
+  } catch (error) {
+    console.error("Error creating and processing payment:", error);
+    return { success: false, error: error.message };
+  }
+}
+
+
 module.exports = {
     createStripeCustomerAndUpdateDB,
-    verifyCardAndUpdateDB
+    verifyCardAndUpdateDB,
+    createPaymentAndProcessing
 };

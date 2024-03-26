@@ -3,7 +3,9 @@ const { ObjectId } = require('mongodb');
 const http = require('http');
 const url = require('url');
 const { StringDecoder } = require('string_decoder');
-const { createStripeCustomerAndUpdateDB, verifyCardAndUpdateDB } = require('./Team3/stripe.js');
+const { createStripeCustomerAndUpdateDB, 
+    verifyCardAndUpdateDB,
+    createPaymentAndProcessing} = require('./Team3/stripe.js');
 const {updateListings } = require('./Team3/UC8update_listings.js'); 
 const {deleteListings  } = require('./Team3/UC8update_listings.js'); 
 const { addProduct } = require('./Team3/UCCreateProduct.js');
@@ -36,8 +38,6 @@ const {
 } = require("./Team1/Reg_lgn/oAuthHandler");
 const { getResponseFromOpenAI } = require("./Team1/ChatBot/openAi");
 
-
-
 // Initialize chat instance before starting server
 let chatInstance = null;
 startChat()
@@ -61,7 +61,7 @@ const server = http.createServer(async (req, res) => {
   req.on("end", async () => {
     buffer += decoder.end();
     try {
-    if (req.method === "POST") {
+      if (req.method === "POST") {
         const requestBody = JSON.parse(buffer);
         let result = null;
 
@@ -291,6 +291,14 @@ const server = http.createServer(async (req, res) => {
                     res.end(JSON.stringify({ message: 'Error handling request', error: error.toString() }));
                 }
                 return;
+       
+
+
+
+            //break here
+
+
+
 
           case "update-discount":
             // Make sure requestBody has the necessary fields
@@ -480,84 +488,99 @@ const server = http.createServer(async (req, res) => {
           default:
             throw new Error("Route not found");
 
-                        case 'fetch-top-rated-products-by-brand':
-                            if (!requestBody.brand) {
-                                res.writeHead(400, { 'Content-Type': 'application/json' });
-                                res.end(JSON.stringify({ message: 'Brand is required' }));
-                                return;
-                            }
-                            try {
-                                const brandResults = await fetchTopRatedProductsByBrand(requestBody.brand);
-                                res.writeHead(200, { 'Content-Type': 'application/json' });
-                                res.end(JSON.stringify({ message: 'Top rated products by brand fetched successfully', data: brandResults }));
-                            } catch (error) {
-                                console.error("Error fetching top rated products by brand:", error);
-                                res.writeHead(500, { 'Content-Type': 'application/json' });
-                                res.end(JSON.stringify({ message: 'Error fetching products by brand', error: error.toString() }));
-                            }
-                            break;
-                        
-                        case 'fetch-top-rated-products-by-type':
-                            if (!requestBody.type) {
-                                res.writeHead(400, { 'Content-Type': 'application/json' });
-                                res.end(JSON.stringify({ message: 'Type is required' }));
-                                return;
-                            }
-                            try {
-                                const typeResults = await fetchTopRatedProductsByType(requestBody.type);
-                                res.writeHead(200, { 'Content-Type': 'application/json' });
-                                res.end(JSON.stringify({ message: 'Top rated products by type fetched successfully', data: typeResults }));
-                            } catch (error) {
-                                console.error("Error fetching top rated products by type:", error);
-                                res.writeHead(500, { 'Content-Type': 'application/json' });
-                                res.end(JSON.stringify({ message: 'Error fetching products by type', error: error.toString() }));
-                            }
-                            break;
-                        
-                        
-                }
+          case "fetch-top-rated-products-by-brand":
+            if (!requestBody.brand) {
+              res.writeHead(400, { "Content-Type": "application/json" });
+              res.end(JSON.stringify({ message: "Brand is required" }));
+              return;
+            }
+            try {
+              const brandResults = await fetchTopRatedProductsByBrand(
+                requestBody.brand
+              );
+              res.writeHead(200, { "Content-Type": "application/json" });
+              res.end(
+                JSON.stringify({
+                  message: "Top rated products by brand fetched successfully",
+                  data: brandResults,
+                })
+              );
+            } catch (error) {
+              console.error(
+                "Error fetching top rated products by brand:",
+                error
+              );
+              res.writeHead(500, { "Content-Type": "application/json" });
+              res.end(
+                JSON.stringify({
+                  message: "Error fetching products by brand",
+                  error: error.toString(),
+                })
+              );
+            }
+            break;
+
+          case "fetch-top-rated-products-by-type":
+            if (!requestBody.type) {
+              res.writeHead(400, { "Content-Type": "application/json" });
+              res.end(JSON.stringify({ message: "Type is required" }));
+              return;
+            }
+            try {
+              const typeResults = await fetchTopRatedProductsByType(
+                requestBody.type
+              );
+              res.writeHead(200, { "Content-Type": "application/json" });
+              res.end(
+                JSON.stringify({
+                  message: "Top rated products by type fetched successfully",
+                  data: typeResults,
+                })
+              );
+            } catch (error) {
+              console.error(
+                "Error fetching top rated products by type:",
+                error
+              );
+              res.writeHead(500, { "Content-Type": "application/json" });
+              res.end(
+                JSON.stringify({
+                  message: "Error fetching products by type",
+                  error: error.toString(),
+                })
+              );
+            }
+            break;
+        }
 
         res.writeHead(200, { "Content-Type": "application/json" });
-                res.end(JSON.stringify({ message: "Operation successful", data: result }));
-    } else if (req.method === "GET") {
-                const requestBody = JSON.parse(buffer);
-                let result = null;
+        res.end(
+          JSON.stringify({ message: "Operation successful", data: result })
+        );
+      } else if (req.method === "GET") {
+        const requestBody = JSON.parse(buffer);
+        let result = null;
 
-                switch (trimmedPath) {
-                  case "filterCatalog": 
-                    result = await productFilterQuery(requestBody);
-                    res.writeHead(200, { "Content-Type": "application/json" });
-                    res.end(JSON.stringify({ message: "Products filtered succesfully", data: result }));
-                    break;
+        switch (trimmedPath) {
+          case "filterCatalog":
+            result = await productFilterQuery(requestBody);
+            res.writeHead(200, { "Content-Type": "application/json" });
+            res.end(
+              JSON.stringify({
+                message: "Products filtered succesfully",
+                data: result,
+              })
+            );
+            break;
 
                     case "fetch-product-performance":
                         result = await fetchTopRatedProducts();
                         res.writeHead(200, { "Content-Type": "application/json" });
                         res.end(JSON.stringify({ message: "Product performance data fetched successfully", data: result }));
                         break;
-                    
                     default:
                         res.writeHead(404, { "Content-Type": "application/json" });
                         res.end(JSON.stringify({ message: "Not Found" }));
-
-                  case "fetch-product-details":
-                    const productId = parsedUrl.query.productId; // Assuming you pass productId as a query parameter
-                    if (!ObjectId.isValid(productId)) {
-                                res.writeHead(400, { "Content-Type": "application/json" });
-                                res.end(JSON.stringify({ message: "Invalid product ID" }));
-                                return;
-                    }
-
-                    try {
-                        const productDetails = await fetchProductDetails(productId);
-                        res.writeHead(200, { "Content-Type": "application/json" });
-                        res.end(JSON.stringify({ message: "Product details fetched successfully", data: productDetails }));
-                    } catch (error) {
-                        console.error("Error fetching product details:", error);
-                        res.writeHead(500, { "Content-Type": "application/json" });
-                        res.end(JSON.stringify({ message: "Error handling request", error: error.toString() }));
-                    }
-                    break;
                 }
             } else {
                 res.writeHead(404, { "Content-Type": "application/json" });
@@ -575,5 +598,5 @@ const server = http.createServer(async (req, res) => {
 
 const PORT = 3000;
 server.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
+  console.log(`Server running! Listening at http://localhost:${PORT}`);
 });

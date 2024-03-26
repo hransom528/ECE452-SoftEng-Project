@@ -128,9 +128,25 @@ async function removeFromCart(userId, productId, quantityToRemove) {
         }
     }
 
+async function getCartDetails(userId) {
+    if (!ObjectId.isValid(userId)) {
+        throw new Error("Invalid user ID");
+    }
+
+    const cart = await Cart.findOne({ userId }).populate('items.productId').exec();
+
+    if (!cart) {
+        throw new Error("Cart not found");
+    }
+
+   
+    return cart;
+}
+
 module.exports = {
     addToCart,
-    removeFromCart
+    removeFromCart,
+    getCartDetails
 
 
 }
