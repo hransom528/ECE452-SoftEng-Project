@@ -6,7 +6,7 @@ const {verifyCardAndUpdateDB} = require('../Team3/stripe.js');
 
 const uri = 'mongodb+srv://admin:SoftEng452@cluster0.qecmfqe.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0';
 
-const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
+const client = new MongoClient(uri);
 
 // Function to check if items in cart are still in stock
 async function verifyCartItems(userId, cartId) {
