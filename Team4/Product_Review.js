@@ -1,4 +1,3 @@
-
 const { MongoClient } = require('mongodb');
 const readline = require('readline');
 
@@ -7,7 +6,6 @@ const rl = readline.createInterface({
     input: process.stdin,
     output: process.stdout
 });
-
 
 const MONGO_URI = "mongodb+srv://admin:SoftEng452@cluster0.qecmfqe.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
 const client = new MongoClient(MONGO_URI);
@@ -28,15 +26,20 @@ async function connectToDB() {
     }
 }
 
-
-// Function to allow the user to give a star rating and leave a review for a product
-async function reviewProduct(productId, title, rating, review) {
+// Function to retrieve product ID by name
+async function getProductByName(productName) {
     const db = await connectToDB();
     const productsCollection = db.collection('products');
     const product = await productsCollection.findOne({ name: productName });
     if (!product) {
         throw new Error(`Product "${productName}" not found`);
     }
+    return product.name;
+}
+
+// Function to allow the user to give a star rating and leave a review for a product
+async function reviewProduct(productName, title, rating, review) {
+    const db = await connectToDB();
     const reviewsCollection = db.collection('reviews');
     const result = await reviewsCollection.insertOne({
         productName: productName,
@@ -45,7 +48,7 @@ async function reviewProduct(productId, title, rating, review) {
         review: review,
         dateTime: new Date().toISOString()
     });
-    console.log(`Review added for product with ID ${productId}`);
+    console.log(`Review added for product "${productName}"`);
     return result.insertedId;
 }
 
@@ -54,7 +57,7 @@ async function gatherReviewData() {
     return new Promise(async (resolve, reject) => {
         try {
             const productName = await askForProductName();
-            const productId = await getProductIdByName(productName);
+            const productId = await getProductByName(productName);
             rl.question(`Enter review title for product "${productId}": `, (title) => {
                 rl.question('Enter rating (1-5): ', async (rating) => {
                     const ratingInt = parseInt(rating);
@@ -63,7 +66,7 @@ async function gatherReviewData() {
                         return;
                     }
                     rl.question('Enter review: ', (review) => {
-                        resolve({ title, rating: ratingInt, review });
+                        resolve({ productName, title, rating: ratingInt, review });
                     });
                 });
             });
@@ -85,9 +88,8 @@ async function askForProductName() {
 async function main() {
     try {
         await connectToDB();
-        const productName = await askForProductName();
         const reviewData = await gatherReviewData();
-        const insertedId = await reviewProduct(productName, reviewData.title, reviewData.rating, reviewData.review);
+        const insertedId = await reviewProduct(reviewData.productName, reviewData.title, reviewData.rating, reviewData.review);
         console.log("Review inserted with ID:", insertedId);
     } catch (error) {
         console.error("Error:", error);
@@ -98,4 +100,10 @@ async function main() {
     }
 }
 
-main();
+module.exports = {
+    getProductByName,
+    reviewProduct,
+    gatherReviewData,
+    askForProductName,
+    main
+};
