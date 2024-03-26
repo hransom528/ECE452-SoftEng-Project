@@ -28,22 +28,18 @@ async function connectToDB() {
     }
 }
 
-// Function to retrieve product ID by name
-async function getProductByName(productName) {
+
+// Function to allow the user to give a star rating and leave a review for a product
+async function reviewProduct(productId, title, rating, review) {
     const db = await connectToDB();
     const productsCollection = db.collection('products');
     const product = await productsCollection.findOne({ name: productName });
     if (!product) {
         throw new Error(`Product "${productName}" not found`);
     }
-    return product.name;
-}
-
-// Function to allow the user to give a star rating and leave a review for a product
-async function reviewProduct(productId, title, rating, review) {
-    const db = await connectToDB();
     const reviewsCollection = db.collection('reviews');
     const result = await reviewsCollection.insertOne({
+        productName: productName,
         title: title,
         rating: rating,
         review: review,
@@ -89,8 +85,9 @@ async function askForProductName() {
 async function main() {
     try {
         await connectToDB();
+        const productName = await askForProductName();
         const reviewData = await gatherReviewData();
-        const insertedId = await reviewProduct( reviewData.title, reviewData.rating, reviewData.review);
+        const insertedId = await reviewProduct(productName, reviewData.title, reviewData.rating, reviewData.review);
         console.log("Review inserted with ID:", insertedId);
     } catch (error) {
         console.error("Error:", error);
