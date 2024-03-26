@@ -8,7 +8,7 @@ const { MongoClient } = require('mongodb');
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
-
+//fuxk this 
 //speficiatation of connection details for MongoDatabse
 const MONGO_URI = 'mongodb+srv://admin:SoftEng452@cluster0.qecmfqe.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0';
 
