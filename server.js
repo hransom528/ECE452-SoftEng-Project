@@ -433,18 +433,25 @@ const server = http.createServer(async (req, res) => {
 
           case "chatWith-AI":
             // Ensure body contains 'prompt'
-            if (!body.prompt) {
+            if (!requestBody.prompt) {
               res.writeHead(400, { "Content-Type": "application/json" });
               res.end(JSON.stringify({ message: "Prompt is required" }));
               break;
             }
 
-            getResponseFromOpenAI(body)
+            await getResponseFromOpenAI(requestBody)
               .then((response) => {
+                console.log("AI Response:", response); // Debugging line
                 res.writeHead(200, { "Content-Type": "application/json" });
-                res.end(JSON.stringify({ message: response }));
+                res.end(
+                  JSON.stringify({
+                    message: "Operation successful",
+                    data: response,
+                  })
+                );
               })
               .catch((error) => {
+                console.log("Error interacting with AI:", error); // Debugging line
                 res.writeHead(500, { "Content-Type": "application/json" });
                 res.end(
                   JSON.stringify({
