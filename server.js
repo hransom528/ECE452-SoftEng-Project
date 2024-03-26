@@ -291,14 +291,6 @@ const server = http.createServer(async (req, res) => {
                     res.end(JSON.stringify({ message: 'Error handling request', error: error.toString() }));
                 }
                 return;
-       
-
-
-
-            //break here
-
-
-
 
           case "update-discount":
             // Make sure requestBody has the necessary fields
@@ -543,9 +535,29 @@ const server = http.createServer(async (req, res) => {
                         res.writeHead(200, { "Content-Type": "application/json" });
                         res.end(JSON.stringify({ message: "Product performance data fetched successfully", data: result }));
                         break;
+                    
                     default:
                         res.writeHead(404, { "Content-Type": "application/json" });
                         res.end(JSON.stringify({ message: "Not Found" }));
+
+                  case "fetch-product-details":
+                    const productId = parsedUrl.query.productId; // Assuming you pass productId as a query parameter
+                    if (!ObjectId.isValid(productId)) {
+                                res.writeHead(400, { "Content-Type": "application/json" });
+                                res.end(JSON.stringify({ message: "Invalid product ID" }));
+                                return;
+                    }
+
+                    try {
+                        const productDetails = await fetchProductDetails(productId);
+                        res.writeHead(200, { "Content-Type": "application/json" });
+                        res.end(JSON.stringify({ message: "Product details fetched successfully", data: productDetails }));
+                    } catch (error) {
+                        console.error("Error fetching product details:", error);
+                        res.writeHead(500, { "Content-Type": "application/json" });
+                        res.end(JSON.stringify({ message: "Error handling request", error: error.toString() }));
+                    }
+                    break;
                 }
             } else {
                 res.writeHead(404, { "Content-Type": "application/json" });
