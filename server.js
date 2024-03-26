@@ -13,7 +13,6 @@ const { discountByBrand } = require('./Team3/UC10DiscountManagement.js');
 const { fetchTopRatedProducts } = require('./Team3/UC9_Product_Performace_Insight.js'); 
 const { fetchTopRatedProductsByBrand } = require('./Team3/UC9_Product_Performace_Insight.js'); 
 const { fetchTopRatedProductsByType } = require('./Team3/UC9_Product_Performace_Insight.js'); 
-const {addToCart} = require('./Team2/Cart.js');
 
 
 const {
@@ -35,6 +34,7 @@ const {
   getAccessTokenFromCode,
   getUserInfo,
 } = require("./Team1/Reg_lgn/oAuthHandler");
+
 
 // Initialize chat instance before starting server
 let chatInstance = null;
@@ -58,9 +58,8 @@ const server = http.createServer(async (req, res) => {
 
   req.on("end", async () => {
     buffer += decoder.end();
-
+    try {
     if (req.method === "POST") {
-      try {
         const requestBody = JSON.parse(buffer);
         let result = null;
 
@@ -468,63 +467,42 @@ const server = http.createServer(async (req, res) => {
                 }
 
         res.writeHead(200, { "Content-Type": "application/json" });
-        res.end(
-          JSON.stringify({ message: "Operation successful", data: result })
-        );
-      } catch (error) {
-        console.error("Error handling POST request:", error);
-        res.writeHead(400, { "Content-Type": "application/json" });
-        res.end(
-          JSON.stringify({
-            message: "Error handling request",
-            error: error.toString(),
-          })
-        );
-      }
-    } 
-    else if (req.method === "GET") {
-      try {
-        const requestBody = JSON.parse(buffer);
-        let result = null;
+                res.end(JSON.stringify({ message: "Operation successful", data: result }));
+    } else if (req.method === "GET") {
+                const requestBody = JSON.parse(buffer);
+                let result = null;
 
-        switch (trimmedPath) {
-          case "fetch-product-performance":
-            try {
-              result = await fetchTopRatedProducts();
-            } catch (error) {
-              console.error("Error handling GET request:", error);
-              res.writeHead(400, { "Content-Type": "application/json" });
-              res.end(
-                JSON.stringify({
-                  message: "Error handling request",
-                  error: error.toString(),
-                })
-              );
+                switch (trimmedPath) {
+                  case "filterCatalog": 
+                    result = await productFilterQuery(requestBody);
+                    res.writeHead(200, { "Content-Type": "application/json" });
+                    res.end(JSON.stringify({ message: "Products filtered succesfully", data: result }));
+                    break;
+
+                    case "fetch-product-performance":
+                        result = await fetchTopRatedProducts();
+                        res.writeHead(200, { "Content-Type": "application/json" });
+                        res.end(JSON.stringify({ message: "Product performance data fetched successfully", data: result }));
+                        break;
+                    default:
+                        res.writeHead(404, { "Content-Type": "application/json" });
+                        res.end(JSON.stringify({ message: "Not Found" }));
+                }
+            } else {
+                res.writeHead(404, { "Content-Type": "application/json" });
+                res.end(JSON.stringify({ message: "Not Found" }));
             }
-          } 
-          res.writeHead(200, { "Content-Type": "application/json" });
-          res.end(
-          JSON.stringify({ message: "Operation successful", data: result })
-        );
-      }catch (error) {
-        console.error("Error handling GET request:", error);
-        res.writeHead(400, { "Content-Type": "application/json" });
-        res.end(
-          JSON.stringify({
-            message: "Error handling request",
-            error: error.toString(),
-          })
-        );
-      }  
-    } else {
-      res.writeHead(404, { "Content-Type": "application/json" });
-      res.end(JSON.stringify({ message: "Not Found" }));
-    }});
+        } catch (error) {
+            console.error("Error handling request:", error);
+            if (!res.headersSent) {
+                res.writeHead(400, { "Content-Type": "application/json" });
+                res.end(JSON.stringify({ message: "Error handling request", error: error.toString() }));
+            }
+        }
+    });
 });
 
 const PORT = 3000;
 server.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+    console.log(`Server running on port ${PORT}`);
 });
-
-// this a change
