@@ -401,10 +401,12 @@ const server = http.createServer(async (req, res) => {
             break;
 
           case "loginUser":
-            const accToken = requestBody.accToken; // part of post request JSON
+            const accToken = requestBody.accessToken; // part of post request JSON
             if (!accToken) {
               res.writeHead(400, { "Content-Type": "application/json" });
-              res.end(JSON.stringify({ message: "Access Token is required" }));
+              res.end(
+                JSON.stringify({ message: "Access Token is not granted" })
+              );
               return;
             }
             try {
@@ -421,6 +423,7 @@ const server = http.createServer(async (req, res) => {
               res.end(
                 JSON.stringify({
                   message: "Login successful",
+                  data: result,
                   // If your loginUser method returns useful data, include it here
                   // For example: user: result.user, token: result.token, etc.
                 })
@@ -439,6 +442,16 @@ const server = http.createServer(async (req, res) => {
             break;
 
           case "chatWith-AI":
+            // make sure they are still logged via access token
+            const accTok = requestBody.accessToken; // part of post request JSON
+            if (!accTok) {
+              res.writeHead(400, { "Content-Type": "application/json" });
+              res.end(
+                JSON.stringify({ message: "Access Token is not granted" })
+              );
+              return;
+            }
+
             // Ensure body contains 'prompt'
             if (!requestBody.prompt) {
               res.writeHead(400, { "Content-Type": "application/json" });
