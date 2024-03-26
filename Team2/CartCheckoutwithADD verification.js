@@ -2,7 +2,7 @@ const { MongoClient } = require('mongodb');
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 const { verifyAddress } = require('./GoogleAddressValidation'); // Import your address validation function
-const { Cart } = require('./cart'); // Assuming you have a Cart model
+// const { Cart } = require('./cart'); // Assuming you have a Cart model
 
 //speficiatation of connection details for MongoDatabse
 const MONGO_URI = 'mongodb+srv://admin:SoftEng452@cluster0.qecmfqe.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0';
@@ -64,9 +64,7 @@ async function checkoutWithAddressValidation(userId, address, items) {
             throw new Error('Invalid address, please correct it');
         }
 
-        // Address is valid, proceed with checkout
-        // Your checkout logic here
-        // This is just a placeholder, you need to implement your checkout logic here
+     
 
         // Example: Create order in the database
         const order = {
