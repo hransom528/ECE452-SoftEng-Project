@@ -64,9 +64,7 @@ async function checkoutWithAddressValidation(userId, address, items) {
             throw new Error('Invalid address, please correct it');
         }
 
-        // Address is valid, proceed with checkout
-        // Your checkout logic here
-        // This is just a placeholder, you need to implement your checkout logic here
+     
 
         // Example: Create order in the database
         const order = {
