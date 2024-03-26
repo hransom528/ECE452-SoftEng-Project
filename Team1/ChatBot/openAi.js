@@ -45,4 +45,5 @@ async function getResponseFromOpenAI(body) {
 // const myPrompt = "What product do you think is the best for me to gain muscle?";
 
 // Assuming you want to include myData as part of the conversation context:
+// getResponseFromOpenAI();
 module.exports = { getResponseFromOpenAI };
