@@ -20,7 +20,7 @@ mongoose.connect(MONGO_URI)
 
 const cartItemSchema = new mongoose.Schema({
 
-
+//cart
     productId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Products',
