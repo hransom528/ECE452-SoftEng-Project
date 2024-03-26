@@ -14,6 +14,3 @@ Spring 2024 Software Engineering Project Repository
 - Harris Ransom
 - Connor King
 - Ali Eke
-
-## Summary of Source Code Files:
-- 
