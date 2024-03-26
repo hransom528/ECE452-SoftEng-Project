@@ -44,9 +44,9 @@ const {
     getUserInfo,
 } = require("./Team1/Reg_lgn/oAuthHandler");
 const { getResponseFromOpenAI } = require("./Team1/ChatBot/openAi");
-
 //const { productFilterQuery} = require("./Team4/Filter_Search.js") other changes;
 //const { productFilterQuery} = require("./Team4/Filter_Search.js");
+const { getProductByName, reviewProduct, gatherReviewData, askForProductName } = require("./Team4/Product_Review.js");
 const {checkout} = require('./Team2/Checkout.js');
 
 const server = http.createServer(async (req, res) => {
