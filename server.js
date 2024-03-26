@@ -262,20 +262,8 @@ const server = http.createServer(async (req, res) => {
                 responseSent = true;
                 }
                 break;
-            case "update-email":
-                result = await updateUserEmail(requestBody);
-                break;
-            case "update-name":
-                result = await updateUserName(requestBody);
-                break;
-            case "update-premium-status":
-                result = await updateUserPremiumStatus(requestBody);
-                break;
             case "add-shipping-address":
                 result = await addUserShippingAddress(requestBody);
-                break;
-            case "update-shipping-address":
-                result = await updateUserShippingAddress(requestBody);
                 break;
         
 
@@ -423,6 +411,13 @@ const server = http.createServer(async (req, res) => {
 
                 //use the info we got to finish registering the user
                 result = await registerUser(userInfo, requestBody);
+                res.writeHead(400, { "Content-Type": "application/json" });
+                res.end(
+                  JSON.stringify({
+                    message: result,
+                  })
+                );
+                responseSent = true;
                 } catch (oauthError) {
                 // handling auth errors
                 res.writeHead(400, { "Content-Type": "application/json" });
@@ -432,7 +427,8 @@ const server = http.createServer(async (req, res) => {
                     error: oauthError.message,
                     })
                 );
-                return;
+                    responseSent = true;
+                    return;
                 }
                 break;
 
@@ -477,7 +473,7 @@ const server = http.createServer(async (req, res) => {
                 }
                 break;
 
-            case "chatWith-AI":
+                case "talkToAI":
                 // Ensure body contains 'prompt'
                 if (!requestBody.prompt) {
                 res.writeHead(400, { "Content-Type": "application/json" });
