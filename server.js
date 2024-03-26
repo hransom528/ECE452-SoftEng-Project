@@ -13,7 +13,7 @@ const { discountByBrand } = require('./Team3/UC10DiscountManagement.js');
 const { fetchTopRatedProducts } = require('./Team3/UC9_Product_Performace_Insight.js'); 
 const { fetchTopRatedProductsByBrand } = require('./Team3/UC9_Product_Performace_Insight.js'); 
 const { fetchTopRatedProductsByType } = require('./Team3/UC9_Product_Performace_Insight.js'); 
-
+const {addToCart} = require('./Team2/Cart.js');
 
 const {
   updateUserEmail,
@@ -34,6 +34,7 @@ const {
   getAccessTokenFromCode,
   getUserInfo,
 } = require("./Team1/Reg_lgn/oAuthHandler");
+const { addToCart } = require('./Team2/Cart.js');
 
 
 // Initialize chat instance before starting server
