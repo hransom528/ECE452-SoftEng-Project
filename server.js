@@ -522,6 +522,30 @@ const server = http.createServer(async (req, res) => {
                         result = await cancelPremiumMembership(requestBody.userId);
                         break;
 
+                    // contact.html
+                    case 'send-email':
+                        // Forward the request to the web3forms API
+                        fetch('https://api.web3forms.com/submit', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Accept': 'application/json'
+                            },
+                            body: buffer // buffer contains the JSON string from the client
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            res.writeHead(200, { 'Content-Type': 'application/json' });
+                            res.end(JSON.stringify({ message: 'Email sent successfully', data: data }));
+                        })
+                        .catch(error => {
+                            console.error('Error sending email:', error);
+                            res.writeHead(500, { 'Content-Type': 'application/json' });
+                            res.end(JSON.stringify({ message: 'Failed to send email', error: error.toString() }));
+                        });
+                        return;
+    
+
                     case "update-discount":
                         if (!requestBody._id || !requestBody.discountPercentage) {
                             throw new Error("Both _id and discountPercentage are required");
