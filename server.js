@@ -276,7 +276,7 @@ const server = http.createServer(async (req, res) => {
                 requestBody.quantity < 1) {
                 res.writeHead(400, { 'Content-Type': 'application/json' });
                 res.end(JSON.stringify({ message: 'Invalid input for adding to cart' }));
-                return; // Exit the function here to prevent further execution
+                break; // Exit the function here to prevent further execution
             }
 
             // Call addToCart function
@@ -296,7 +296,7 @@ const server = http.createServer(async (req, res) => {
                     requestBody.quantityToRemove < 1) {
                     res.writeHead(400, { 'Content-Type': 'application/json' });
                     res.end(JSON.stringify({ message: 'Invalid input for removing from cart' }));
-                    return; // Exit this case block, ensuring no further code in this case is executed
+                    break; // Exit this case block, ensuring no further code in this case is executed
                 }
             
                 // Assuming removeFromCart function is defined and properly handles the logic
