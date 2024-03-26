@@ -26,10 +26,9 @@ const {
 const { addToCart, removeFromCart } = require("./Team2/Cart.js");
 
 const {
+    updateUserProfile,
     updateUserEmail,
-    // this is a change
     updateUserName,
-    updateUserPhoneNumber,
     updateUserPremiumStatus,
     addUserShippingAddress,
     updateUserShippingAddress,
@@ -48,6 +47,8 @@ const { getResponseFromOpenAI } = require("./Team1/ChatBot/openAi");
 //const { productFilterQuery} = require("./Team4/Filter_Search.js") other changes;
 //const { productFilterQuery} = require("./Team4/Filter_Search.js");
 const {checkout} = require('./Team2/Checkout.js');
+
+let responseSent = false;
 
 const server = http.createServer(async (req, res) => {
     const parsedUrl = url.parse(req.url, true);
@@ -168,8 +169,7 @@ const server = http.createServer(async (req, res) => {
                                     );
                                 }
                             });
-                        return; // Prevent further execution
-                    // Add new case for verifying card details
+                        return;
                     case "verify-card-details":
                         try {
                             const { userObjectId, stripeCustomerId, stripeToken } =
@@ -194,9 +194,21 @@ const server = http.createServer(async (req, res) => {
                                 );
                             }
                         }
-                        return; // Exit the function after handling the request
+                        return;
 
                     // userProfile.js
+                    case 'update-user-profile':
+                        try {
+                            // Directly passing requestBody to updateUserProfile
+                            const result = await updateUserProfile(requestBody);
+                            res.writeHead(200, { 'Content-Type': 'application/json' });
+                            res.end(JSON.stringify({ message: 'User profile updated successfully', data: result }));
+                        } catch (error) {
+                            res.writeHead(500, { 'Content-Type': 'application/json' });
+                            res.end(JSON.stringify({ message: 'Error updating user profile', error: error.toString() }));
+                        }
+                        break;
+                    
                     case "update-email":
                         result = await updateUserEmail(
                             requestBody.userId,
