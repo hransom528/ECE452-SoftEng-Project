@@ -75,6 +75,13 @@ const server = http.createServer(async (req, res) => {
         let result = null;
 
         switch (trimmedPath) {
+          
+          case 'checkout':
+                        const { userId, cartId, address, paymentToken } = requestBody;
+                        await checkout(userId, cartId, address, paymentToken);
+                        result = { message: 'Checkout successful' };
+                        break;
+
           case "update-listings":
             console.log(
               "Received productIds for update:",
