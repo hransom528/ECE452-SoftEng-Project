@@ -13,6 +13,7 @@ const { discountByBrand } = require('./Team3/UC10DiscountManagement.js');
 const { fetchTopRatedProducts } = require('./Team3/UC9_Product_Performace_Insight.js'); 
 const { fetchTopRatedProductsByBrand } = require('./Team3/UC9_Product_Performace_Insight.js'); 
 const { fetchTopRatedProductsByType } = require('./Team3/UC9_Product_Performace_Insight.js'); 
+const productFilterQuery = require('./Team4/Filter_Search.js');
 
 
 const {
@@ -34,6 +35,7 @@ const {
   getAccessTokenFromCode,
   getUserInfo,
 } = require("./Team1/Reg_lgn/oAuthHandler");
+
 
 // Initialize chat instance before starting server
 let chatInstance = null;
@@ -450,9 +452,16 @@ const server = http.createServer(async (req, res) => {
         res.writeHead(200, { "Content-Type": "application/json" });
                 res.end(JSON.stringify({ message: "Operation successful", data: result }));
     } else if (req.method === "GET") {
+                const requestBody = JSON.parse(buffer);
                 let result = null;
 
                 switch (trimmedPath) {
+                  case "filterCatalog": 
+                    result = await productFilterQuery(requestBody);
+                    res.writeHead(200, { "Content-Type": "application/json" });
+                    res.end(JSON.stringify({ message: "Products filtered succesfully", data: result }));
+                    break;
+
                     case "fetch-product-performance":
                         result = await fetchTopRatedProducts();
                         res.writeHead(200, { "Content-Type": "application/json" });
