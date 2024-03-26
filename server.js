@@ -42,6 +42,7 @@ const {
   getAccessTokenFromCode,
   getUserInfo,
 } = require("./Team1/Reg_lgn/oAuthHandler");
+const { getResponseFromOpenAI } = require("./Team1/ChatBot/openAi");
 
 // Initialize chat instance before starting server
 let chatInstance = null;
@@ -363,6 +364,31 @@ const server = http.createServer(async (req, res) => {
               );
               return;
             }
+            break;
+
+          case "chatWith-AI":
+            // Ensure body contains 'prompt'
+            if (!body.prompt) {
+              res.writeHead(400, { "Content-Type": "application/json" });
+              res.end(JSON.stringify({ message: "Prompt is required" }));
+              break;
+            }
+
+            getResponseFromOpenAI(body)
+              .then((response) => {
+                res.writeHead(200, { "Content-Type": "application/json" });
+                res.end(JSON.stringify({ message: response }));
+              })
+              .catch((error) => {
+                res.writeHead(500, { "Content-Type": "application/json" });
+                res.end(
+                  JSON.stringify({
+                    message: "Error interacting with AI",
+                    error: error.toString(),
+                  })
+                );
+              });
+
             break;
 
           // chatSupport.js
