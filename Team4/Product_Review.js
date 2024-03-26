@@ -1,4 +1,4 @@
-const { MongoClient } = require('mongodb');
+const { connectDB } = require('../dbConfig.js'); 
 const readline = require('readline');
 
 // Create interface for user input
@@ -7,49 +7,38 @@ const rl = readline.createInterface({
     output: process.stdout
 });
 
-const MONGO_URI = "mongodb+srv://admin:SoftEng452@cluster0.qecmfqe.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
-const client = new MongoClient(MONGO_URI);
-
-// Database Name
-const dbName = 'website';
-
-// Function to connect to MongoDB
-async function connectToDB() {
+// Function to retrieve product ID by name
+async function getProductByName(productName) {
     try {
-        await client.connect();
-        console.log("Connected to MongoDB");
-        const db = client.db(dbName);
-        return db;
+        const db = await connectDB();
+        const productsCollection = db.collection('products');
+        const product = await productsCollection.findOne({ name: productName });
+        if (!product) {
+            throw new Error(`Product "${productName}" not found`);
+        }
+        return product.name;
     } catch (error) {
-        console.error("Error connecting to MongoDB:", error);
         throw error;
     }
 }
 
-// Function to retrieve product ID by name
-async function getProductByName(productName) {
-    const db = await connectToDB();
-    const productsCollection = db.collection('products');
-    const product = await productsCollection.findOne({ name: productName });
-    if (!product) {
-        throw new Error(`Product "${productName}" not found`);
-    }
-    return product.name;
-}
-
 // Function to allow the user to give a star rating and leave a review for a product
 async function reviewProduct(productName, title, rating, review) {
-    const db = await connectToDB();
-    const reviewsCollection = db.collection('reviews');
-    const result = await reviewsCollection.insertOne({
-        productName: productName,
-        title: title,
-        rating: rating,
-        review: review,
-        dateTime: new Date().toISOString()
-    });
-    console.log(`Review added for product "${productName}"`);
-    return result.insertedId;
+    try {
+        const db = await connectDB();
+        const reviewsCollection = db.collection('reviews');
+        const result = await reviewsCollection.insertOne({
+            productName: productName,
+            title: title,
+            rating: rating,
+            review: review,
+            dateTime: new Date().toISOString()
+        });
+        console.log(`Review added for product "${productName}"`);
+        return result.insertedId;
+    } catch (error) {
+        throw error;
+    }
 }
 
 // Function to gather review data from user input
@@ -76,6 +65,7 @@ async function gatherReviewData() {
     });
 }
 
+// Function to gather product name from user input
 async function askForProductName() {
     return new Promise((resolve, reject) => {
         rl.question('Enter the name of the product you want to review: ', (productName) => {
@@ -84,26 +74,35 @@ async function askForProductName() {
     });
 }
 
-// Usage example
-async function main() {
+// Testing
+async function test() {
     try {
-        await connectToDB();
+        // Test getProductByName
+        const productName = await getProductByName('Fitness Gear Olympic Curl Bar');
+        console.log("Product Name:", productName);
+
+        // Test gatherReviewData
+        console.log("\n--- Gathering Review Data ---");
         const reviewData = await gatherReviewData();
-        const insertedId = await reviewProduct(reviewData.productName, reviewData.title, reviewData.rating, reviewData.review);
-        console.log("Review inserted with ID:", insertedId);
-    } catch (error) {
-        console.error("Error:", error);
-    } finally {
-        // Close readline interface and MongoDB client
+        console.log("\nReview Data:", reviewData);
+
+        // Test reviewProduct
+        console.log("\n--- Reviewing Product ---");
+        const reviewId = await reviewProduct(reviewData.productName, reviewData.title, reviewData.rating, reviewData.review);
+        console.log("Review added with ID:", reviewId);
+
+        // Close readline interface
         rl.close();
-        await client.close();
+    } catch (error) {
+        console.error("Error during testing:", error);
     }
 }
+
+test();
 
 module.exports = {
     getProductByName,
     reviewProduct,
     gatherReviewData,
-    askForProductName,
-    main
+    askForProductName
 };
