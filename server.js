@@ -136,7 +136,27 @@ const server = http.createServer(async (req, res) => {
                                     }
                                 }
                                 return; // Exit the function after handling the request
-                    // userProfile.js
+                        case 'process-payment':
+                                    try {
+                                        const { stripeCustomerId, paymentMethodId, amount } = requestBody;
+                                        // Validate input
+                                        if (!stripeCustomerId || !paymentMethodId || !amount) {
+                                            throw new Error('Missing required payment fields.');
+                                        }
+                                        // Assuming amount is provided in the smallest currency unit (e.g., cents for USD)
+                                        const paymentResult = await createPaymentAndProcessing(stripeCustomerId, paymentMethodId, amount);
+                                        res.writeHead(200, { 'Content-Type': 'application/json' });
+                                        res.end(JSON.stringify({ success: true, data: paymentResult }));
+                                    } catch (error) {
+                                        console.error("Error processing payment:", error);
+                                        if (!res.headersSent) {
+                                            res.writeHead(500, { 'Content-Type': 'application/json' });
+                                            res.end(JSON.stringify({ success: false, message: 'Failed to process payment', error: error.message }));
+                                        }
+                                    }
+                                    return;
+                                
+                                // userProfile.js
                     case 'update-email':
                         result = await updateUserEmail(requestBody.userId, requestBody.newEmail);
                         break;    
