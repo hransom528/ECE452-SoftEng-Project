@@ -260,8 +260,8 @@ const server = http.createServer(async (req, res) => {
                 typeof requestBody.quantity !== 'number' ||
                 requestBody.quantity < 1) {
                 res.writeHead(400, { 'Content-Type': 'application/json' });
-                res.end(JSON.stringify({ message: 'Invalid input for adding to cart' }));
-                return; // Exit the function here to prevent further execution
+                res.end(JSON.stringify({message: 'Invalid input for adding to cart' }));
+                break; // Exit the function here to prevent further execution
             }
         
             // Call addToCart function
