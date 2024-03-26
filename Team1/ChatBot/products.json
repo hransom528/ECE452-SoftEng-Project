@@ -208,5 +208,39 @@
     "rating": 4.2,
     "discount": 50,
     "originalPrice": 99.99
+  },
+  {
+    "name": "test4demo1",
+    "description": "This is for testing demo",
+    "brand": "brddemo1",
+    "type": "demo1",
+    "price": 49.995,
+    "stockQuantity": 10,
+    "specs": {
+      "weightCapacity": "225 lbs",
+      "strideLength": "20 inches"
+    },
+    "trendingScore": 3,
+    "topTrending": false,
+    "rating": 4.2,
+    "discount": 50,
+    "originalPrice": 99.99
+  },
+  {
+    "name": "test4.1demo1",
+    "description": "This is for testing demo",
+    "brand": "brddemo1",
+    "type": "demo1",
+    "price": 79.992,
+    "stockQuantity": 10,
+    "specs": {
+      "weightCapacity": "225 lbs",
+      "strideLength": "20 inches"
+    },
+    "trendingScore": 3,
+    "topTrending": false,
+    "rating": 4.2,
+    "discount": 20,
+    "originalPrice": 99.99
   }
 ]
