@@ -51,6 +51,8 @@ const {
     askForProductName,
   } = require("./Team4/Product_Review.js");
 const { checkout } = require("./Team2/Checkout.js");
+const { productSearchQuery } = require("./Team4/Product_Search.js");
+const { autocompleteProductSearch } = require("./Team4/Autocomplete.js");
 
 let responseSent = false;
 let result;
@@ -1233,6 +1235,28 @@ const server = http.createServer(async (req, res) => {
                             })
                         );
                         break;
+                    
+                    case "searchProducts":
+                        result = await productSearchQuery(requestBody.query);
+                        res.writeHead(200, { "Content-Type": "application/json" });
+                        res.end(
+                            JSON.stringify({
+                                message: "Products searched succesfully",
+                                data: result,
+                            })
+                        );
+                        break;
+
+                    case "autocomplete":
+                        result = await autocompleteProductSearch(requestBody.query);
+                        res.writeHead(200, { "Content-Type": "application/json" });
+                        res.end(
+                            JSON.stringify({
+                                message: "Autocomplete operation successful",
+                                data: result,
+                            })
+                        );
+                        break;
 
                     case "fetch-product-performance":
                         result = await fetchTopRatedProducts();
@@ -1244,6 +1268,7 @@ const server = http.createServer(async (req, res) => {
                             })
                         );
                         break;
+                        
                     default:
                         res.writeHead(404, { "Content-Type": "application/json" });
                         res.end(JSON.stringify({ message: "Not Found" }));
