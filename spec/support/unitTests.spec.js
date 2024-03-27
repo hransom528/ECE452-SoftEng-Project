@@ -1,7 +1,7 @@
 const request = require("supertest");
 const server = require("../../server.js");
 
-// team 1 jasmine tests:
+// Team 1 Jasmine tests:
 
 describe("Projec Unit Tests TEAM 1", () => {
   const ACCESS_TOKEN =
@@ -158,7 +158,7 @@ describe("Projec Unit Tests TEAM 1", () => {
     expect(response.statusCode).toEqual(200);
   });
 
-  it("should NOT allow user to send a prompt to ai if the prompt field is empty", async () => {
+  it("should NOT allow user to send a prompt to AI if the prompt field is empty", async () => {
     const requestBody = {
       aToken: ACCESS_TOKEN,
       prompt: "",
@@ -167,5 +167,54 @@ describe("Projec Unit Tests TEAM 1", () => {
     const response = await request(server).post("/talkToAI").send(requestBody);
     expect(response.statusCode).toEqual(400);
   });
+
+  it("should allow user to update user profile if information is new and entered properly", async () => {
+    const requestBody = {
+        accToken: ACCESS_TOKEN,
+        userId: "66036d8ebb0295510accc86c",
+        profileUpdates: {
+            "name": "Jane Doe"
+        }
+    };
+
+    const response = await request(server).post("/update-user-profile").send(requestBody);
+    expect(response.statusCode).toEqual(200);
+  });
+
+  it("should NOT allow user to update user profile if access token is missing/invalid", async () => {
+    const requestBody = {
+        accToken: "Invalid Token",
+        userId: "66036d8ebb0295510accc86c",
+        profileUpdates: {
+            "name": "Jane Doe"
+        }
+    };
+
+    const response = await request(server).post("/update-user-profile").send(requestBody);
+    expect(response.statusCode).toEqual(400);
+  });
+
+  it("should allow user to update a shipping address if all information is filled out properly", async () => {
+    const requestBody = {
+      accToken: ACCESS_TOKEN,
+      userId: "66036d8ebb0295510accc86c",
+      addressId: "4836bf75-b997-43e8-9150-45923d382cec",
+      updatedAddress: {
+        recipientName: "Jane Doe",
+        streetAddress: "123 Newer Street",
+        city: "Piscataway",
+        state: "New Jersey",
+        postalCode: "08854",
+        country: "USA",
+        isDefault: true,
+        isValid: true
+      }
+    };
+
+    const response = await request(server).post("/update-shipping-address").send(requestBody);
+    expect(response.statusCode).toEqual(200);
+  });
+
+
 });
 
