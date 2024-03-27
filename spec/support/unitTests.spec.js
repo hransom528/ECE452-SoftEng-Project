@@ -1,5 +1,5 @@
 const request = require("supertest");
-const server = require("../../server");
+const server = require("../../server.js");
 
 // team 1 jasmine tests:
 
@@ -168,3 +168,4 @@ describe("Projec Unit Tests TEAM 1", () => {
     expect(response.statusCode).toEqual(400);
   });
 });
+
