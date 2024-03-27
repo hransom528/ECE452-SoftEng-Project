@@ -46,11 +46,13 @@ async function productSearchQuery(queryInput) {
 }
 
 // Testing
+/*
 async function test() {
     let testQuery = "bar";
     await productSearchQuery(testQuery);
     process.exit(0);
 }
 test();
+*/
 
 module.exports = { productSearchQuery };
