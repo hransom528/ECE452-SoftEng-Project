@@ -238,5 +238,124 @@
     "trendingScore": 3,
     "topTrending": false,
     "rating": 4.2
+  },
+  {
+    "name": "Fitness Gear Ab Wheel",
+    "description": "Non-slip rubber wheel tread",
+    "brand": "Fitness Gear",
+    "type": "Non-slip rubber wheel tread",
+    "price": 29.99,
+    "stockQuantity": 10,
+    "specs": {
+      "weightCapacity": "100 lbs",
+      "strideLength": "20 inches"
+    },
+    "trendingScore": 3,
+    "topTrending": false,
+    "rating": 5
+  },
+  {
+    "name": "GoFit Deluxe Dual Ab Wheel",
+    "description": "Carve out a six-pack with the GoFit® Deluxe Dual Ab Wheel . The Ab Wheel is compact, lightweight, and easy to use, proving to be the perfect addition to your workout routine.",
+    "brand": "GoFit",
+    "type": "Non-slip rubber wheel tread",
+    "price": 24.99,
+    "stockQuantity": 11,
+    "specs": {
+      "weightCapacity": "100 lbs",
+      "strideLength": "20 inches"
+    },
+    "trendingScore": 3,
+    "topTrending": false,
+    "rating": 5
+  },
+  {
+    "name": "Nike Fundamental Speed Rope",
+    "description": "Featuring an adjustable length for a customized fit, the Nike® Fundamental Speed Rope delivers fast, smooth rotations for a conditioning cardio workout.",
+    "brand": "Nike",
+    "type": "ADJUSTABLE SPEED ROPE",
+    "price": 20,
+    "stockQuantity": 11,
+    "specs": {
+      "weightCapacity": "150 lbs",
+      "strideLength": "20 inches"
+    },
+    "trendingScore": 6,
+    "topTrending": false,
+    "rating": 2.8
+  },
+  {
+    "name": "Fitness Gear Leather Jump Rope",
+    "description": "Build your cardio endurance with the Fitness Gear Leather Jump Rope",
+    "brand": "Nike",
+    "type": "Fitness Gear",
+    "price": 19.99,
+    "stockQuantity": 11,
+    "specs": {
+      "weightCapacity": "150 lbs",
+      "Length": "20 inches"
+    },
+    "trendingScore": 5,
+    "topTrending": false,
+    "rating": 3
+  },
+  {
+    "name": "ETHOS 50 lb. Selectable Dumbbell – Pair",
+    "description": "Comes in a pair of 2",
+    "brand": "ETHOS",
+    "type": "demo1",
+    "price": 279.992,
+    "stockQuantity": 10,
+    "specs": {
+      "weight": "50 lbs"
+    },
+    "trendingScore": 2,
+    "topTrending": false,
+    "rating": 4,
+    "discount": 20,
+    "originalPrice": 349.99
+  },
+  {
+    "name": "Fitness Gear Pro Half Rack",
+    "description": "Durable steel construction",
+    "brand": "Pull-up/dip bar station",
+    "type": "demo1",
+    "price": 449.99,
+    "stockQuantity": 5,
+    "specs": {
+      "weightCapacity": "700 lbs",
+      "Length": "200 cm"
+    },
+    "trendingScore": 2,
+    "topTrending": false,
+    "rating": 1
+  },
+  {
+    "name": "Marcy 150lb Stack Home Gym",
+    "description": "The dual action press arms with independent motion allow for chest press and vertical butterfly exercises",
+    "brand": "Marcy",
+    "type": "Home Gym",
+    "price": 449.99,
+    "stockQuantity": 5,
+    "specs": {
+      "weight": "50 lbs"
+    },
+    "trendingScore": 2,
+    "topTrending": false,
+    "rating": 4.5
+  },
+  {
+    "name": "Fitness Gear Soft Medicine Ball",
+    "description": "The dual action press arms with independent motion allow for chest press and vertical butterfly exercises",
+    "brand": "Fitness Gear",
+    "type": "Home Gym",
+    "price": 24.99,
+    "stockQuantity": 9,
+    "specs": {
+      "weight": "8 lbs"
+    },
+    "trendingScore": 1,
+    "topTrending": false,
+    "rating": 4.8
   }
 ]

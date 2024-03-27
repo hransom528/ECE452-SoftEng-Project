@@ -1,8 +1,13 @@
 {
+  "main": "server.js",
+  "scripts": {
+    "test": "jest --detectOpenHandles --forceExit"
+  },
   "dependencies": {
     "@google-cloud/aiplatform": "^3.15.0",
     "@google-cloud/vertexai": "^0.5.0",
     "@google/generative-ai": "^0.3.1",
+    "ai": "^3.0.14",
     "dotenv": "^16.4.5",
     "google-auth-library": "^9.7.0",
     "googleapis": "^133.0.0",
@@ -13,5 +18,8 @@
     "openai": "^4.29.2",
     "stripe": "^14.22.0",
     "uuid": "^9.0.1"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0"
   }
 }
