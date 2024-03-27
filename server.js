@@ -86,6 +86,36 @@ const server = http.createServer(async (req, res) => {
                             })
                         );
                         break;
+                        case "update-listings":
+                            console.log(
+                                "Received productIds for update:",
+                                requestBody.productIds
+                            );
+                            console.log("Received update fields:", requestBody.updateFields);
+                            console.log("Received fields to remove:", requestBody.unsetFields); // Log the fields to remove
+    
+                            if (
+                                !Array.isArray(requestBody.productIds) ||
+                                typeof requestBody.updateFields !== "object" ||
+                                requestBody.productIds.some((id) => !ObjectId.isValid(id)) ||
+                                (requestBody.unsetFields &&
+                                    !Array.isArray(requestBody.unsetFields))
+                            ) {
+                                // Check if unsetFields is an array if it exists
+                                res.writeHead(400, { "Content-Type": "application/json" });
+                                res.end(
+                                    JSON.stringify({
+                                        message: "Invalid input for updating listings",
+                                    })
+                                );
+                                return;
+                            }
+                            result = await updateListings(
+                                requestBody.productIds,
+                                requestBody.updateFields,
+                                requestBody.unsetFields
+                            ); 
+                            break;
                     case "update-shipping-address":
                         result = await updateUserShippingAddress(requestBody);
                         res.writeHead(200, { "Content-Type": "application/json" });
@@ -128,6 +158,41 @@ const server = http.createServer(async (req, res) => {
                         res.writeHead(200, { "Content-Type": "application/json" });
                         res.end(JSON.stringify({ message: "Shipping address deleted successfully", data: result }));
                         break;
+                        case "delete-listings":
+                            console.log(
+                                "Received productIds for deletion:",
+                                requestBody.productIds
+                            );
+                            if (
+                                !Array.isArray(requestBody.productIds) ||
+                                requestBody.productIds.some((id) => !ObjectId.isValid(id))
+                            ) {
+                                res.writeHead(400, { "Content-Type": "application/json" });
+                                res.end(
+                                    JSON.stringify({
+                                        message: "Invalid input for deleting listings",
+                                    })
+                                );
+                                return;
+                            }
+                            try {
+                                const result = await deleteListings(requestBody.productIds);
+                                res.writeHead(200, { "Content-Type": "application/json" });
+                                res.end(
+                                    JSON.stringify({
+                                        message: "Listings deleted successfully",
+                                        result,
+                                    })
+                                );
+                            } catch (error) {
+                                console.error(
+                                    "An error occurred during the deletion operation:",
+                                    error
+                                );
+                                res.writeHead(500, { "Content-Type": "application/json" });
+                                res.end(JSON.stringify({ message: "Internal server error" }));
+                            }
+                            return;
                     case "delete-user-profile":
                         result = await deleteUserProfile(requestBody);
                         res.writeHead(200, { "Content-Type": "application/json" });
@@ -149,100 +214,6 @@ const server = http.createServer(async (req, res) => {
                         await checkout(userId, cartId, address, paymentToken);
                         result = { message: "Checkout successful" };
                         break;
-
-                    case "update-listings":
-                        console.log(
-                            "Received productIds for update:",
-                            requestBody.productIds
-                        );
-                        console.log("Received update fields:", requestBody.updateFields);
-                        console.log("Received fields to remove:", requestBody.unsetFields); // Log the fields to remove
-
-                        if (
-                            !Array.isArray(requestBody.productIds) ||
-                            typeof requestBody.updateFields !== "object" ||
-                            requestBody.productIds.some((id) => !ObjectId.isValid(id)) ||
-                            (requestBody.unsetFields &&
-                                !Array.isArray(requestBody.unsetFields))
-                        ) {
-                            // Check if unsetFields is an array if it exists
-                            res.writeHead(400, { "Content-Type": "application/json" });
-                            res.end(
-                                JSON.stringify({
-                                    message: "Invalid input for updating listings",
-                                })
-                            );
-                            return;
-                        }
-
-                        result = await updateListings(
-                            requestBody.productIds,
-                            requestBody.updateFields,
-                            requestBody.unsetFields
-                        ); // Pass the unsetFields as well
-                        break;
-                    case "delete-listings":
-                        console.log(
-                            "Received productIds for deletion:",
-                            requestBody.productIds
-                        );
-                        if (
-                            !Array.isArray(requestBody.productIds) ||
-                            requestBody.productIds.some((id) => !ObjectId.isValid(id))
-                        ) {
-                            res.writeHead(400, { "Content-Type": "application/json" });
-                            res.end(
-                                JSON.stringify({
-                                    message: "Invalid input for deleting listings",
-                                })
-                            );
-                            return;
-                        }
-                        try {
-                            const result = await deleteListings(requestBody.productIds);
-                            // Assuming deleteListings function returns the result of deletion operation,
-                            // you can further process this result or directly send a success response
-                            res.writeHead(200, { "Content-Type": "application/json" });
-                            res.end(
-                                JSON.stringify({
-                                    message: "Listings deleted successfully",
-                                    result,
-                                })
-                            );
-                        } catch (error) {
-                            console.error(
-                                "An error occurred during the deletion operation:",
-                                error
-                            );
-                            res.writeHead(500, { "Content-Type": "application/json" });
-                            res.end(JSON.stringify({ message: "Internal server error" }));
-                        }
-                        return;
-                    case "create-stripe-customer":
-                        const { userObjectId, email, name } = requestBody;
-                        createStripeCustomerAndUpdateDB(userObjectId, email, name)
-                            .then((customerResult) => {
-                                if (!res.headersSent) {
-                                    res.writeHead(200, { "Content-Type": "application/json" });
-                                    res.end(
-                                        JSON.stringify({ success: true, data: customerResult })
-                                    );
-                                }
-                            })
-                            .catch((error) => {
-                                console.error("Error creating Stripe customer:", error);
-                                if (!res.headersSent) {
-                                    res.writeHead(500, { "Content-Type": "application/json" });
-                                    res.end(
-                                        JSON.stringify({
-                                            success: false,
-                                            message: "Failed to create Stripe customer",
-                                            error: error.message,
-                                        })
-                                    );
-                                }
-                            });
-                        return;
                     case "verify-card-details":
                         try {
                             const { userObjectId, stripeCustomerId, stripeToken } =
@@ -268,7 +239,28 @@ const server = http.createServer(async (req, res) => {
                             }
                         }
                         return;
-
+                     case "process-payment":
+                            try {
+                                const { stripeCustomerId, paymentMethodId, amountInDollars } = requestBody;
+                                const paymentResult = await createPaymentAndProcessing(stripeCustomerId, paymentMethodId, amountInDollars);
+                                res.writeHead(200, { "Content-Type": "application/json" });
+                                res.end(
+                                    JSON.stringify({
+                                        message: "Payment processed successfully",
+                                        data: paymentResult,
+                                    })
+                                );
+                            } catch (error) {
+                                console.error("Error processing payment:", error);
+                                res.writeHead(500, { "Content-Type": "application/json" });
+                                res.end(
+                                    JSON.stringify({
+                                        message: "Failed to process payment",
+                                        error: error.message,
+                                    })
+                                );
+                            }
+                            break;
                     // userProfile.js
                     case "update-user-profile":
                         try {
@@ -730,7 +722,31 @@ const server = http.createServer(async (req, res) => {
                             })
                         );
                         break;
-
+                        case "create-stripe-customer":
+                            const { userObjectId, email, name } = requestBody;
+                            createStripeCustomerAndUpdateDB(userObjectId, email, name)
+                                .then((customerResult) => {
+                                    if (!res.headersSent) {
+                                        res.writeHead(200, { "Content-Type": "application/json" });
+                                        res.end(
+                                            JSON.stringify({ success: true, data: customerResult })
+                                        );
+                                    }
+                                })
+                                .catch((error) => {
+                                    console.error("Error creating Stripe customer:", error);
+                                    if (!res.headersSent) {
+                                        res.writeHead(500, { "Content-Type": "application/json" });
+                                        res.end(
+                                            JSON.stringify({
+                                                success: false,
+                                                message: "Failed to create Stripe customer",
+                                                error: error.message,
+                                            })
+                                        );
+                                    }
+                                });
+                            return;
                     case "autocomplete":
                         result = await autocompleteProductSearch(requestBody.query);
                         res.writeHead(200, { "Content-Type": "application/json" });
