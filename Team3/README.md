@@ -1,5 +1,45 @@
 This is readme for team 3
 
+For testing Add Product
+url: http://localhost:3000/add-product
+Under Headers, Content/type = application/json
+Body: raw
+{
+  "name": "Fitness Gear Soft Medicine Ball",
+  "description": "The dual action press arms with independent motion allow for chest press and vertical butterfly exercises",
+  "brand": "Fitness Gear",
+  "type": "Home Gym",
+  "price": 24.99,
+  "stockQuantity": 9,
+  "images": [
+    "https://www.dickssportinggoods.com/p/fitness-gear-soft-medicine-ball-15fgeufg6lbsftmdbeac/15fgeufg6lbsftmdbeac"
+  ],
+  "specs": {
+    "weight": "8 lbs"
+  },
+  "trendingScore": 1,
+  "topTrending": false,
+  "rating": 4.8
+}
+
+For testing Discount by id
+url: http://localhost:3000/update-discount
+Under Headers, Content/type = application/json
+Body: raw
+{
+  "_id": "66030d51f02ec08511877e81",
+  "discountPercentage": 20
+}
+
+For testing discount by brand/type **For type, just replace "brand" with "type"
+url: http://localhost:3000/discount-by-brand 
+Under Headers, Content/type = application/json
+Body: raw
+{
+  "brand": "brddemo1",  
+  "discountPercentage": 2
+}
+
 
 For testing of update listings , run the server first and then go to POSTMAN 
 and for the URL:

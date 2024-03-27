@@ -1,44 +1,57 @@
 const { MongoClient } = require('mongodb');
 const { verifyAddress } = require('./GoogleAddressValidation.js');
-const {verifyCardAndUpdateDB} = require('../Team3/stripe.js');
+const {verifyCardAndUpdateDB, createStripeCustomerAndUpdateDB} = require('../Team3/stripe.js');
 // MongoDB connection URI
-//curl -X POST -H "Content-Type: application/json" -d '{"userId": "your_user_id", "cartId": "your_cart_id", "address": {"street": "123 Main St", "city": "Anytown", "state": "CA", "zip": "12345"}, "paymentToken": "your_payment_token"}' http://localhost:3000/checkout
+//curl -X POST -H "Content-Type: application/json" -d '{"userId": "65fb26fd8ee7dfe76e1b0dcd", "cartId": "66035461382bf12efaa6386b", "address": {"street": "46 Ray Street", "city": "New Brunswick", "state": "NJ", "zip": "08844"}, "paymentToken": "tok_visa", "stripeCustomerId": "cus_PnYvFk6K6O5fY8"}' http://localhost:3000/checkout
 
-const uri = 'mongodb+srv://admin:SoftEng452@cluster0.qecmfqe.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0';
+const uri = 'mongodb+srv://admin:SoftEng452@cluster0.qecmfqe.mongodb.net/website?retryWrites=true&w=majority&appName=Cluster0';
+
+
+
 
 const client = new MongoClient(uri);
+//--------------------------
+//const MongoClient = require('mongodb').MongoClient;
 
-// Function to check if items in cart are still in stock
-async function verifyCartItems(userId, cartId) {
-    return true;
+// Function to verify stock availability for items in the cart
+async function verifyStock(cartId) {
     try {
         await client.connect();
+
         const database = client.db('website');
         const cartsCollection = database.collection('carts');
         const productsCollection = database.collection('products');
 
-        // Retrieve the cart
-        const cart = await cartsCollection.findOne({ userID: userId, _id: cartId });
+        // Retrieve cart details
+        const cart = await cartsCollection.findOne({ _id: cartId });
         if (!cart) {
             throw new Error('Cart not found');
         }
 
-        // Check each item in the cart
-        for (const item of cart.Items) {
+        let allItemsInStock = true;
+
+        // Check stock availability for each item in the cart
+        for (const item of cart.items) {
             const product = await productsCollection.findOne({ _id: item.productId });
-            if (!product || product.stockQuantity < item.quantity) {
-                return false; // Item out of stock
+            if (!product) {
+                throw new Error(`Product with ID ${item.productId} not found`);
+            }
+
+            if (product.stockQuantity < item.quantity) {
+                console.log(`Item "${product.name}" is out of stock.`);
+                allItemsInStock = false;
             }
         }
 
-        return true; // All items in stock
+        return allItemsInStock;
     } catch (error) {
-        console.error('Error verifying cart items:', error);
-        throw new Error('Failed to verify cart items');
+        console.error('Error verifying stock:', error);
+        return false;
     } finally {
         await client.close();
     }
 }
+
 
 // Function to verify user address
 async function verifyUserAddress(address) {
@@ -49,28 +62,70 @@ async function verifyUserAddress(address) {
         throw new Error('Failed to verify user address');
     }
 }
+// Function to write order details to the "purchases" collection
+async function createPurchase(orderId) {
+
+    try {
+        await client.connect();
+
+        const database = client.db('website');
+        const purchasesCollection = database.collection('purchases');
+
+        // Retrieve the order details using the provided order ID
+        const order = await getOrderById(orderId);
+        if (!order) {
+            throw new Error('Failed to retrieve order details');
+        }
+
+        // Insert the order details into the "purchases" collection
+        const result = await purchasesCollection.insertOne(order);
+        console.log(`Order successfully added to purchases collection with ID: ${result.insertedId}`);
+        return result.insertedId;
+    } catch (error) {
+        console.error('Error creating purchase:', error);
+        return null;
+    } finally {
+        await client.close();
+    }
+}
 
 // Checkout function
-async function checkout(userId, cartId, address, paymentToken) {
+async function checkout(userId, cartId, address, paymentToken, stripeCustomerId, stripeCustomerId) {
+    const database = client.db('website');
+
     try {
         // Verify cart items
-        const itemsInStock = await verifyCartItems(userId, cartId);
-        if (!itemsInStock) {
+        const itemsInStock = await verifyStock(cartId);
+        if (itemsInStock) {
             throw new Error('One or more items in the cart are out of stock');
         }
 
         // Verify user address
         const verifiedAddress = await verifyUserAddress(address);
+        const stripeToken = 'tok_visa';
+        // Verify the card with the payment method ID and user's Stripe ID
+        try {
+            //const verificationResult = await verifyCardAndUpdateDB(userId, stripeCustomerId, stripeToken);
+            const verificationResult = true;
+            if (verificationResult.success) {
+                // If card verification is successful, update orders collection
+                //const updateSucceeded = await updateUserPremiumStatus(userId, true);
 
-        // Add payment method
-        const { success: paymentSuccess, paymentMethodId } = await verifyCardAndUpdateDB(userId, address.stripeCustomerId, paymentToken);
-        if (!paymentSuccess) {
-            throw new Error('Failed to add payment method');
+            } else {
+                // Handle failure to verify the card
+                return { success: false, message: "Failed to verify the card." };
+            }
+        } catch (error) {
+            // Handle exceptions during the verification process
+            console.error("Error during card verification:", error);
+            throw error;
         }
 
-        // Proceed with checkout
+        // Add order to the database
+        createPurchase(orderId)
+
         console.log('Checkout successful!');
-        // Additional logic for checkout can be added here
+    
 
     } catch (error) {
         console.error('Error during checkout:', error.message);
@@ -78,19 +133,6 @@ async function checkout(userId, cartId, address, paymentToken) {
     }
 }
 
-/*// Example usage:
-const userId = 'your_user_id';
-const cartId = 'your_cart_id';
-const address = {
-    street: '123 Main St',
-    city: 'Anytown',
-    state: 'CA',
-    zip: '12345',
-    stripeCustomerId: 'your_stripe_customer_id' // You need to get this from the user's document
-};
-const paymentToken = 'stripe_payment_token'; // You need to get this from the frontend
 
-checkout(userId, cartId, address, paymentToken);
 
-*/
 module.exports = {checkout};
