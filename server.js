@@ -1,4 +1,4 @@
-require("dotenv").config();
+require("dotenv").config(); 
 const { ObjectId } = require("mongodb");
 const http = require("http");
 const url = require("url");
@@ -621,10 +621,11 @@ const server = http.createServer(async (req, res) => {
           );
         }
       } else if (req.method === "GET") {
-        const requestBody = JSON.parse(buffer);
-        let result = null;
+           const requestBody = JSON.parse(buffer);
+           let result = null;
 
                 switch (trimmedPath) {
+
                     case "filterCatalog":
                         result = await productFilterQuery(requestBody);
                         res.writeHead(200, { "Content-Type": "application/json" });
@@ -635,7 +636,7 @@ const server = http.createServer(async (req, res) => {
                             })
                         );
                         break;
-
+                   
           case "fetch-product-performance":
             result = await fetchTopRatedProducts();
             res.writeHead(200, { "Content-Type": "application/json" });
@@ -646,6 +647,36 @@ const server = http.createServer(async (req, res) => {
               })
             );
             break;
+          case "fetch-product-details":
+            console.log("Hello");
+            try {
+              // Extract userId from the query parameters instead of requestBody, more appropriate for a GET request
+              const userId = parsedUrl.query.userId; 
+              conso
+      
+              // Validate userId before proceeding
+              if (!ObjectId.isValid(userId)) {
+                  res.writeHead(400, { "Content-Type": "application/json" });
+                  res.end(JSON.stringify({ message: "Invalid user ID" }));
+                  break;
+              }
+
+              const result = await getCartDetails(userId);
+
+
+              res.writeHead(200, { "Content-Type": "application/json" });
+              res.end(JSON.stringify({
+                message: "Details of cart were extracted successfully",
+                data: result,
+            }));
+          } catch (error) {
+            // Log and handle any errors that occurred during the process
+            console.error("Error fetching cart details:", error);
+            res.writeHead(500, { "Content-Type": "application/json" });
+            res.end(JSON.stringify({ message: "Error fetching cart details", error: error.toString() }));
+        }
+        break;
+
           default:
             res.writeHead(404, { "Content-Type": "application/json" });
             res.end(JSON.stringify({ message: "Not Found" }));
