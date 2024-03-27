@@ -193,7 +193,6 @@ async function updateUserShippingAddress(requestBody) {
 
 module.exports = {
     updateUserProfile,
-    updateUserEmail,
     updateUserName,
     updateUserPremiumStatus,
     addUserShippingAddress,
