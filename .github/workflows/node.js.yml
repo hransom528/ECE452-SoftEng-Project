@@ -4,7 +4,7 @@
 name: Node.js CI
 env:
   MONGO_URI: ${{ secrets.MONGOURI }}
-
+  OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
 on:
   push:
     branches: [ "main" ]
