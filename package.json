@@ -1,7 +1,7 @@
 {
   "main": "server.js",
   "scripts": {
-    "test": "jest --detectOpenHandles --forceExit"
+    "test": "jest --detectOpenHandles --forceExit --testPathPattern=tests/"
   },
   "dependencies": {
     "@google-cloud/aiplatform": "^3.15.0",
