@@ -7,7 +7,7 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
-async function getResponseFromOpenAI(body) {
+async function getResponseFromOpenAI(userInfo, body) {
   // Waiting for products from the database to be retrieved
   await fetchAllProducts();
 

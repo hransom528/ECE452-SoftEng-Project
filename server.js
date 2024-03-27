@@ -441,7 +441,7 @@ const server = http.createServer(async (req, res) => {
 
               //use the info we got to finish registering the user
               result = await registerUser(userInfo, requestBody);
-              res.writeHead(400, { "Content-Type": "application/json" });
+              res.writeHead(200, { "Content-Type": "application/json" });
               res.end(
                 JSON.stringify({
                   message: result,
@@ -504,6 +504,15 @@ const server = http.createServer(async (req, res) => {
             break;
 
           case "talkToAI":
+            const aToken = requestBody.aToken; // part of post request JSON
+            const userInfo = await getUserInfo(aToken);
+            if (!aToken) {
+              res.writeHead(400, { "Content-Type": "application/json" });
+              res.end(JSON.stringify({ message: "Access Token is required" }));
+              responseSent = true;
+              return;
+            }
+
             // Ensure body contains 'prompt'
             if (!requestBody.prompt) {
               res.writeHead(400, { "Content-Type": "application/json" });
@@ -512,29 +521,42 @@ const server = http.createServer(async (req, res) => {
               break;
             }
 
-            await getResponseFromOpenAI(requestBody)
-              .then((response) => {
-                console.log("AI Response:", response); // Debugging line
-                res.writeHead(200, { "Content-Type": "application/json" });
-                res.end(
-                  JSON.stringify({
-                    message: "Operation successful",
-                    data: response,
-                  })
-                );
-                responseSent = true;
-              })
-              .catch((error) => {
-                console.log("Error interacting with AI:", error); // Debugging line
-                res.writeHead(500, { "Content-Type": "application/json" });
-                res.end(
-                  JSON.stringify({
-                    message: "Error interacting with AI",
-                    error: error.toString(),
-                  })
-                );
-                responseSent = true;
-              });
+            try {
+              await getResponseFromOpenAI(userInfo, requestBody) // implement userInfo on ai function side
+                .then((response) => {
+                  // console.log("AI Response:", response);
+                  res.writeHead(200, { "Content-Type": "application/json" });
+                  res.end(
+                    JSON.stringify({
+                      message: "Operation successful",
+                      data: response,
+                    })
+                  );
+                  responseSent = true;
+                })
+                .catch((error) => {
+                  console.log("Error interacting with AI:", error); // Debugging line
+                  res.writeHead(500, { "Content-Type": "application/json" });
+                  res.end(
+                    JSON.stringify({
+                      message: "Error interacting with AI",
+                      error: error.toString(),
+                    })
+                  );
+                  responseSent = true;
+                });
+            } catch (Error) {
+              // handling login errors
+              res.writeHead(400, { "Content-Type": "application/json" });
+              res.end(
+                JSON.stringify({
+                  message: "Not able to send prompt to AI", // implement better
+                  error: Error.message,
+                })
+              );
+              responseSent = true;
+              return;
+            }
 
             break;
 
@@ -734,6 +756,11 @@ const server = http.createServer(async (req, res) => {
 });
 
 const PORT = 3000;
-server.listen(PORT, () => {
-  console.log(`Server running! Listening at http://localhost:${PORT}`);
-});
+// calling through main or jasmine
+if (require.main === module) {
+  server.listen(PORT, () => {
+    console.log(`Server running! Listening at http://localhost:${PORT}`);
+  });
+} else {
+  module.exports = server;
+}
