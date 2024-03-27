@@ -121,10 +121,10 @@ const server = http.createServer(async (req, res) => {
 
 
                     case 'checkout':
-                        const { userId: userIdForCheckout, cartId, address, paymentToken } = requestBody; // Rename userId to userIdForCheckout
-                        await checkout(userIdForCheckout, cartId, address, paymentToken);
+                        const { userId, cartId, address, paymentToken, stripeCustomerId } = requestBody;
+                        await checkout(userId, cartId, address, paymentToken, stripeCustomerId);
                         result = { message: 'Checkout successful' };
-                        break; ``
+                        break;
 
                     case "update-listings":
                         console.log(
