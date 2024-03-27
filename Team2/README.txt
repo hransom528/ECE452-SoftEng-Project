@@ -27,4 +27,42 @@ Cart.js
 ------------
 Watchlist.js
 ------------
+1. Start the server by running the following command:
+   npm start
+   This will start the application and connect it to your MongoDB database.
+
+2. Open Postman and import the provided collection file (Watchlist.postman_collection.json).
+
+3. You should see three requests in the collection:
+   - Add Product to Watchlist: Used to add a product to a user's watchlist.
+   - Remove Product from Watchlist: Used to remove a product from a user's watchlist.
+   - Get User's Watchlist: Used to retrieve a user's watchlist.
+
+4. Send requests to the appropriate endpoints using Postman to interact with the watchlist data.
+
+API Endpoints:
+
+- Add Product to Watchlist
+  Method: POST
+  Endpoint: http://localhost:3000/addToWatchList
+  Body (JSON):
+  {
+    "userId": "user_id_here",
+    "productId": "product_id_here"
+  }
+
+- Remove Product from Watchlist
+  Method: POST
+  Endpoint: http://localhost:3000/removeFromWatchList
+  Body (JSON):
+  {
+    "userId": "user_id_here",
+    "productId": "product_id_here"
+  }
+
+- Get User's Watchlist
+  Method: GET
+  Endpoint: http://localhost:3000/getWatchList?userId=user_id_here
+
+Replace user_id_here and product_id_here with the appropriate values.
 
