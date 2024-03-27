@@ -9,7 +9,7 @@ const uri = 'mongodb+srv://admin:SoftEng452@cluster0.qecmfqe.mongodb.net/website
 
 
 
-const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
+const client = new MongoClient(uri);
 //--------------------------
 //const MongoClient = require('mongodb').MongoClient;
 
