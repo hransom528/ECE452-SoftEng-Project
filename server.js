@@ -71,11 +71,6 @@ const server = http.createServer(async (req, res) => {
             let result = null;
 
             switch (trimmedPath) {
-                case "update-email":
-                    result = await updateUserEmail(requestBody);
-                    res.writeHead(200, { "Content-Type": "application/json" });
-                    res.end(JSON.stringify({ message: `Email successfully updated`, data: result }));
-                    break;
                 case "update-name":
                     result = await updateUserName(requestBody);
                     res.writeHead(200, { "Content-Type": "application/json" });

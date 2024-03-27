@@ -88,37 +88,6 @@ async function updateUserProfile(requestBody) {
     }
 }
 
-async function updateUserEmail(requestBody) {
-    const { userId, newEmail, accToken } = requestBody;
-    
-    // Validate the access token and get user info
-    const userInfo = await validateAccessTokenAndGetUserInfo(accToken);
-    
-
-    if (!userId || !newEmail) {
-        throw new Error('userId and newEmail are required');
-    }
-
-    if (!validateEmail(newEmail)) {
-        throw new Error('Invalid email format');
-    }
-    
-    const db = await connectDB();
-    const collection = db.collection('users');
-    
-    const result = await collection.updateOne(
-        { _id: new ObjectId(userId) }, // Will be inputting a hexademical string; deprecation does not apply
-        { $set: { email: newEmail } }
-    );
-    
-    if (result.matchedCount === 0) {
-        throw new Error(`No user found with ID ${userId}`);
-    }
-    
-    console.log(`Successfully updated the email for user ID ${userId}`);
-    return result;
-}
-
 async function updateUserName(requestBody) {
     const { userId, newName, accToken } = requestBody;
     
