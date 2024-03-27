@@ -21,11 +21,12 @@ async function getResponseFromOpenAI(body) {
     console.log("AI is thinking...");
     const response = await openai.chat.completions.create({
       model: "gpt-3.5-turbo-1106",
+      // model: "gpt-4-1106-preview",
       messages: [
         {
           role: "system",
           content:
-            "You are a helpful assistant. Provide concise, accurate answers based on the data provided. I want you to respond as if you are a part of our team, do not say 'based on the data inputted', instead it would be better to say something like 'based on our company's data...'. If the data does not contain the information needed to answer the question, state that the information is not available.",
+            "You are a helpful assistant. Provide concise, accurate answers based on the data provided. I want you to respond as if you are a part of our team, do not say 'based on the data inputted', instead it would be better to say something like 'based on our company's data...'. If the data does not contain the information needed to answer the question, state that the information is not available. Do not make the outputs too long.",
         },
         {
           role: "user",
