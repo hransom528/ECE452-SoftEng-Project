@@ -1,5 +1,6 @@
 require("dotenv").config();
 const { ObjectId } = require("mongodb");
+
 const http = require("http");
 const url = require("url");
 const { StringDecoder } = require("string_decoder");
@@ -48,7 +49,7 @@ const {
     askForProductName
 } = require('./Team4/Product_Review.js');
 const productFilterQuery = require("./Team4/Filter_Search.js");
-const { checkout } = require("./Team2/Checkout.js");
+
 
 let responseSent = false;
 let result;
@@ -110,11 +111,6 @@ const server = http.createServer(async (req, res) => {
             let result = null;
 
             switch (trimmedPath) {
-            case "checkout":
-                const { userId, cartId, address, paymentToken } = requestBody;
-                await checkout(userId, cartId, address, paymentToken);
-                result = { message: "Checkout successful" };
-                break;
 
             case "update-listings":
                 console.log(
@@ -209,6 +205,7 @@ const server = http.createServer(async (req, res) => {
                     }
                 });
                 return;
+                  
             case "verify-card-details":
                 try {
                 const { userObjectId, stripeCustomerId, stripeToken } =
@@ -287,6 +284,12 @@ const server = http.createServer(async (req, res) => {
                 requestBody.unsetFields
                 );
                 break;
+
+            case 'checkout':
+                  const { userId, cartId, address, paymentToken, stripeCustomerId } = requestBody;
+                  await checkout(userId, cartId, address, paymentToken, stripeCustomerId);
+                  result = { message: 'Checkout successful' };
+                  break;
 
             case "add-to-cart":
                 if (
@@ -503,7 +506,9 @@ const server = http.createServer(async (req, res) => {
                     responseSent = true;
                 });
 
+              
                 break;
+               
 
             // membershipManagement.js
             case "create-premium-membership":
@@ -664,6 +669,36 @@ const server = http.createServer(async (req, res) => {
                 })
                 );
                 break;
+
+                case "fetch-cart-details":  // Renamed for clarity, assuming you're fetching cart details
+                try {
+                    // Extract userId from the query parameters instead of requestBody, more appropriate for a GET request
+                    const userId = parsedUrl.query.userId;
+            
+                    // Validate userId before proceeding
+                    if (!ObjectId.isValid(userId)) {
+                        res.writeHead(400, { "Content-Type": "application/json" });
+                        res.end(JSON.stringify({ message: "Invalid user ID" }));
+                        break;
+                    }
+            
+                    // Fetch cart details using the provided userId
+                    const result = await getCartDetails(userId);
+            
+                    // Send the fetched cart details as the response
+                    res.writeHead(200, { "Content-Type": "application/json" });
+                    res.end(JSON.stringify({
+                        message: "Details of cart were extracted successfully",
+                        data: result,
+                    }));
+                } catch (error) {
+                    // Log and handle any errors that occurred during the process
+                    console.error("Error fetching cart details:", error);
+                    res.writeHead(500, { "Content-Type": "application/json" });
+                    res.end(JSON.stringify({ message: "Error fetching cart details", error: error.toString() }));
+                }
+                break;
+            
 
             case "fetch-product-performance":
                 result = await fetchTopRatedProducts();
