@@ -27,9 +27,7 @@ const { addToCart, removeFromCart } = require("./Team2/Cart.js");
 
 const {
   updateUserProfile,
-  updateUserEmail,
   updateUserName,
-  updateUserPremiumStatus,
   addUserShippingAddress,
   updateUserShippingAddress,
 } = require("./Team1/userProfile");
