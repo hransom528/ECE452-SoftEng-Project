@@ -40,16 +40,18 @@ async function productSearchQuery(queryInput) {
         },
     ];
     const cursor = await collection.aggregate(agg);
-    await cursor.forEach((doc) => console.log(doc));
+    var results = [];
+    await cursor.forEach((doc) => results.push((doc)));
     await client.close();
-    return true;
+    return results;
 }
 
 // Testing
 /*
 async function test() {
     let testQuery = "bar";
-    await productSearchQuery(testQuery);
+    const result = await productSearchQuery(testQuery);
+    console.log(result);
     process.exit(0);
 }
 test();

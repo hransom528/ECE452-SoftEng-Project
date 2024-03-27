@@ -27,6 +27,8 @@ async function autocompleteProductSearch(queryInput) {
             {$project: {_id: 0, name: 1}}
         ];
 
+        // TODO: Compound aggregation
+        /*
         const compoundAgg = [
             {
                 '$search': {
@@ -60,21 +62,26 @@ async function autocompleteProductSearch(queryInput) {
                     'brand': 1
                 }
             }
-        ];
+        ];*/
 
         // Run pipeline
         const result = await collection.aggregate(agg);
 
         // Print results
-        await result.forEach((doc) => console.log(doc));
+        var results = [];
+        await result.forEach((doc) => results.push((doc)));
+        return results;
     } 
+    catch (e) {
+        console.error(e);
+        return false;
+    }
     finally {
         await client.close();
     }
-    return true;
 }
 
 // Testing
-// autocompleteProductSearch("bar");
+// const results = await autocompleteProductSearch("bar");
 
 module.exports = { autocompleteProductSearch };
