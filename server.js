@@ -44,8 +44,7 @@ const {
 } = require("./Team1/Reg_lgn/oAuthHandler");
 const { getResponseFromOpenAI } = require("./Team1/ChatBot/openAi");
 
-//const { productFilterQuery} = require("./Team4/Filter_Search.js") other changes;
-//const { productFilterQuery} = require("./Team4/Filter_Search.js");
+const { productFilterQuery} = require("./Team4/Filter_Search.js");
 const { checkout } = require("./Team2/Checkout.js");
 
 let responseSent = false;
