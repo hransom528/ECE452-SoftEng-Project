@@ -1,6 +1,7 @@
 // Includes dependencies
 const { MongoClient } = require('mongodb');
 const { connectDB } = require('../dbConfig.js');
+require('dotenv').config()
 
 // TODO: Change MongoDB URI to secret
 const MONGO_URI = "mongodb+srv://admin:SoftEng452@cluster0.qecmfqe.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
