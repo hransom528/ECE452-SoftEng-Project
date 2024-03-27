@@ -1,49 +1,60 @@
 
 // Includes dependencies
 const { MongoClient } = require('mongodb');
-const assert = require("assert");
-
-// TODO: Change MongoDB URI to secret
-const MONGO_URI = "mongodb+srv://admin:SoftEng452@cluster0.qecmfqe.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
+const { connectDB } = require('../dbConfig.js');
+require('dotenv').config()
+const MONGO_URI = process.env.MONGO_URI;
 const client = new MongoClient(MONGO_URI);
 
-// Database Name
-const dbName = 'website';
+// Collection Name
+const collectionName = 'products';
 
 // Searches for products based on query and filters
-// TODO: Implement filters
 /**
- * @param {MongoClient} client
- * @param {string} query
+ * @param {string} queryInput - The search query
  */
-async function productSearchQuery(query) {
+async function productSearchQuery(queryInput) {
     // Use connect method to connect to the server
-    await client.connect();
-    console.log('Connected successfully to server');
-    const db = client.db(dbName);
-    const collection = db.collection('products');
+    const db = await connectDB();
+    const collection = db.collection(collectionName);
 
-    // TODO Define agg JSON
+    // Define agg JSON
     const agg = [
         {
             $search: {
+                index: "textSearch",
                 text: {
-                    query: query,
-                    path: {
-                        wildcard: "*"
-                    }
-                }
-            }
-        }
+                    query: queryInput.toString(),
+                    path: "name",
+                },
+            },
+        },
+        {
+            $limit: 10,
+        },
+        {
+            $project: {
+                _id: 0,
+                name: 1,
+            },
+        },
     ];
     const cursor = await collection.aggregate(agg);
-    await cursor.forEach((doc) => console.log(doc));
+    var results = [];
+    await cursor.forEach((doc) => results.push((doc)));
     await client.close();
-    return true;
+    return results;
 }
 
-const testQuery = "barbell";
-productSearchQuery(testQuery)
-    //.then(console.log)
-    //.catch(console.error)
-    //.finally(() => client.close());
+// Testing
+/*
+async function test() {
+    let testQuery = "bar";
+    const result = await productSearchQuery(testQuery);
+    console.log(result);
+    process.exit(0);
+}
+test();
+*/
+
+module.exports = { productSearchQuery };

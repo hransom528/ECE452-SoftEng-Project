@@ -21,12 +21,18 @@ async function registerUser(userInfo, requestBody) {
       const ToUser =
         "Please Accepts our Terms and Conditions to continue registering.";
       return { ToUser };
+    } else if (!requestBody.address || requestBody.address.trim() === "") {
+      // Check for empty address
+      return {
+        RegistrationStatus: "Failed",
+        Message: "Address cannot be empty. Please provide a shipping address.",
+      };
     } else {
       // If the user is new, create a new user object including the data from Google
       const newUser = {
         email: userInfo.email,
         name: userInfo.name,
-        isPremium: requestBody.premium,
+        isPremium: false,
         shippingAddressses: requestBody.address,
         shoppingCart: { cartId: "", items: [], cartSubtotal: 0.0 },
         watchlist: [],

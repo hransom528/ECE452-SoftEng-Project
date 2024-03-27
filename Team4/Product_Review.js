@@ -40,7 +40,6 @@ async function reviewProduct(productName, title, rating, review) {
         throw error;
     }
 }
-
 // Function to gather review data from user input
 async function gatherReviewData() {
     return new Promise(async (resolve, reject) => {
@@ -75,6 +74,7 @@ async function askForProductName() {
 }
 
 // Testing
+/*
 async function test() {
     try {
         // Test getProductByName
@@ -99,7 +99,7 @@ async function test() {
 }
 
 test();
-
+*/
 module.exports = {
     getProductByName,
     reviewProduct,

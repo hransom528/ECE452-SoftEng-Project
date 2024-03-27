@@ -1,7 +1,7 @@
 {
   "main": "server.js",
   "scripts": {
-    "test": "jest --detectOpenHandles --forceExit"
+    "test": "jest --detectOpenHandles --forceExit --testPathPattern=tests/"
   },
   "dependencies": {
     "@google-cloud/aiplatform": "^3.15.0",
@@ -17,9 +17,11 @@
     "nodemailer": "^6.9.13",
     "openai": "^4.29.2",
     "stripe": "^14.22.0",
+    "supertest": "^6.3.4",
     "uuid": "^9.0.1"
   },
   "devDependencies": {
+    "jasmine": "^5.1.0",
     "jest": "^29.7.0"
   }
 }

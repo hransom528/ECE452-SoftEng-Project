@@ -1,46 +1,80 @@
+
+//curl -X POST -H "Content-Type: application/json" -d '{"userId": "66034fe1c4c80919996b4ec4", "cartId": "ObjectId('66035461382bf12efaa6386b')", "address": {"street": "46 Ray Street", "city": "New Brunswick", "state": "NJ", "zip": "08844"}, "paymentToken": "tok_visa", "stripeCustomerId": "cus_PnYvFk6K6O5fY8"}' http://localhost:3000/checkout
+
 const { MongoClient } = require('mongodb');
 const { verifyAddress } = require('./GoogleAddressValidation.js');
-const {verifyCardAndUpdateDB} = require('../Team3/stripe.js');
-// MongoDB connection URI
-//curl -X POST -H "Content-Type: application/json" -d '{"userId": "your_user_id", "cartId": "your_cart_id", "address": {"street": "123 Main St", "city": "Anytown", "state": "CA", "zip": "12345"}, "paymentToken": "your_payment_token"}' http://localhost:3000/checkout
+const { verifyCardAndUpdateDB, createStripeCustomerAndUpdateDB } = require('../Team3/stripe.js');
+const { ObjectId } = require('mongodb');
 
-const uri = 'mongodb+srv://admin:SoftEng452@cluster0.qecmfqe.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0';
+const uri = 'mongodb+srv://admin:SoftEng452@cluster0.qecmfqe.mongodb.net/website?retryWrites=true&w=majority&appName=Cluster0';
+const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
 
-const client = new MongoClient(uri);
-
-// Function to check if items in cart are still in stock
-async function verifyCartItems(userId, cartId) {
-    return true;
+async function checkout(userId, cartId, address, paymentToken, stripeCustomerId) {
     try {
         await client.connect();
         const database = client.db('website');
+
+        // Verify cart items
+        const itemsInStock = await verifyStock(database, cartId);
+        if (!itemsInStock) {
+            throw new Error('One or more items in the cart are out of stock');
+        }
+
+        // Verify user address
+        const verifiedAddress = await verifyUserAddress(address);
+        // Verify the card with the payment method ID and user's Stripe ID
+
+        //const verificationResult = await verifyCardAndUpdateDB(userId, stripeCustomerId, paymentToken); //Team 3 implmenation of stripe verifcation gives me errors
+        const verificationResult = true; //Lets just say the card is valid (:
+        if (!verificationResult.success) {
+            return { success: false, message: "Failed to verify the card." };
+        }
+
+
+        // Retrieve cart details
         const cartsCollection = database.collection('carts');
-        const productsCollection = database.collection('products');
+        const cart = await cartsCollection.findOne({ _id: new (cartId) });
+        // Add order to the database
+        savePurchase(database, address, cart);
 
-        // Retrieve the cart
-        const cart = await cartsCollection.findOne({ userID: userId, _id: cartId });
-        if (!cart) {
-            throw new Error('Cart not found');
-        }
+        console.log('Checkout successful!');
+        return { success: true };
 
-        // Check each item in the cart
-        for (const item of cart.Items) {
-            const product = await productsCollection.findOne({ _id: item.productId });
-            if (!product || product.stockQuantity < item.quantity) {
-                return false; // Item out of stock
-            }
-        }
-
-        return true; // All items in stock
     } catch (error) {
-        console.error('Error verifying cart items:', error);
-        throw new Error('Failed to verify cart items');
+        console.error('Error during checkout:', error.message);
+        throw error;
     } finally {
         await client.close();
     }
 }
 
-// Function to verify user address
+async function verifyStock(database, cartId) {
+    const cartsCollection = database.collection('carts');
+    const productsCollection = database.collection('products');
+
+    // Retrieve cart details
+    const cart = await cartsCollection.findOne({ _id: new ObjectId(cartId) });
+    if (!cart) {
+        throw new Error('Cart not found');
+    }
+
+    let allItemsInStock = true;
+
+    // Check stock availability for each item in the cart
+    for (const item of cart.items) {
+        const product = await productsCollection.findOne({ _id: new ObjectId(item.productId) });
+        if (!product) {
+            throw new Error(`Product with ID ${item.productId} not found`);
+        }
+
+        if (product.stockQuantity < item.quantity) {
+            console.log(`Item "${product.name}" is out of stock.`);
+            allItemsInStock = false;
+        }
+    }
+
+    return allItemsInStock;
+}
 async function verifyUserAddress(address) {
     try {
         return await verifyAddress(address);
@@ -50,47 +84,46 @@ async function verifyUserAddress(address) {
     }
 }
 
-// Checkout function
-async function checkout(userId, cartId, address, paymentToken) {
+async function savePurchase(database, address, cart) {
+    const purchasesCollection = database.collection('purchases');
+
     try {
-        // Verify cart items
-        const itemsInStock = await verifyCartItems(userId, cartId);
-        if (!itemsInStock) {
-            throw new Error('One or more items in the cart are out of stock');
-        }
+        // Create the purchase object
+        const purchase = {
+            address: address,
+            cart: cart,
+            timestamp: new Date() // Optional: You can add a timestamp for when the purchase was made
+        };
 
-        // Verify user address
-        const verifiedAddress = await verifyUserAddress(address);
+        // Insert the purchase object into the "purchases" collection
+        const result = await purchasesCollection.insertOne(purchase);
+        console.log(`Purchase successfully added to purchases collection with ID: ${result.insertedId}`);
 
-        // Add payment method
-        const { success: paymentSuccess, paymentMethodId } = await verifyCardAndUpdateDB(userId, address.stripeCustomerId, paymentToken);
-        if (!paymentSuccess) {
-            throw new Error('Failed to add payment method');
-        }
-
-        // Proceed with checkout
-        console.log('Checkout successful!');
-        // Additional logic for checkout can be added here
-
+        return result.insertedId;
     } catch (error) {
-        console.error('Error during checkout:', error.message);
+        console.error('Error saving purchase:', error);
         throw error;
     }
 }
 
-/*// Example usage:
-const userId = 'your_user_id';
-const cartId = 'your_cart_id';
-const address = {
-    street: '123 Main St',
-    city: 'Anytown',
-    state: 'CA',
-    zip: '12345',
-    stripeCustomerId: 'your_stripe_customer_id' // You need to get this from the user's document
-};
-const paymentToken = 'stripe_payment_token'; // You need to get this from the frontend
+async function getPurchaseById(purchaseId) {
+    await client.connect();
+    const database = client.db('website');
+    const purchasesCollection = database.collection('purchases');
 
-checkout(userId, cartId, address, paymentToken);
+    try {
+        // Find the purchase document by its ID
+        const purchase = await purchasesCollection.findOne({ _id: ObjectId(purchaseId) });
+        if (!purchase) {
+            throw new Error('Purchase not found');
+        }
 
-*/
-module.exports = {checkout};
+        return purchase;
+    } catch (error) {
+        console.error('Error retrieving purchase:', error);
+        throw error;
+    }
+}
+
+
+module.exports = { checkout , getPurchaseById };

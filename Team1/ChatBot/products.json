@@ -304,7 +304,7 @@
     "description": "Comes in a pair of 2",
     "brand": "ETHOS",
     "type": "demo1",
-    "price": 279.992,
+    "price": 314.99100000000004,
     "stockQuantity": 10,
     "specs": {
       "weight": "50 lbs"
@@ -312,7 +312,7 @@
     "trendingScore": 2,
     "topTrending": false,
     "rating": 4,
-    "discount": 20,
+    "discount": 10,
     "originalPrice": 349.99
   },
   {
