@@ -11,10 +11,10 @@ async function getResponseFromOpenAI(body) {
   // Waiting for products from the database to be retrieved
   await fetchAllProducts();
 
-  // Prepare your data as a stringified JSON
+  // Prepare data as a stringified JSON
   const jsonData = await fs.readFile("Team1/ChatBot/products.json", "utf8");
 
-  // Create the full prompt including instructions on how the model should respond
+  // Creating the full prompt including instructions on how the model should respond
   const fullPrompt = `Here is some data: ${jsonData}\n\n${body.prompt}`;
 
   try {

@@ -26,6 +26,7 @@ async function registerUser(userInfo, requestBody) {
       const newUser = {
         email: userInfo.email,
         name: userInfo.name,
+        isPremium: false,
         shippingAddressses: requestBody.address,
         shoppingCart: { cartId: "", items: [], cartSubtotal: 0.0 },
         watchlist: [],
