@@ -23,6 +23,7 @@ const {
 const {
   fetchTopRatedProductsByType,
 } = require("./Team3/UC9_Product_Performace_Insight.js");
+
 const { addToCart, removeFromCart } = require("./Team2/Cart.js");
 
 const {
@@ -680,7 +681,9 @@ const server = http.createServer(async (req, res) => {
                 res.end(JSON.stringify({ message: "Not Found" }));
                 return;
             }
+
         } else {
+
             res.writeHead(404, { "Content-Type": "application/json" });
             res.end(JSON.stringify({ message: "Not Found" }));
             return;

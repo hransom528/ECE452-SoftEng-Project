@@ -11,21 +11,22 @@ async function getResponseFromOpenAI(body) {
   // Waiting for products from the database to be retrieved
   await fetchAllProducts();
 
-  // Prepare your data as a stringified JSON
+  // Prepare data as a stringified JSON
   const jsonData = await fs.readFile("Team1/ChatBot/products.json", "utf8");
 
-  // Create the full prompt including instructions on how the model should respond
+  // Creating the full prompt including instructions on how the model should respond
   const fullPrompt = `Here is some data: ${jsonData}\n\n${body.prompt}`;
 
   try {
     console.log("AI is thinking...");
     const response = await openai.chat.completions.create({
       model: "gpt-3.5-turbo-1106",
+      // model: "gpt-4-1106-preview",
       messages: [
         {
           role: "system",
           content:
-            "You are a helpful assistant. Provide concise, accurate answers based on the data provided. I want you to respond as if you are a part of our team, do not say 'based on the data inputted', instead it would be better to say something like 'based on our company's data...'. If the data does not contain the information needed to answer the question, state that the information is not available.",
+            "You are a helpful assistant. Provide concise, accurate answers based on the data provided. I want you to respond as if you are a part of our team, do not say 'based on the data inputted', instead it would be better to say something like 'based on our company's data...'. If the data does not contain the information needed to answer the question, state that the information is not available. Do not make the outputs too long.",
         },
         {
           role: "user",
