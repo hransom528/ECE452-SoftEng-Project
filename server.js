@@ -44,6 +44,12 @@ const {
 const { getResponseFromOpenAI } = require("./Team1/ChatBot/openAi");
 
 const productFilterQuery = require("./Team4/Filter_Search.js");
+const {
+    getProductByName,
+    reviewProduct,
+    gatherReviewData,
+    askForProductName,
+  } = require("./Team4/Product_Review.js");
 const { checkout } = require("./Team2/Checkout.js");
 
 let responseSent = false;
@@ -663,6 +669,19 @@ const server = http.createServer(async (req, res) => {
                         const { userId, cartId, address, paymentToken } = requestBody;
                         await checkout(userId, cartId, address, paymentToken);
                         result = { message: "Checkout successful" };
+                        break;
+                    case "review-product":
+                        try {
+                          const reviewData = JSON.parse(buffer); // Parse the JSON body
+                          const { productName, title, rating, review } = reviewData; // Destructure the review data
+                          const insertedId = await reviewProduct(productName, title, rating, review); // Call reviewProduct function
+                          res.writeHead(200, { "Content-Type": "application/json" });
+                          res.end(JSON.stringify({ message: "Review added successfully", reviewId: insertedId }));
+                        } catch (error) {
+                          console.error("Error reviewing product:", error);
+                          res.writeHead(400, { "Content-Type": "application/json" });
+                          res.end(JSON.stringify({ message: "Failed to add review", error: error.toString() }));
+                        }
                         break;
 
                     case "update-listings":
