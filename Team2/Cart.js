@@ -8,8 +8,9 @@ const { MongoClient } = require('mongodb');
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
+//fuxk this 
 //speficiatation of connection details for MongoDatabse
-const MONGO_URI = 'mongodb+srv://admin:SoftEng452@cluster0.qecmfqe.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0';
+const MONGO_URI = 'mongodb+srv://admin:SoftEng452@cluster0.qecmfqe.mongodb.net/website?retryWrites=true&w=majority&appName=Cluster0';
 
 
 mongoose.connect(MONGO_URI)
@@ -55,9 +56,8 @@ const productSchema = new mongoose.Schema({
     price: Number, // Price field
         // Other fields like description, category, etc.
     });
-    
 
-const Product = mongoose.model('Product', productSchema);
+const Product = mongoose.model('Product', productSchema, 'products');
 const Cart = mongoose.model('Cart', cartSchema, 'carts');
 
 async function getProductPrice(productId) {
