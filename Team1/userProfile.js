@@ -191,10 +191,62 @@ async function updateUserShippingAddress(requestBody) {
     return result;
 }
 
+async function deleteUserShippingAddress(requestBody) {
+    const { userId, addressId, accToken } = requestBody;
+    
+    // Validate the access token and get user info
+    const userInfo = await validateAccessTokenAndGetUserInfo(accToken);
+
+    if (!userId || !addressId) {
+        throw new Error('userId and addressId are required');
+    }
+
+    const db = await connectDB();
+
+    const result = await db.collection('users').updateOne(
+        { _id: new ObjectId(userId) },
+        { $pull: { shippingAddresses: { addressId: addressId } } }
+    );
+
+    if (result.matchedCount === 0) {
+        throw new Error(`No user found with ID ${userId} or addressId ${addressId}`);
+    }
+
+    console.log(`Successfully deleted shipping address ${addressId} for user ID ${userId}`);
+    return result;
+}
+
+async function deleteUserProfile(requestBody) {
+    const { userId, accToken } = requestBody;
+    
+    // Validate the access token and get user info
+    const userInfo = await validateAccessTokenAndGetUserInfo(accToken);
+
+    if (!userId) {
+        throw new Error('userId is required');
+    }
+
+    const db = await connectDB();
+
+    const result = await db.collection('users').deleteOne(
+        { _id: new ObjectId(userId) }
+    );
+
+    if (result.deletedCount === 0) {
+        throw new Error(`No user found with ID ${userId}`);
+    }
+
+    console.log(`Successfully deleted user profile for user ID ${userId}`);
+    return result;
+}
+
+
 module.exports = {
     updateUserProfile,
     updateUserName,
     updateUserPremiumStatus,
     addUserShippingAddress,
     updateUserShippingAddress,
+    deleteUserShippingAddress,
+    deleteUserProfile
 };

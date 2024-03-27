@@ -31,10 +31,12 @@ const {
   updateUserName,
   addUserShippingAddress,
   updateUserShippingAddress,
+  deleteUserShippingAddress,
+  deleteUserProfile
 } = require("./Team1/userProfile");
 const {
   createPremiumMembership,
-  cancelPremiumMembership,
+  cancelPremiumMembersçhip,
 } = require("./Team1/membershipManagement.js");
 const { registerUser, loginUser } = require("./Team1/Reg_lgn/regLogin");
 const {
@@ -104,26 +106,42 @@ const server = http.createServer(async (req, res) => {
         const requestBody = JSON.parse(buffer);
         let result = null;
 
-        switch (trimmedPath) {
-          case "update-user-profile":
-            result = await updateUserProfile(requestBody);
-            res.writeHead(200, { "Content-Type": "application/json" });
-            res.end(
-              JSON.stringify({
-                message: "User Profile successfully updated",
-                data: result,
-              })
-            );
-            break;
-          // ...other PUT routes
-          default:
-            res.writeHead(404, { "Content-Type": "application/json" });
-            res.end(JSON.stringify({ message: "Not Found" }));
-            return; // Early return to prevent further execution
-        }
-      } else if (req.method === "POST") {
-        const requestBody = JSON.parse(buffer);
-        let result = null;
+            switch (trimmedPath) {
+                case "update-user-profile":
+                    result = await updateUserProfile(requestBody);
+                    res.writeHead(200, { "Content-Type": "application/json" });
+                    res.end(JSON.stringify({ message: "User Profile successfully updated", data: result }));
+                    break;
+                // ...other PUT routes
+                default:
+                    res.writeHead(404, { "Content-Type": "application/json" });
+                    res.end(JSON.stringify({ message: "Not Found" }));
+                    return; // Early return to prevent further execution
+            }
+        } else if (req.method === 'DELETE') {
+            const requestBody = JSON.parse(buffer);
+            let result = null;
+
+            switch (trimmedPath) {
+                case "delete-shipping-address":
+                    result = await deleteUserShippingAddress(requestBody);
+                    res.writeHead(200, { "Content-Type": "application/json" });
+                    res.end(JSON.stringify({ message: "Shipping address deleted successfully", data: result }));
+                    break;
+                case "delete-user-profile":
+                    result = await deleteUserProfile(requestBody);
+                    res.writeHead(200, { "Content-Type": "application/json" });
+                    res.end(JSON.stringify({ message: "User profile deleted successfully", data: result }));
+                    break;
+                // ...other DELETE routes
+                default:
+                    res.writeHead(404, { "Content-Type": "application/json" });
+                    res.end(JSON.stringify({ message: "Not Found" }));
+                    return; // Early return to prevent further execution
+            }
+        } else if (req.method === "POST") {
+            const requestBody = JSON.parse(buffer);
+            let result = null;
 
         switch (trimmedPath) {
           case "checkout":
