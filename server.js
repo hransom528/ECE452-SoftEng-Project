@@ -24,7 +24,7 @@ const {
     fetchTopRatedProductsByType,
 } = require("./Team3/UC9_Product_Performace_Insight.js");
 
-const { addToCart, removeFromCart } = require("./Team2/Cart.js");
+const { addToCart, removeFromCart, getCartDetails} = require("./Team2/Cart.js");
 
 const {
     updateUserProfile,
