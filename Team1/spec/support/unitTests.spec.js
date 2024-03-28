@@ -1,5 +1,5 @@
 const request = require("supertest");
-const server = require("../../server.js");
+const server = require("../../../server");
 
 // Team 1 Jasmine tests:
 
@@ -199,7 +199,7 @@ describe("Projec Unit Tests TEAM 1", () => {
   });
 });
 
-// jasmine problem:
+// jasmine problem, works fine on postman:
 // it("should allow user to update a shipping address if all information is filled out properly", async () => {
 //     //     const requestBody = {
 //     //       accToken: ACCESS_TOKEN,
