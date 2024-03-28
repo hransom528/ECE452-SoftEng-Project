@@ -300,27 +300,11 @@
     "rating": 3
   },
   {
-    "name": "ETHOS 50 lb. Selectable Dumbbell – Pair",
-    "description": "Comes in a pair of 2",
-    "brand": "ETHOS",
-    "type": "demo1",
-    "price": 314.99100000000004,
-    "stockQuantity": 10,
-    "specs": {
-      "weight": "50 lbs"
-    },
-    "trendingScore": 2,
-    "topTrending": false,
-    "rating": 4,
-    "discount": 10,
-    "originalPrice": 349.99
-  },
-  {
     "name": "Fitness Gear Pro Half Rack",
     "description": "Durable steel construction",
     "brand": "Pull-up/dip bar station",
     "type": "demo1",
-    "price": 449.99,
+    "price": 409.4909,
     "stockQuantity": 5,
     "specs": {
       "weightCapacity": "700 lbs",
@@ -328,34 +312,40 @@
     },
     "trendingScore": 2,
     "topTrending": false,
-    "rating": 1
+    "rating": 1,
+    "discount": 9,
+    "originalPrice": 449.99
   },
   {
     "name": "Marcy 150lb Stack Home Gym",
     "description": "The dual action press arms with independent motion allow for chest press and vertical butterfly exercises",
     "brand": "Marcy",
     "type": "Home Gym",
-    "price": 449.99,
+    "price": 359.992,
     "stockQuantity": 5,
     "specs": {
       "weight": "50 lbs"
     },
     "trendingScore": 2,
     "topTrending": false,
-    "rating": 4.5
+    "rating": 4.5,
+    "discount": 20,
+    "originalPrice": 449.99
   },
   {
     "name": "Fitness Gear Soft Medicine Ball",
     "description": "The dual action press arms with independent motion allow for chest press and vertical butterfly exercises",
     "brand": "Fitness Gear",
     "type": "Home Gym",
-    "price": 24.99,
+    "price": 19.992,
     "stockQuantity": 9,
     "specs": {
       "weight": "8 lbs"
     },
     "trendingScore": 1,
     "topTrending": false,
-    "rating": 4.8
+    "rating": 4.8,
+    "discount": 20,
+    "originalPrice": 24.99
   }
 ]
