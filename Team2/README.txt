@@ -22,7 +22,12 @@ Get Purchase History w/ curl:
 ------------
 Cart.js
 ------------
+This is an implementation of the Cart where a user can add or remove items based on the userID, productId, and quantity. 
+Additionally a user can retrieve their cart through a GET request. 
 
+// curl -X POST http://localhost:3000/remove-from-cart -H "Content-Type: application/json" -d '{"userId":"65fb26fd8ee7dfe76e1b0dcd", "productId":"65f8ede18c06f461ae617087", "quantityToRemove":50}'
+// curl -X POST http://localhost:3000/add-to-cart -H "Content-Type: application/json" -d '{"userId":"65fb26fd8ee7dfe76e1b0dcd", "productId":"65f8ede18c06f461ae617087", "quantityToRemove":50}'  
+//curl "http://localhost:3000/remove-from-cart?userId=65fb26fd8ee7dfe76e1b0dcd&productId=65f8ede18c06f461ae617087&quantityToRemove=50"
 
 ------------
 Watchlist.js
