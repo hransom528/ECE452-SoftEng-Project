@@ -24,7 +24,7 @@ const {
     fetchTopRatedProductsByType,
 } = require("./Team3/UC9_Product_Performace_Insight.js");
 
-const { addToCart, removeFromCart } = require("./Team2/Cart.js");
+const { addToCart, removeFromCart, getCartDetails} = require("./Team2/Cart.js");
 
 const {
     updateUserProfile,
@@ -749,7 +749,7 @@ const server = http.createServer(async (req, res) => {
                             res.end(JSON.stringify({ message: "Error fetching cart details", error: error.toString() }));
                     }
                     break;
-                    
+
                     case "get-watchlist":
                         const { userId: userIdToRetrieve } = requestBody;
                         try {
