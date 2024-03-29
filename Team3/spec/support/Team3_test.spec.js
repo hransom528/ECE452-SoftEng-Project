@@ -1,6 +1,9 @@
 const request = require("supertest");
 const server = require("../../server.js");
 const { connectDBandClose } = require('../../dbConfig');
+const { fetchTopRatedProducts, fetchTopRatedProductsByBrand, fetchTopRatedProductsByType } = require("./Team3/UC9_Product_Performace_Insight.js");
+const { updateListings, deleteListings } = require('./Team3/UC8update_listings.js'); // Replace with the correct path
+
 // team 3 jasmine tests:
 
 describe('Project Unit Tests Team 3', () => {
@@ -87,5 +90,162 @@ describe('Project Unit Tests Team 3', () => {
 
     expect(paymentResponse.statusCode).toEqual(200);
     expect(paymentResponse.body.message).toEqual("Payment processed successfully");
+  });
+});
+
+describe('Product Performance Insights', () => {
+  let db, client;
+
+  beforeEach(async () => {
+      const connection = await connectDBandClose();
+      db = connection.db;
+      client = connection.client;
+
+      // Insert some test products
+      await db.collection('products').insertMany([
+          { name: 'Product A', brand: 'BrandX', type: 'Type1', rating: 5 },
+          { name: 'Product B', brand: 'BrandX', type: 'Type2', rating: 4 },
+          // Add more products as needed for testing
+      ]);
+  });
+
+  afterEach(async () => {
+      // Delete the test products
+      await db.collection('products').deleteMany({});
+      await client.close();
+  });
+
+  it('should fetch top rated products', async () => {
+      const topRatedProducts = await fetchTopRatedProducts();
+      expect(topRatedProducts.length).toEqual(10);
+      // Add more assertions as needed
+  });
+
+  it('should fetch top rated products by brand', async () => {
+      const brand = 'BrandX';
+      const topRatedProductsByBrand = await fetchTopRatedProductsByBrand(brand);
+      expect(topRatedProductsByBrand.length).toEqual(5);
+      // Check if the products are from the correct brand
+  });
+
+  it('should fetch top rated products by type', async () => {
+      const type = 'Type1';
+      const topRatedProductsByType = await fetchTopRatedProductsByType(type);
+      expect(topRatedProductsByType.length).toEqual(5);
+      // Check if the products are of the correct type
+  });
+
+  it('should handle fetching when there are fewer products than requested', async () => {
+    const brand = 'BrandX';
+    // Assuming we want to fetch more products than are available
+    const limit = 100; 
+    const topRatedProducts = await fetchTopRatedProductsByBrand(brand, limit);
+    // The actual number of fetched products should not exceed the total number of products available
+    expect(topRatedProducts.length).toBeLessThanOrEqual(limit);
+  });
+
+  it('should correctly sort products by rating', async () => {
+    const topRatedProducts = await fetchTopRatedProducts();
+    let isSorted = true;
+    for (let i = 0; i < topRatedProducts.length - 1; i++) {
+        if (topRatedProducts[i].rating < topRatedProducts[i + 1].rating) {
+            isSorted = false;
+            break;
+        }
+    }
+    expect(isSorted).toBe(true);
+  });
+});
+
+describe('Listings Management', () => {
+  let db, client, productsCollection;
+
+  beforeEach(async () => {
+      const connection = await connectDBandClose();
+      db = connection.db;
+      client = connection.client;
+      productsCollection = db.collection('products');
+
+      // Insert some test products for update and delete operations
+      await productsCollection.insertMany([
+          { name: 'Product C', type: 'Type3', price: 20 },
+          { name: 'Product D', type: 'Type4', price: 30 }
+      ]);
+  });
+
+  afterEach(async () => {
+      await productsCollection.deleteMany({});
+      await client.close();
+  });
+
+  it('should update listings correctly', async () => {
+      const productsToUpdate = await productsCollection.find({}).toArray();
+      const productIds = productsToUpdate.map(product => product._id.toString());
+      const updateFields = { price: 25 };
+
+      const results = await updateListings(productIds, updateFields);
+      expect(results.length).toBe(productsToUpdate.length);
+
+      // Verify the update operation was successful
+      const updatedProducts = await productsCollection.find({}).toArray();
+      updatedProducts.forEach(product => {
+          expect(product.price).toBe(25);
+      });
+  });
+
+  it('should delete listings correctly', async () => {
+      const productsToDelete = await productsCollection.find({}).toArray();
+      const productIds = productsToDelete.map(product => product._id.toString());
+
+      const results = await deleteListings(productIds);
+      expect(results.length).toBe(productsToDelete.length);
+
+      // Verify the delete operation was successful
+      const remainingProducts = await productsCollection.find({}).toArray();
+      expect(remainingProducts.length).toBe(0);
+  });
+
+  // New test cases
+  it('should partially update listings correctly', async () => {
+      const productsToUpdate = await productsCollection.find({}).toArray();
+      const productIds = productsToUpdate.map(product => product._id.toString());
+      const updateFields = { price: 55 };
+
+      const results = await updateListings(productIds, updateFields);
+      expect(results.length).toBe(productsToUpdate.length);
+
+      // Verify only the specified fields were updated
+      const updatedProducts = await productsCollection.find({}).toArray();
+      updatedProducts.forEach(product => {
+          expect(product.price).toBe(55);
+      });
+  });
+
+  it('should remove fields from listings correctly', async () => {
+      const productsToUpdate = await productsCollection.find({}).toArray();
+      const productIds = productsToUpdate.map(product => product._id.toString());
+      const removeFields = ['type'];
+
+      const results = await updateListings(productIds, {}, removeFields);
+      expect(results.length).toBe(productsToUpdate.length);
+
+      // Verify the fields were removed
+      const updatedProducts = await productsCollection.find({}).toArray();
+      updatedProducts.forEach(product => {
+          expect(product.type).toBeUndefined();
+      });
+  });
+
+  it('should handle update with invalid product IDs', async () => {
+      const productIds = ['invalidId'];
+      const updateFields = { price: 65 };
+
+      await expectAsync(updateListings(productIds, updateFields)).toBeRejected();
+  });
+
+  it('should handle deletion with invalid product IDs', async () => {
+      const productIds = ['invalidId'];
+
+      await expectAsync(deleteListings(productIds)).toBeRejected();
   });
 });
