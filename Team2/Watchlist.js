@@ -6,14 +6,41 @@ const client = new MongoClient(MONGO_URI);
 const dbName = 'website';
 const watchlistCollection = 'watchList';
 
-async function addToWatchList(userId, productId) {
+async function getProduct(productId) {
+    try {
+        await client.connect();
+        const db = client.db(dbName);
+        const collection = db.collection('products');
+
+        const product = await collection.findOne({ _id: new ObjectId(productId) });
+
+        return product;
+    } catch (error) {
+        console.error('Database operation failed:', error);
+    } finally {
+        await client.close();
+    }
+}
+
+async function addToWatchlist(userId, productId) {
     try {
         console.log('Adding product to watchlist:', productId);
         await client.connect();
         const db = client.db(dbName);
-        const collection = db.collection(watchlistCollection);
+        const watchlistCollection = db.collection('watchList');
+        const productsCollection = db.collection('products');
 
-        await collection.updateOne(
+        // Fetch product details
+        const product = await productsCollection.findOne({ _id: new ObjectId(productId) });
+
+        // Check if product exists
+        if (!product) {
+            console.log('Product not found.');
+            return;
+        }
+
+        // Add product to watchlist
+        await watchlistCollection.updateOne(
             { userId: userId },
             { $addToSet: { products: productId } }, 
             { upsert: true }
@@ -26,13 +53,14 @@ async function addToWatchList(userId, productId) {
     }
 }
 
-async function removeFromWatchList(userId, productId) {
+async function removeFromWatchlist(userId, productId) {
     try {
         await client.connect();
         const db = client.db(dbName);
-        const collection = db.collection(watchlistCollection);
+        const watchlistCollection = db.collection('watchList');
 
-        await collection.updateOne(
+        // Remove product from watchlist
+        await watchlistCollection.updateOne(
             { userId: userId },
             { $pull: { products: productId } } 
         );
@@ -44,7 +72,8 @@ async function removeFromWatchList(userId, productId) {
     }
 }
 
-async function getWatchList(userId) {
+
+async function getWatchlist(userId) {
     try {
         await client.connect();
         const db = client.db(dbName);
@@ -58,7 +87,11 @@ async function getWatchList(userId) {
         }
 
         console.log('Watchlist retrieved:', watchlist.products);
-        return watchlist.products; 
+
+        // Fetch product details for each productId in the watchlist
+        const productDetails = await Promise.all(watchlist.products.map(productId => getProduct(productId)));
+
+        return productDetails;
     } catch (error) {
         console.error('Database operation failed:', error);
     } finally {
@@ -67,7 +100,7 @@ async function getWatchList(userId) {
 }
 
 module.exports = {
-    getWatchList,
-    removeFromWatchList,
-    addToWatchList
+    getWatchlist,
+    removeFromWatchlist,
+    addToWatchlist
 };

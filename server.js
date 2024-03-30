@@ -24,7 +24,7 @@ const {
     fetchTopRatedProductsByType,
 } = require("./Team3/UC9_Product_Performace_Insight.js");
 
-const { addToCart, removeFromCart } = require("./Team2/Cart.js");
+const { addToCart, removeFromCart, getCartDetails} = require("./Team2/Cart.js");
 
 const {
     updateUserProfile,
@@ -52,7 +52,7 @@ const {
 } = require("./Team4/Product_Review.js");
 const productFilterQuery = require("./Team4/Filter_Search.js");
 const { checkout } = require("./Team2/Checkout.js");
-const {addToWatchList,removeFromWatchList,getWatchList} = require("./Team2/Watchlist.js");
+const {addToWatchlist,removeFromWatchlist,getWatchlist} = require("./Team2/Watchlist.js");
 
 let responseSent = false;
 let result;
@@ -238,35 +238,31 @@ const server = http.createServer(async (req, res) => {
                 let result = null;
 
                 switch (trimmedPath) {
-                    case "add-to-watchlist":
-                        const { userId: userIdToAdd, productIdToAdd } = requestBody; 
-                        try {
-                            // Assuming you have the addToWatchList function available and properly imported
-                            // You need to adjust this part according to your addToWatchList function
-                            await addToWatchList(userIdToAdd, productIdToAdd); 
-                            res.writeHead(200, { "Content-Type": "application/json" });
-                            res.end(JSON.stringify({ message: "Product added to watchlist" }));
-                        } catch (error) {
-                            console.error("Error adding product to watchlist:", error);
-                            res.writeHead(500, { "Content-Type": "application/json" });
-                            res.end(JSON.stringify({ error: "Internal Server Error" }));
-                        }
-                        return;
+                    case 'add-to-watchlist':
+                    const { userId: userIdToAdd, productId: productIdToAdd } = requestBody; 
+                    try {
+                        await addToWatchlist(userIdToAdd, productIdToAdd); 
+                        res.writeHead(200, { "Content-Type": "application/json" });
+                        res.end(JSON.stringify({ message: "Product added to watchlist" }));
+                    } catch (error) {
+                        console.error("Error adding product to watchlist:", error);
+                        res.writeHead(500, { "Content-Type": "application/json" });
+                        res.end(JSON.stringify({ error: "Internal Server Error" }));
+                    }
+                    return;
 
-                    
-
-                    case "remove-from-watchlist":
-                        const { userId: userIdToRemove, productIdToRemove } = requestBody; 
-                        try {
-                            await removeFromWatchList(userIdToRemove, productIdToRemove); 
-                            res.writeHead(200, { "Content-Type": "application/json" });
-                            res.end(JSON.stringify({ message: "Product removed from watchlist" }));
-                        } catch (error) {
-                            console.error("Error removing product from watchlist:", error);
-                            res.writeHead(500, { "Content-Type": "application/json" });
-                            res.end(JSON.stringify({ error: "Internal Server Error" }));
-                        }
-                        return;
+                case 'remove-from-watchlist':
+                    const { userId: userIdToRemove, productId: productIdToRemove } = requestBody; 
+                    try {
+                        await removeFromWatchlist(userIdToRemove, productIdToRemove); 
+                        res.writeHead(200, { "Content-Type": "application/json" });
+                        res.end(JSON.stringify({ message: "Product removed from watchlist" }));
+                    } catch (error) {
+                        console.error("Error removing product from watchlist:", error);
+                        res.writeHead(500, { "Content-Type": "application/json" });
+                        res.end(JSON.stringify({ error: "Internal Server Error" }));
+                    }
+                    return;
 
                     case "checkout":
                         const { userId, cartId, address, paymentToken, stripeCustomerId } = requestBody;
@@ -781,13 +777,13 @@ const server = http.createServer(async (req, res) => {
                     case "get-watchlist":
                         const { userId: userIdToRetrieve } = requestBody;
                         try {
-                            const watchlist = await getWatchList(userIdToRetrieve);
-                            if (watchlist.length === 0) {
+                            const watchList = await getWatchlist(userIdToRetrieve);
+                            if (watchList.length === 0) {
                                 res.writeHead(404, { "Content-Type": "application/json" }); // Not Found status code
                                 res.end(JSON.stringify({ message: "Watchlist not found for this user" }));
                             } else {
                                 res.writeHead(200, { "Content-Type": "application/json" });
-                                res.end(JSON.stringify({ watchlist }));
+                                res.end(JSON.stringify({ watchList }));
                             }
                         } catch (error) {
                             console.error("Error retrieving watchlist:", error);
