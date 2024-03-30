@@ -8,7 +8,6 @@ const watchlistCollection = 'watchList';
 
 async function addToWatchList(userId, productId) {
     try {
-        console.log('Adding product to watchlist:', productId);
         await client.connect();
         const db = client.db(dbName);
         const collection = db.collection(watchlistCollection);
