@@ -24,7 +24,7 @@ const {
     fetchTopRatedProductsByType,
 } = require("./Team3/UC9_Product_Performace_Insight.js");
 
-const { addToCart, removeFromCart } = require("./Team2/Cart.js");
+const { addToCart, removeFromCart, getCartDetails} = require("./Team2/Cart.js");
 
 const {
     updateUserProfile,
@@ -237,8 +237,8 @@ const server = http.createServer(async (req, res) => {
                     return;
 
                     case "checkout":
-                        const { userId, cartId, address, paymentToken } = requestBody;
-                        await checkout(userId, cartId, address, paymentToken);
+                        const { userId, cartId, address, paymentToken, stripeCustomerId } = requestBody;
+                        await checkout(userId, cartId, address, paymentToken, stripeCustomerId);
                         result = { message: "Checkout successful" };
                         break;
                     case "verify-card-details":
@@ -728,6 +728,24 @@ const server = http.createServer(async (req, res) => {
                 let result = null;
 
                 switch (trimmedPath) {
+
+                    case "fetch-cart-details":
+                        try {
+                            const userId = parsedUrl.query.userId; // Assuming parsedUrl is defined earlier
+                
+                            const cartDetails = await getCartDetails(userId);
+                            res.writeHead(200, { "Content-Type": "application/json" });
+                            res.end(JSON.stringify({
+                                message: "Cart details fetched successfully",
+                                data: cartDetails,
+                        }));
+                    } catch (error) {
+                            console.error("Error fetching cart details:", error);
+                            res.writeHead(500, { "Content-Type": "application/json" });
+                            res.end(JSON.stringify({ message: "Error fetching cart details", error: error.toString() }));
+                    }
+                    break;
+                    
                     case "get-watchlist":
                         const { userId: userIdToRetrieve } = requestBody;
                         try {
