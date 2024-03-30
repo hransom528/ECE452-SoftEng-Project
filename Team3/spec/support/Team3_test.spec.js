@@ -1,8 +1,9 @@
+require('dotenv').config();
 const request = require("supertest");
-const server = require("../../server.js");
-const { connectDBandClose } = require('../../dbConfig');
-const { fetchTopRatedProducts, fetchTopRatedProductsByBrand, fetchTopRatedProductsByType } = require("./Team3/UC9_Product_Performace_Insight.js");
-const { updateListings, deleteListings } = require('./Team3/UC8update_listings.js'); // Replace with the correct path
+const server = require('../../../server.js');
+const { connectDBandClose } = require('../../../dbConfig');
+const { fetchTopRatedProducts, fetchTopRatedProductsByBrand, fetchTopRatedProductsByType } = require("../../UC9_Product_Performace_Insight.js");
+const { updateListings, deleteListings } = require('../../UC8update_listings.js'); // Replace with the correct path
 
 // team 3 jasmine tests:
 
