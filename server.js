@@ -65,12 +65,40 @@ const server = http.createServer(async (req, res) => {
     const decoder = new StringDecoder("utf-8");
     let buffer = "";
 
+    // Log HTTP method, request URL, and headers
+    console.log(`HTTP Method: ${req.method}`);
+    console.log(`Request URL: ${req.url}`);
+    console.log(`Headers: ${JSON.stringify(req.headers, null, 2)}`);
+    // Assuming the buffer contains the full request body
+    console.log(`Request Body: ${buffer}`);    
+
     req.on("data", (data) => {
         buffer += decoder.write(data);
     });
 
     req.on("end", async () => {
         buffer += decoder.end();
+        console.log(`Request Body: ${buffer}`);
+
+        // Wrap res.write and res.end to capture and log response details
+        const originalWrite = res.write.bind(res);
+        const originalEnd = res.end.bind(res);
+        let responseBody = '';
+
+        res.write = (chunk, ...args) => {
+            responseBody += chunk;
+            originalWrite(chunk, ...args);
+        };
+
+        res.end = (chunk, ...args) => {
+            if (chunk) responseBody += chunk;
+            // Log the response just before sending it
+            console.log(`Response Status: ${res.statusCode}`);
+            console.log(`Response Headers: ${JSON.stringify(res.getHeaders())}`);
+            console.log(`Response Body: ${responseBody}`);
+
+            originalEnd(chunk, ...args);
+        };
         try {
             if (req.method === "PATCH") {
                 const requestBody = JSON.parse(buffer);
@@ -732,6 +760,24 @@ const server = http.createServer(async (req, res) => {
                 let result = null;
 
                 switch (trimmedPath) {
+
+                    case "fetch-cart-details":
+                        try {
+                            const userId = parsedUrl.query.userId; // Assuming parsedUrl is defined earlier
+                
+                            const cartDetails = await getCartDetails(userId);
+                            res.writeHead(200, { "Content-Type": "application/json" });
+                            res.end(JSON.stringify({
+                                message: "Cart details fetched successfully",
+                                data: cartDetails,
+                        }));
+                    } catch (error) {
+                            console.error("Error fetching cart details:", error);
+                            res.writeHead(500, { "Content-Type": "application/json" });
+                            res.end(JSON.stringify({ message: "Error fetching cart details", error: error.toString() }));
+                    }
+                    break;
+                    
                     case "get-watchlist":
                         const { userId: userIdToRetrieve } = requestBody;
                         try {
