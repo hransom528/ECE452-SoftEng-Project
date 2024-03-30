@@ -3,11 +3,10 @@
 
 const { MongoClient } = require('mongodb');
 const { verifyAddress } = require('./GoogleAddressValidation.js');
-const { verifyCardAndUpdateDB, createStripeCustomerAndUpdateDB } = require('../Team3/stripe.js');
 const { ObjectId } = require('mongodb');
 
 const uri = 'mongodb+srv://admin:SoftEng452@cluster0.qecmfqe.mongodb.net/website?retryWrites=true&w=majority&appName=Cluster0';
-const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
+const client = new MongoClient(uri);
 
 async function checkout(userId, cartId, address, paymentToken, stripeCustomerId) {
     try {
