@@ -194,6 +194,8 @@ describe('Listings Management', () => {
       });
   });
 
+  /* TODO: Make this use a test collection or backup products collection
+    Do NOT enable this test until this has been fixed
   it('should delete listings correctly', async () => {
       const productsToDelete = await productsCollection.find({}).toArray();
       const productIds = productsToDelete.map(product => product._id.toString());
@@ -204,7 +206,7 @@ describe('Listings Management', () => {
       // Verify the delete operation was successful
       const remainingProducts = await productsCollection.find({}).toArray();
       expect(remainingProducts.length).toBe(0);
-  });
+  });*/
 
   // New test cases
   it('should partially update listings correctly', async () => {
