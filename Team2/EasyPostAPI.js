@@ -1,125 +1,87 @@
+// shipments.js
 const { ObjectId } = require('mongodb');
 const { connectDB } = require('../dbConfig');
 
-// Function to verify address
-async function verifyAddress(address) {
+// List shipments
+async function listShipments(req, res) {
     try {
-        if (!address || typeof address !== 'object') {
-            throw new Error('Invalid address object');
-        }
-
-        const isValid = true;
-
-        return { ...address, isValid };
-    } catch (error) {
-        console.error('Error verifying address:', error);
-        throw new Error('Failed to verify address');
+        const db = await connectDB();
+        const shipmentsCollection = db.collection('shipments');
+        const shipments = await shipmentsCollection.find({}).toArray();
+        res.status(200).json(shipments);
+    } catch (err) {
+        console.error('Error listing shipments:', err);
+        res.status(500).send('Internal Server Error');
     }
 }
 
-// Function to standardize address
-async function standardizeAddress(address) {
+// Create a shipment
+async function createShipment(req, res) {
     try {
-        if (!address || typeof address !== 'object') {
-            throw new Error('Invalid address object');
-        }
-
-        const standardizedAddress = {
-            ...address,
-            streetAddress: address.streetAddress.toUpperCase(),
-            city: address.city.toUpperCase(),
-            State: address.State.toUpperCase()
-        };
-
-        return standardizedAddress;
-    } catch (error) {
-        console.error('Error standardizing address:', error);
-        throw new Error('Failed to standardize address');
+        const newShipment = req.body;
+        const db = await connectDB();
+        const shipmentsCollection = db.collection('shipments');
+        const result = await shipmentsCollection.insertOne(newShipment);
+        res.status(201).json(result.ops[0]);
+    } catch (err) {
+        console.error('Error creating shipment:', err);
+        res.status(400).send('Bad Request');
     }
 }
 
-// Function to geocode address
-async function geocodeAddress(address) {
+// Retrieve a shipment
+async function retrieveShipment(req, res) {
     try {
-        if (!address || typeof address !== 'object') {
-            throw new Error('Invalid address object');
+        const shipmentId = req.params.id;
+        const db = await connectDB();
+        const shipmentsCollection = db.collection('shipments');
+        const shipment = await shipmentsCollection.findOne({ _id: ObjectId(shipmentId) });
+        if (!shipment) {
+            res.status(404).send('Shipment not found');
+            return;
         }
-
-        const latitude = 0;
-        const longitude = 0;
-
-        return { latitude, longitude };
-    } catch (error) {
-        console.error('Error geocoding address:', error);
-        throw new Error('Failed to geocode address');
+        res.status(200).json(shipment);
+    } catch (err) {
+        console.error('Error retrieving shipment:', err);
+        res.status(500).send('Internal Server Error');
     }
 }
 
-// Function to extract address components
-async function extractAddressComponents(address) {
+// Track a shipment
+async function trackShipment(req, res) {
     try {
-        if (!address || typeof address !== 'object') {
-            throw new Error('Invalid address object');
+        const shipmentId = req.params.id;
+        const db = await connectDB();
+        const shipmentsCollection = db.collection('shipments');
+        
+        // Find the shipment by ID
+        const shipment = await shipmentsCollection.findOne({ _id: ObjectId(shipmentId) });
+        
+        // Check if shipment exists
+        if (!shipment) {
+            res.status(404).send('Shipment not found');
+            return;
         }
-
-        const addressComponents = {
-            streetAddress: address.streetAddress,
-            city: address.city,
-            State: address.State,
-            postalCode: address.postalCode
-        };
-
-        return addressComponents;
-    } catch (error) {
-        console.error('Error extracting address components:', error);
-        throw new Error('Failed to extract address components');
-    }
-}
-
-// Function to check address completeness
-async function checkAddressCompleteness(address) {
-    try {
-        if (!address || typeof address !== 'object') {
-            throw new Error('Invalid address object');
+        
+        // Check if shipment is available for tracking
+        if (shipment.status !== 'shipped') {
+            res.status(400).send('Shipment is not available for tracking');
+            return;
         }
-
-        // Check if all required address fields are present
-        const isComplete = !!(
-            address.streetAddress &&
-            address.city &&
-            address.State &&
-            address.postalCode
-        );
-
-        return { isComplete };
+        
+        // Fetch tracking information from shipment object
+        const trackingInfo = shipment.trackingInfo;
+        
+        res.status(200).json(trackingInfo);
     } catch (error) {
-        console.error('Error checking address completeness:', error);
-        throw new Error('Failed to check address completeness');
-    }
-}
-
-// Function to retrieve address history
-async function retrieveAddressHistory(addressId) {
-    try {
-        if (!addressId || typeof addressId !== 'string') {
-            throw new Error('Invalid address ID');
-        }
-
-        const db = await connectDB(); // Call connectDB from dbConfig
-        const addressHistory = await db.collection('address_history').find({ addressID: addressId }).toArray();
-
-        return addressHistory;
-    } catch (error) {
-        console.error('Error retrieving address history:', error);
-        throw new Error('Failed to retrieve address history');
+        console.error('Error tracking shipment:', error);
+        res.status(500).send('Internal Server Error');
     }
 }
 
 module.exports = {
-    verifyAddress,
-    standardizeAddress,
-    geocodeAddress,
-    extractAddressComponents,
-    checkAddressCompleteness,
-    retrieveAddressHistory
+    listShipments,
+    createShipment,
+    retrieveShipment,
+    trackShipment
 };
