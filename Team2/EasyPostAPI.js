@@ -1,96 +1,125 @@
-const { MongoClient, ObjectId } = require('mongodb');
-const { connectDB } = require('../dbConfig.js');
-const mongoURI = process.env.MONGO_URI;
+const { ObjectId } = require('mongodb');
+const { connectDB } = require('../dbConfig');
 
-// Connect to MongoDB
-async function connectToMongoDB() {
+// Function to verify address
+async function verifyAddress(address) {
     try {
-        const client = await MongoClient.connect(mongoURI);
-        console.log('Connected to MongoDB');
-        return client.db(); // Returns the default database
+        if (!address || typeof address !== 'object') {
+            throw new Error('Invalid address object');
+        }
+
+        const isValid = true;
+
+        return { ...address, isValid };
     } catch (error) {
-        console.error('Error connecting to MongoDB:', error);
-        throw error;
+        console.error('Error verifying address:', error);
+        throw new Error('Failed to verify address');
     }
 }
 
-// List shipments
-async function listShipments(req, res, db) {
+// Function to standardize address
+async function standardizeAddress(address) {
     try {
-        const shipmentsCollection = db.collection('shipments');
-        const shipments = await shipmentsCollection.find({}).toArray();
-        res.status(200).json(shipments);
-    } catch (err) {
-        console.error('Error listing shipments:', err);
-        res.status(500).send('Internal Server Error');
-    }
-}
-
-// Create a shipment
-async function createShipment(req, res, db) {
-    try {
-        const newShipment = req.body;
-        const shipmentsCollection = db.collection('shipments');
-        const result = await shipmentsCollection.insertOne(newShipment);
-        res.status(201).json(result.ops[0]);
-    } catch (err) {
-        console.error('Error creating shipment:', err);
-        res.status(400).send('Bad Request');
-    }
-}
-
-// Retrieve a shipment
-async function retrieveShipment(req, res, db) {
-    try {
-        const shipmentId = req.params.id;
-        const shipmentsCollection = db.collection('shipments');
-        const shipment = await shipmentsCollection.findOne({ _id: ObjectId(shipmentId) });
-        if (!shipment) {
-            res.status(404).send('Shipment not found');
-            return;
+        if (!address || typeof address !== 'object') {
+            throw new Error('Invalid address object');
         }
-        res.status(200).json(shipment);
-    } catch (err) {
-        console.error('Error retrieving shipment:', err);
-        res.status(500).send('Internal Server Error');
-    }
-}
 
-// Track a shipment
-async function trackShipment(req, res, db) {
-    try {
-        const shipmentId = req.params.id;
-        const shipmentsCollection = db.collection('shipments');
-        
-        // Find the shipment by ID
-        const shipment = await shipmentsCollection.findOne({ _id: ObjectId(shipmentId) });
-        
-        // Check if shipment exists
-        if (!shipment) {
-            res.status(404).send('Shipment not found');
-            return;
-        }
-        
-        // Check if shipment is available for tracking
-        if (shipment.status !== 'shipped') {
-            res.status(400).send('Shipment is not available for tracking');
-            return;
-        }
-        
-        // Fetch tracking information from shipment object
-        const trackingInfo = shipment.trackingInfo;
-        
-        res.status(200).json(trackingInfo);
+        const standardizedAddress = {
+            ...address,
+            streetAddress: address.streetAddress.toUpperCase(),
+            city: address.city.toUpperCase(),
+            State: address.State.toUpperCase()
+        };
+
+        return standardizedAddress;
     } catch (error) {
-        console.error('Error tracking shipment:', error);
-        res.status(500).send('Internal Server Error');
+        console.error('Error standardizing address:', error);
+        throw new Error('Failed to standardize address');
+    }
+}
+
+// Function to geocode address
+async function geocodeAddress(address) {
+    try {
+        if (!address || typeof address !== 'object') {
+            throw new Error('Invalid address object');
+        }
+
+        const latitude = 0;
+        const longitude = 0;
+
+        return { latitude, longitude };
+    } catch (error) {
+        console.error('Error geocoding address:', error);
+        throw new Error('Failed to geocode address');
+    }
+}
+
+// Function to extract address components
+async function extractAddressComponents(address) {
+    try {
+        if (!address || typeof address !== 'object') {
+            throw new Error('Invalid address object');
+        }
+
+        const addressComponents = {
+            streetAddress: address.streetAddress,
+            city: address.city,
+            State: address.State,
+            postalCode: address.postalCode
+        };
+
+        return addressComponents;
+    } catch (error) {
+        console.error('Error extracting address components:', error);
+        throw new Error('Failed to extract address components');
+    }
+}
+
+// Function to check address completeness
+async function checkAddressCompleteness(address) {
+    try {
+        if (!address || typeof address !== 'object') {
+            throw new Error('Invalid address object');
+        }
+
+        // Check if all required address fields are present
+        const isComplete = !!(
+            address.streetAddress &&
+            address.city &&
+            address.State &&
+            address.postalCode
+        );
+
+        return { isComplete };
+    } catch (error) {
+        console.error('Error checking address completeness:', error);
+        throw new Error('Failed to check address completeness');
+    }
+}
+
+// Function to retrieve address history
+async function retrieveAddressHistory(addressId) {
+    try {
+        if (!addressId || typeof addressId !== 'string') {
+            throw new Error('Invalid address ID');
+        }
+
+        const db = await connectDB(); // Call connectDB from dbConfig
+        const addressHistory = await db.collection('address_history').find({ addressID: addressId }).toArray();
+
+        return addressHistory;
+    } catch (error) {
+        console.error('Error retrieving address history:', error);
+        throw new Error('Failed to retrieve address history');
     }
 }
 
 module.exports = {
-    connectToMongoDB,
-    listShipments,
-    createShipment,
-    retrieveShipment,
-    trackShipment
+    verifyAddress,
+    standardizeAddress,
+    geocodeAddress,
+    extractAddressComponents,
+    checkAddressCompleteness,
+    retrieveAddressHistory
 };
