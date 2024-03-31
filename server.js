@@ -36,7 +36,7 @@ const {
 } = require("./Team1/userProfile");
 const {
     createPremiumMembership,
-    cancelPremiumMembersçhip,
+    cancelPremiumMembership,
 } = require("./Team1/membershipManagement.js");
 const { registerUser, loginUser } = require("./Team1/Reg_lgn/regLogin");
 const {
@@ -69,8 +69,6 @@ const server = http.createServer(async (req, res) => {
     console.log(`HTTP Method: ${req.method}`);
     console.log(`Request URL: ${req.url}`);
     console.log(`Headers: ${JSON.stringify(req.headers, null, 2)}`);
-    // Assuming the buffer contains the full request body
-    console.log(`Request Body: ${buffer}`);    
 
     req.on("data", (data) => {
         buffer += decoder.write(data);
