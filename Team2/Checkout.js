@@ -23,9 +23,9 @@ async function checkout(userId, cartId, address, paymentToken, stripeCustomerId)
         const verifiedAddress = await verifyUserAddress(address);
         // Verify the card with the payment method ID and user's Stripe ID
 
-        //const verificationResult = await verifyCardAndUpdateDB(userId, stripeCustomerId, paymentToken); //Team 3 implmenation of stripe verifcation gives me errors
+        //const {verificationResult, paymentMethodId} = await verifyCardAndUpdateDB(userId, stripeCustomerId, paymentToken); //Team 3 implmenation of stripe verifcation gives me errors
         const verificationResult = true; //Lets just say the card is valid (:
-
+        const paymentMethodId = "pm_1P0R64IYD2Ak4FLoH2m7gmqa"; //makeshift payment method
         // process a payment for a Stripe customer using a specific payment method
         createPaymentAndProcessing(stripeCustomerId, paymentMethodId, amountInDollars);
 
