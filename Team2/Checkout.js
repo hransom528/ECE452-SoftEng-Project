@@ -4,7 +4,7 @@
 const { MongoClient } = require('mongodb');
 const { verifyAddress } = require('./GoogleAddressValidation.js');
 const { ObjectId } = require('mongodb');
-
+const {createPaymentAndProcessing, verifyCardAndUpdateDB} = require('../Team3/stripe.js');
 const uri = 'mongodb+srv://admin:SoftEng452@cluster0.qecmfqe.mongodb.net/website?retryWrites=true&w=majority&appName=Cluster0';
 const client = new MongoClient(uri);
 
@@ -14,7 +14,7 @@ async function checkout(userId, cartId, address, paymentToken, stripeCustomerId)
         const database = client.db('website');
 
         // Verify cart items
-        const itemsInStock = await verifyStock(database, cartId);
+        const {itemsInStock, amountInDollars} = await verifyStock(database, cartId);
         if (!itemsInStock) {
             throw new Error('One or more items in the cart are out of stock');
         }
@@ -25,6 +25,10 @@ async function checkout(userId, cartId, address, paymentToken, stripeCustomerId)
 
         //const verificationResult = await verifyCardAndUpdateDB(userId, stripeCustomerId, paymentToken); //Team 3 implmenation of stripe verifcation gives me errors
         const verificationResult = true; //Lets just say the card is valid (:
+
+        // process a payment for a Stripe customer using a specific payment method
+        createPaymentAndProcessing(stripeCustomerId, paymentMethodId, amountInDollars);
+
         if (!verificationResult.success) {
             return { success: false, message: "Failed to verify the card." };
         }
@@ -53,6 +57,7 @@ async function verifyStock(database, cartId) {
 
     // Retrieve cart details
     const cart = await cartsCollection.findOne({ _id: new ObjectId(cartId) });
+    const cartTotal = cart.cartSubTotal;
     if (!cart) {
         throw new Error('Cart not found');
     }
@@ -72,7 +77,7 @@ async function verifyStock(database, cartId) {
         }
     }
 
-    return allItemsInStock;
+    return allItemsInStock, cartTotal;
 }
 async function verifyUserAddress(address) {
     try {
@@ -126,3 +131,4 @@ async function getPurchaseById(purchaseId) {
 
 
 module.exports = { checkout , getPurchaseById };
+

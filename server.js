@@ -263,9 +263,18 @@ const server = http.createServer(async (req, res) => {
                     return;
 
                     case "checkout":
+                    
                         const { userId, cartId, address, paymentToken, stripeCustomerId } = requestBody;
-                        await checkout(userId, cartId, address, paymentToken, stripeCustomerId);
-                        result = { message: "Checkout successful" };
+                        try{
+                            await checkout(userId, cartId, address, paymentToken, stripeCustomerId);
+                            result = { message: "Checkout successful" };
+                        }
+                        catch(error){
+                            console.error("Error during checkout:", error);
+                            res.writeHead(500, { "Content-Type": "application/json" });
+                            res.end(JSON.stringify({ error: "Internal Server Error" }));
+                        }
+                        
                         break;
                     case "verify-card-details":
                         try {
