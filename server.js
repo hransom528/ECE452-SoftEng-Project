@@ -261,7 +261,20 @@ const server = http.createServer(async (req, res) => {
                         res.end(JSON.stringify({ error: "Internal Server Error" }));
                     }
                     return;
+            case "review-product":
 
+            try {
+              const reviewData = JSON.parse(buffer); // Parse the JSON body
+              const { productName, title, rating, review } = reviewData; // Destructure the review data
+              const insertedId = await reviewProduct(productName, title, rating, review); // Call reviewProduct function
+              res.writeHead(200, { "Content-Type": "application/json" });
+              res.end(JSON.stringify({ message: "Review added successfully", reviewId: insertedId }));
+            } catch (error) {
+              console.error("Error reviewing product:", error);
+              res.writeHead(400, { "Content-Type": "application/json" });
+              res.end(JSON.stringify({ message: "Failed to add review", error: error.toString() }));
+            }
+            break;
                     case "checkout":
                     
                         const { userId, cartId, address, paymentToken, stripeCustomerId } = requestBody;
