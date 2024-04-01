@@ -16,7 +16,7 @@ const MONGO_URI = 'mongodb+srv://admin:SoftEng452@cluster0.qecmfqe.mongodb.net/w
 mongoose.connect(MONGO_URI)
   .then(() => console.log('Successfully connected to MongoDB.'))
   .catch(err => console.error('Connection error', err));
-
+// thi is a change
 
 const cartItemSchema = new mongoose.Schema({
 
