@@ -160,7 +160,7 @@ async function addUserShippingAddress(requestBody) {
     }
     
     console.log(`Successfully added a new shipping address for user ID ${userId}`);
-    return result;
+    return { ...result, addressId: newAddress.addressId }; // Include the addressId
 }
 
 async function updateUserShippingAddress(requestBody) {
