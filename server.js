@@ -793,7 +793,7 @@ const server = http.createServer(async (req, res) => {
                             res.end(JSON.stringify({ message: "Error fetching cart details", error: error.toString() }));
                     }
                     break;
-                    
+
                     case "get-watchlist":
                         const { userId: userIdToRetrieve } = requestBody;
                         try {
