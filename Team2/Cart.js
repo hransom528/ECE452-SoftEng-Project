@@ -51,7 +51,7 @@ const cartSchema = new mongoose.Schema({
         }
     });
 
-
+// this is a change here
 const productSchema = new mongoose.Schema({
     price: Number, // Price field
         // Other fields like description, category, etc.
