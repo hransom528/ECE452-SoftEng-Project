@@ -1,351 +1,148 @@
 [
   {
-    "name": "Fitness Gear Olympic Curl Bar",
-    "description": "This chrome solid steel bar accommodates 2” Olympic-style plates. Angling provides optimal comfort for the elbows and wrists. Especially effective in building the upper arm muscles and forearms.",
-    "brand": "Fitness Gear",
-    "type": "Barbell",
-    "price": 69.99,
-    "stockQuantity": 10,
+    "name": "Brooks High-quality Treadmill",
+    "description": "The high-quality iron design is perfect for any home gym setup.",
+    "brand": "Brooks",
+    "type": "Treadmill",
+    "price": 284,
+    "stockQuantity": 23,
     "specs": {
-      "weight": "16 lbs",
-      "material": "Chrome",
-      "color": "Silver"
-    },
-    "trendingScore": 4.5,
-    "topTrending": false,
-    "rating": 4.2
-  },
-  {
-    "name": "Fitness Gear Cast Hex Dumbbell- Single",
-    "description": "This is a dumbbell",
-    "brand": "Dicks",
-    "type": "bench workout",
-    "price": 149.99,
-    "stockQuantity": 15,
-    "specs": {
-      "weight": "150 lbs",
-      "color": "Black",
-      "material": "carbon steel"
-    },
-    "trendingScore": 4.6,
-    "topTrending": true,
-    "rating": 4.9
-  },
-  {
-    "name": "Marcy 6' Chrome Bar",
-    "description": "Complete with deep threads and safety spin locks to maximize plate stability and safety during lifts, the Marcy® 6’ Chrome Bar secures standard sized weights to reduce movement and provide you with fluid performance on each exercise.",
-    "brand": "Marcy",
-    "type": "Barbell",
-    "price": 64.99,
-    "stockQuantity": 12,
-    "specs": {
-      "weight": "\"10 lbs\"",
-      "material": "Chrome",
-      "color": "Silver"
-    },
-    "trendingScore": 4,
-    "topTrending": false,
-    "rating": 4.3
-  },
-  {
-    "name": "Fitness Gear Pro GHD Bench",
-    "description": "This is a bench",
-    "brand": "Dicks",
-    "type": "bench workout",
-    "price": 149.99,
-    "stockQuantity": 15,
-    "specs": {
-      "weight": "150 lbs",
-      "color": "Black",
-      "material": "carbon steel"
-    },
-    "trendingScore": 4.6,
-    "topTrending": true,
-    "rating": 4.9
-  },
-  {
-    "name": "Horizon Fitness 7.0AT Studio Series Treadmill",
-    "description": "This is a cardio machine",
-    "brand": "Horizon",
-    "type": "Pre/Post workout",
-    "price": 800,
-    "stockQuantity": 10,
-    "specs": {
-      "weight": "200 lbs",
-      "color": "Black",
-      "material": "carbon steel"
-    },
-    "trendingScore": "3.5",
-    "topTrending": true,
-    "rating": 4.9
-  },
-  {
-    "name": "Fitness Gear Multi-Purpose Mat",
-    "description": "The Fitness Gear® Multi-Purpose Mat helps protect floors and carpets from equipment damage and is great for a variety of floor exercises. Non-slip and easy to clean, the mat is constructed of durable 1/4 inches thick, closed cell vinyl that is safe and is virtually odorless. Fits most treadmills, elliptical machines and recumbent bikes to reduce equipment noise and vibration. Rolls up for storage convenience.",
-    "brand": "Fitness Gear",
-    "type": "Mat",
-    "price": 1335.99,
-    "stockQuantity": 50,
-    "specs": {
-      "weight": "5 lbs",
-      "material": "Styrofoam",
-      "color": "Black"
+      "weight": "14 lbs"
     },
     "trendingScore": 6,
-    "topTrending": false,
-    "rating": 332
+    "topTrending": true,
+    "rating": 3,
+    "discount": 20,
+    "originalPrice": 355
   },
   {
-    "name": "Schwinn 190 Upright Exercise Bike",
-    "description": "Interact, train, and compete against others in a virtual world that motivates you at every mile (separate digital subscription required)",
-    "brand": "Schwinn",
+    "name": "Puma Multi-purpose Treadmill",
+    "description": "The multi-purpose iron design is perfect for any home gym setup.",
+    "brand": "Puma",
+    "type": "Treadmill",
+    "price": 223.20000000000002,
+    "stockQuantity": 47,
+    "specs": {
+      "weight": "34 lbs"
+    },
+    "trendingScore": 8,
+    "topTrending": true,
+    "rating": 5,
+    "discount": 20,
+    "originalPrice": 279
+  },
+  {
+    "name": "Lululemon Foldable Exercise Bike",
+    "description": "The foldable iron design is perfect for any home gym setup.",
+    "brand": "Lululemon",
     "type": "Exercise Bike",
-    "price": 449.98,
-    "stockQuantity": 30,
+    "price": 17,
+    "stockQuantity": 45,
     "specs": {
-      "weight": "50 lbs",
-      "material": "Plastic",
-      "color": "White"
+      "weight": "36 lbs"
     },
-    "trendingScore": 4,
+    "trendingScore": 2,
     "topTrending": false,
-    "rating": 4.6
+    "rating": 2
   },
   {
-    "name": "Nike Kettleball",
-    "description": "Crafted for versatility and built to last, the Nike Kettlebell is a powerhouse of fitness equipment. With a sleek black powder-coated finish, the kettlebell ensures a smooth and secure grip, with or without chalk. Its rock-solid, wobble-free base keeps you in control during every workout, while vibrant color stripes make size identification a breeze. Take your fitness to the next level with this training essential. JUST DO IT.",
-    "brand": "Nike",
-    "type": "Kettleball",
-    "price": 55,
-    "stockQuantity": 20,
+    "name": "Brooks Compact Bench",
+    "description": "The compact iron design is perfect for any home gym setup.",
+    "brand": "Brooks",
+    "type": "Bench",
+    "price": 201,
+    "stockQuantity": 18,
     "specs": {
-      "weight": "18 lbs",
-      "material": "Chrome",
-      "color": "Black and Red"
-    },
-    "trendingScore": 3,
-    "topTrending": false,
-    "rating": 2.8
-  },
-  {
-    "name": "Fitness Gear Olympic Cast Plate - Single",
-    "description": "Maximize your workout with the Fitness Gear® Olympic Cast Plate. The heavy-duty cast iron construction will provide many years of use. Convenient grip handles allow for easy moving.",
-    "brand": "Fitness Gear",
-    "type": "Weight Plate",
-    "price": 34.98,
-    "stockQuantity": 30,
-    "specs": {
-      "weight": "25 lbs",
-      "material": "chrome",
-      "color": "black"
-    },
-    "trendingScore": 7,
-    "topTrending": true,
-    "rating": 4.8
-  },
-  {
-    "name": "Sole E25 Elliptical (2023)",
-    "description": "The all new Sole E25 Elliptical sold exclusively at Dick’s Sporting Goods. The brand-new model features a new sleek design an upgraded 7.5” LCD display with connectivity to all Garmin devices. The E25 keeps its solid 15-year pedigree with power incline, articulating pedals, pulse grip HR and an incredibly smooth feel.",
-    "brand": "Sole",
-    "type": "Elliptical Machine",
-    "price": 999.99,
-    "stockQuantity": 6,
-    "specs": {
-      "weight": "200 lbs",
-      "material": "Plastic",
-      "color": "Black"
-    },
-    "trendingScore": 3,
-    "topTrending": false,
-    "rating": 3.8
-  },
-  {
-    "name": "Echelon Connect EX-8S Exercise Bike",
-    "description": "workout bike ",
-    "brand": "Echelon",
-    "type": " workout",
-    "price": 2500,
-    "stockQuantity": 10,
-    "specs": {
-      "weight": "150 lbs",
-      "color": "Black",
-      "material": "carbon steel"
-    },
-    "trendingScore": 4.6,
-    "topTrending": true,
-    "rating": 4.9,
-    "productId": "0f22d7cf-bf02-466e-ac4c-3fb86bf140c1"
-  },
-  {
-    "name": "Sole E25 BenchV2 (2023)",
-    "description": "The all new Sole E25 BenchV2 sold exclusively at Dick’s Sporting Goods.",
-    "brand": "Sole",
-    "type": "Bench for workout",
-    "price": 199.99,
-    "stockQuantity": 6,
-    "specs": {
-      "weightCapacity": "2555 lbs",
-      "strideLength": "20 inches"
-    },
-    "trendingScore": 3,
-    "topTrending": false,
-    "rating": 3.2,
-    "productId": "4834a455-732d-45f5-a2fb-adae7871cfb2"
-  },
-  {
-    "name": "testLeko E25 BenchV2 (2023)",
-    "description": "The all new Sole E25 BenchV2 sold exclusively at Dick’s Sporting Goods.",
-    "brand": "testLeko",
-    "type": "Bench for workout",
-    "price": 49.995,
-    "stockQuantity": 6,
-    "specs": {
-      "weightCapacity": "2555 lbs",
-      "strideLength": "20 inches"
-    },
-    "trendingScore": 3,
-    "topTrending": false,
-    "rating": 4.2,
-    "discount": 50,
-    "originalPrice": 99.99
-  },
-  {
-    "name": "videotest4.1demo1",
-    "description": "This is for testing demo",
-    "brand": "brddemo1",
-    "type": "demo1",
-    "price": 99.99,
-    "stockQuantity": 10,
-    "specs": {
-      "weightCapacity": "225 lbs",
-      "strideLength": "20 inches"
-    },
-    "trendingScore": 3,
-    "topTrending": false,
-    "rating": 4.2
-  },
-  {
-    "name": "videotest4.2demo1",
-    "description": "This is for testing demo",
-    "brand": "brddemo1",
-    "type": "demo1",
-    "price": 99.99,
-    "stockQuantity": 10,
-    "specs": {
-      "weightCapacity": "225 lbs",
-      "strideLength": "20 inches"
-    },
-    "trendingScore": 3,
-    "topTrending": false,
-    "rating": 4.2
-  },
-  {
-    "name": "Fitness Gear Ab Wheel",
-    "description": "Non-slip rubber wheel tread",
-    "brand": "Fitness Gear",
-    "type": "Non-slip rubber wheel tread",
-    "price": 29.99,
-    "stockQuantity": 10,
-    "specs": {
-      "weightCapacity": "100 lbs",
-      "strideLength": "20 inches"
-    },
-    "trendingScore": 3,
-    "topTrending": false,
-    "rating": 5
-  },
-  {
-    "name": "GoFit Deluxe Dual Ab Wheel",
-    "description": "Carve out a six-pack with the GoFit® Deluxe Dual Ab Wheel . The Ab Wheel is compact, lightweight, and easy to use, proving to be the perfect addition to your workout routine.",
-    "brand": "GoFit",
-    "type": "Non-slip rubber wheel tread",
-    "price": 24.99,
-    "stockQuantity": 11,
-    "specs": {
-      "weightCapacity": "100 lbs",
-      "strideLength": "20 inches"
-    },
-    "trendingScore": 3,
-    "topTrending": false,
-    "rating": 5
-  },
-  {
-    "name": "Nike Fundamental Speed Rope",
-    "description": "Featuring an adjustable length for a customized fit, the Nike® Fundamental Speed Rope delivers fast, smooth rotations for a conditioning cardio workout.",
-    "brand": "Nike",
-    "type": "ADJUSTABLE SPEED ROPE",
-    "price": 20,
-    "stockQuantity": 11,
-    "specs": {
-      "weightCapacity": "150 lbs",
-      "strideLength": "20 inches"
+      "weight": "18 lbs"
     },
     "trendingScore": 6,
     "topTrending": false,
-    "rating": 2.8
+    "rating": 4
   },
   {
-    "name": "Fitness Gear Leather Jump Rope",
-    "description": "Build your cardio endurance with the Fitness Gear Leather Jump Rope",
-    "brand": "Nike",
-    "type": "Fitness Gear",
-    "price": 19.99,
-    "stockQuantity": 11,
+    "name": "ProForm Foldable Bench",
+    "description": "The foldable steel design is perfect for any home gym setup.",
+    "brand": "ProForm",
+    "type": "Bench",
+    "price": 43,
+    "stockQuantity": 8,
     "specs": {
-      "weightCapacity": "150 lbs",
-      "Length": "20 inches"
+      "weight": "44 lbs"
     },
-    "trendingScore": 5,
+    "trendingScore": 9,
+    "topTrending": true,
+    "rating": 4
+  },
+  {
+    "name": "Cybex Multi-purpose Home Gym",
+    "description": "The multi-purpose iron design is perfect for any home gym setup.",
+    "brand": "Cybex",
+    "type": "Home Gym",
+    "price": 387,
+    "stockQuantity": 37,
+    "specs": {
+      "weight": "51 lbs"
+    },
+    "trendingScore": 9,
+    "topTrending": true,
+    "rating": 3
+  },
+  {
+    "name": "ProForm Multi-purpose Elliptical",
+    "description": "The multi-purpose plastic design is perfect for any home gym setup.",
+    "brand": "ProForm",
+    "type": "Elliptical",
+    "price": 362,
+    "stockQuantity": 36,
+    "specs": {
+      "weight": "13 lbs"
+    },
+    "trendingScore": 4,
     "topTrending": false,
     "rating": 3
   },
   {
-    "name": "Fitness Gear Pro Half Rack",
-    "description": "Durable steel construction",
-    "brand": "Pull-up/dip bar station",
-    "type": "demo1",
-    "price": 409.4909,
-    "stockQuantity": 5,
+    "name": "ProForm High-quality Treadmill",
+    "description": "The high-quality iron design is perfect for any home gym setup.",
+    "brand": "ProForm",
+    "type": "Treadmill",
+    "price": 84.80000000000001,
+    "stockQuantity": 29,
     "specs": {
-      "weightCapacity": "700 lbs",
-      "Length": "200 cm"
-    },
-    "trendingScore": 2,
-    "topTrending": false,
-    "rating": 1,
-    "discount": 9,
-    "originalPrice": 449.99
-  },
-  {
-    "name": "Marcy 150lb Stack Home Gym",
-    "description": "The dual action press arms with independent motion allow for chest press and vertical butterfly exercises",
-    "brand": "Marcy",
-    "type": "Home Gym",
-    "price": 359.992,
-    "stockQuantity": 5,
-    "specs": {
-      "weight": "50 lbs"
-    },
-    "trendingScore": 2,
-    "topTrending": false,
-    "rating": 4.5,
-    "discount": 20,
-    "originalPrice": 449.99
-  },
-  {
-    "name": "Fitness Gear Soft Medicine Ball",
-    "description": "The dual action press arms with independent motion allow for chest press and vertical butterfly exercises",
-    "brand": "Fitness Gear",
-    "type": "Home Gym",
-    "price": 19.992,
-    "stockQuantity": 9,
-    "specs": {
-      "weight": "8 lbs"
+      "weight": "28 lbs"
     },
     "trendingScore": 1,
     "topTrending": false,
-    "rating": 4.8,
+    "rating": 1,
     "discount": 20,
-    "originalPrice": 24.99
+    "originalPrice": 106
+  },
+  {
+    "name": "Asics Foldable Bench",
+    "description": "The foldable steel design is perfect for any home gym setup.",
+    "brand": "Asics",
+    "type": "Bench",
+    "price": 452,
+    "stockQuantity": 36,
+    "specs": {
+      "weight": "63 lbs"
+    },
+    "trendingScore": 2,
+    "topTrending": false,
+    "rating": 2
+  },
+  {
+    "name": "Lululemon Foldable Exercise Bike",
+    "description": "The foldable iron design is perfect for any home gym setup.",
+    "brand": "Lululemon",
+    "type": "Exercise Bike",
+    "price": 211,
+    "stockQuantity": 18,
+    "specs": {
+      "weight": "45 lbs"
+    },
+    "trendingScore": 1,
+    "topTrending": true,
+    "rating": 4
   }
 ]
