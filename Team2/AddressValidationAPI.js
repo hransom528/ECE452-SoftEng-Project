@@ -11,63 +11,47 @@ const googleMapsClient = createClient({
 const geocodeAsync = promisify(googleMapsClient.geocode).bind(googleMapsClient);
 
 async function verifyAddress(data) {
-        try {
-            // Extract address object from the data
-            const address = data.address;
-    
-            console.log('Extracted address object:', address);
-    
-            if (!address || typeof address !== 'object') {
-                throw new Error('Invalid address object');
-            }
-    
-            const { street, city, state, postalCode, country } = address;
-    
-            // Construct the address string
-            const addressString = `${street}, ${city}, ${state}, ${postalCode}, ${country}`;
-    
-            console.log('Constructed address string:', addressString);
-    
-            // Make a request to Google Maps Geocoding API to validate the address
-            const response = await geocodeAsync({
-                address: addressString
-            });
-    
-            console.log('Geocoding API response:', response);
+    try {
+        // Extract address object from the data
+        const address = data.address;
 
-            // Check if response is undefined or data is undefined
-            if (!response || !response.data) {
-                console.log('Invalid response or data');
-                const isValid = false;
-                return { ...address, isValid };
-            } else {
-                // Log the results array
-                console.log('Results:', response.data.results);
-            
-                if (!response.data.results || response.data.results.length === 0) {
-                    // If no results are found, consider the address as invalid
-                    console.log('No results found');
-                    const isValid = false;
-                    return { ...address, isValid };
-                } else {
-                    // If there are results, consider the address as valid
-                    console.log('Results found');
-                    const isValid = true;
-                    return { ...address, isValid };
-                }
-            }
-            
-        } catch (error) {
-            console.error('Error verifying address:', error);
-            throw new Error('Failed to verify address');
+        console.log('Extracted address object:', address);
+
+        if (!address || typeof address !== 'object') {
+            throw new Error('Invalid address object');
         }
+
+        const { street, city, state, postalCode, country } = address;
+
+        // Construct the address string
+        const addressString = `${street}, ${city}, ${state}, ${postalCode}, ${country}`;
+
+        console.log('Constructed address string:', addressString);
+
+        // Make a request to Google Maps Geocoding API to validate the address
+        const response = await geocodeAsync({
+            address: addressString
+        });
+
+        console.log('Geocoding API response:', response);
+
+        // Check if response is undefined or no results found
+        if (!response || !response.json || !response.json.results || response.json.results.length === 0) {
+            console.log('Invalid response or no results found');
+            const isValid = false;
+            return { ...address, isValid };
+        } else {
+            console.log('Results found');
+            const isValid = true;
+            return { ...address, isValid };
+        }
+
+    } catch (error) {
+        console.error('Error verifying address:', error);
+        throw new Error('Failed to verify address');
     }
+}
     
-
-
-
-
-  
 
 // Function to standardize address
 async function standardizeAddress(address) {

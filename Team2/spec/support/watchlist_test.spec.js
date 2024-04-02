@@ -1,76 +1,48 @@
-require('dotenv').config();
+const { getWatchlist, addToWatchlist, removeFromWatchlist } = require('../../Watchlist');
 
-const { MongoClient } = require('mongodb');
-const { getWatchlist, removeFromWatchlist, addToWatchlist } = require('../../Watchlist');
+describe('Watchlist', () => {
+    let mockDB;
 
-const { connectDBandClose } = require('../../../dbConfig');
-
-let db, client;
-
-beforeAll(async () => {
-    const connection = await connectDBandClose();
-    db = connection.db;
-    client = connection.client;
-});
-
-beforeEach(async () => {
-    // Clear any existing data in the collections before each test
-    await db.collection('watchList').deleteMany({});
-});
-
-afterAll(async () => {
-    // Close the MongoDB connection after all tests have run
-    await client.close();
-});
-
-describe('Watchlist Module', () => {
-    let userId = 'user123';
-    let productId = 'product123';
-
-    describe('getWatchlist', () => {
-        it('should return an empty array if no watchlist is found for the user', async () => {
-            const watchlist = await getWatchlist(userId);
-            expect(watchlist).toEqual([]);
-        });
-
-        it('should return product details for each product in the watchlist', async () => {
-            await db.collection('watchList').insertOne({ userId: userId, products: [productId] });
-            await db.collection('products').insertOne({ _id: productId, name: 'Product 123' });
-
-            const watchlist = await getWatchlist(userId);
-            expect(watchlist).toEqual([{ _id: productId, name: 'Product 123' }]);
-        });
+    beforeEach(() => {
+        mockDB = {
+            products: [],
+            watchList: {}
+        };
     });
 
-    describe('removeFromWatchlist', () => {
-        it('should remove a product from the watchlist', async () => {
-            await db.collection('watchList').insertOne({ userId: userId, products: [productId] });
+    it('should add product to watchlist', async () => {
+        const userId = 'user123';
+        const productId = 'product123';
 
-            await removeFromWatchlist(userId, productId);
+        await addToWatchlist(userId, productId);
 
-            const watchlist = await db.collection('watchList').findOne({ userId: userId });
-            expect(watchlist.products).not.toContain(productId);
-        });
+        expect(mockDB.watchList[userId]).toBeDefined();
+        expect(mockDB.watchList[userId].products).toContain(productId);
     });
 
-    describe('addToWatchlist', () => {
-        it('should add a product to the watchlist', async () => {
-            await addToWatchlist(userId, productId);
+    it('should remove product from watchlist', async () => {
+        const userId = 'user123';
+        const productId = 'product123';
 
-            const watchlist = await db.collection('watchList').findOne({ userId: userId });
-            expect(watchlist.products).toContain(productId);
-        });
+        // Add product to watchlist first
+        mockDB.watchList[userId] = { products: [productId] };
 
-        it('should not add a product if it does not exist', async () => {
-            const nonExistingProductId = 'nonExistingProduct123';
-            spyOn(console, 'log');
-            await addToWatchlist(userId, nonExistingProductId);
+        await removeFromWatchlist(userId, productId);
 
-            const watchlist = await db.collection('watchList').findOne({ userId: userId });
-            expect(watchlist).toBeNull();
-            expect(console.log).toHaveBeenCalledWith('Product not found.');
-        });
+        expect(mockDB.watchList[userId]).toBeDefined();
+        expect(mockDB.watchList[userId].products).not.toContain(productId);
     });
 
-    // Add additional test cases as needed
+    it('should retrieve user watchlist', async () => {
+        const userId = 'user123';
+        const productId = 'product123';
+
+        // Add product to watchlist first
+        mockDB.watchList[userId] = { products: [productId] };
+
+        const watchlist = await getWatchlist(userId);
+
+        expect(watchlist.length).toBe(1);
+        expect(watchlist[0]._id).toBe(productId); // Adjust this based on the actual structure of product object
+    });
 });

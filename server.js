@@ -250,13 +250,13 @@ const server = http.createServer(async (req, res) => {
                         break;
                     case 'standardize-address':
                         result = await standardizeAddress(requestBody);
-                        return;
+                        break;
                     case 'extract-address-components':
                         result = await extractAddressComponents(requestBody);
-                        return;
+                        break;
                     case 'check-address-completeness':
                         result = await checkAddressCompleteness(requestBody);
-                        return;
+                        break;
 
                     case 'add-to-watchlist':
                     const { userId: userIdToAdd, productId: productIdToAdd } = requestBody; 
@@ -798,7 +798,7 @@ const server = http.createServer(async (req, res) => {
                             res.writeHead(500, { "Content-Type": "application/json" });
                             res.end(JSON.stringify({ error: "Internal Server Error" }));
                         }
-                        return;
+                        break;
                     
                     case "fetch-cart-details":
                         try {
