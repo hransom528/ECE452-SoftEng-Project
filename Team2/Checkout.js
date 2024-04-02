@@ -2,7 +2,7 @@
 //curl -X POST -H "Content-Type: application/json" -d '{"userId": "66034fe1c4c80919996b4ec4", "cartId": "ObjectId('66035461382bf12efaa6386b')", "address": {"street": "46 Ray Street", "city": "New Brunswick", "state": "NJ", "zip": "08844"}, "paymentToken": "tok_visa", "stripeCustomerId": "cus_PnYvFk6K6O5fY8"}' http://localhost:3000/checkout
 
 const { MongoClient } = require('mongodb');
-const { verifyAddress } = require('./GoogleAddressValidation.js');
+const { verifyAddress } = require('./AddressValidationAPI.js');
 const { ObjectId } = require('mongodb');
 
 const uri = 'mongodb+srv://admin:SoftEng452@cluster0.qecmfqe.mongodb.net/website?retryWrites=true&w=majority&appName=Cluster0';

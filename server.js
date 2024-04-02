@@ -8,6 +8,13 @@ const {
     verifyCardAndUpdateDB,
     createPaymentAndProcessing,
 } = require("./Team3/stripe.js");
+const {
+    verifyAddress,
+    standardizeAddress,
+    extractAddressComponents,
+    checkAddressCompleteness,
+    retrieveAddressHistory
+} = require('./Team2/AddressValidationAPI.js');
 const { updateListings } = require("./Team3/UC8update_listings.js");
 const { deleteListings } = require("./Team3/UC8update_listings.js");
 const { addProduct } = require("./Team3/UCCreateProduct.js");
@@ -238,6 +245,19 @@ const server = http.createServer(async (req, res) => {
                 let result = null;
 
                 switch (trimmedPath) {
+                    case 'verify-address':
+                        result = await verifyAddress(requestBody);
+                        break;
+                    case 'standardize-address':
+                        result = await standardizeAddress(requestBody);
+                        return;
+                    case 'extract-address-components':
+                        result = await extractAddressComponents(requestBody);
+                        return;
+                    case 'check-address-completeness':
+                        result = await checkAddressCompleteness(requestBody);
+                        return;
+
                     case 'add-to-watchlist':
                     const { userId: userIdToAdd, productId: productIdToAdd } = requestBody; 
                     try {
@@ -251,18 +271,18 @@ const server = http.createServer(async (req, res) => {
                     }
                     return;
 
-                case 'remove-from-watchlist':
-                    const { userId: userIdToRemove, productId: productIdToRemove } = requestBody; 
-                    try {
-                        await removeFromWatchlist(userIdToRemove, productIdToRemove); 
-                        res.writeHead(200, { "Content-Type": "application/json" });
-                        res.end(JSON.stringify({ message: "Product removed from watchlist" }));
-                    } catch (error) {
-                        console.error("Error removing product from watchlist:", error);
-                        res.writeHead(500, { "Content-Type": "application/json" });
-                        res.end(JSON.stringify({ error: "Internal Server Error" }));
-                    }
-                    return;
+                    case 'remove-from-watchlist':
+                        const { userId: userIdToRemove, productId: productIdToRemove } = requestBody; 
+                        try {
+                            await removeFromWatchlist(userIdToRemove, productIdToRemove); 
+                            res.writeHead(200, { "Content-Type": "application/json" });
+                            res.end(JSON.stringify({ message: "Product removed from watchlist" }));
+                        } catch (error) {
+                            console.error("Error removing product from watchlist:", error);
+                            res.writeHead(500, { "Content-Type": "application/json" });
+                            res.end(JSON.stringify({ error: "Internal Server Error" }));
+                        }
+                        return;
 
                     case "checkout":
                         const { userId, cartId, address, paymentToken, stripeCustomerId } = requestBody;
@@ -756,7 +776,30 @@ const server = http.createServer(async (req, res) => {
                 let result = null;
 
                 switch (trimmedPath) {
-
+                    case "retrieve-address-history":
+                        const { addressId } = requestBody;
+                        try {
+                            if (!addressId) {
+                                throw new Error('Address ID is missing in the request body');
+                            }
+                    
+                            const addressCriteria = { _id: new ObjectId(addressId) }; // Assuming addressId is the MongoDB ObjectId
+                            const result = await retrieveAddressHistory(addressCriteria);
+                    
+                            if (!result || result.length === 0) {
+                                res.writeHead(404, { "Content-Type": "application/json" }); // Not Found status code
+                                res.end(JSON.stringify({ message: "Address not found" }));
+                            } else {
+                                res.writeHead(200, { "Content-Type": "application/json" });
+                                res.end(JSON.stringify({ addressHistory: result }));
+                            }
+                        } catch (error) {
+                            console.error("Error retrieving address history:", error);
+                            res.writeHead(500, { "Content-Type": "application/json" });
+                            res.end(JSON.stringify({ error: "Internal Server Error" }));
+                        }
+                        return;
+                    
                     case "fetch-cart-details":
                         try {
                             const userId = parsedUrl.query.userId; // Assuming parsedUrl is defined earlier
