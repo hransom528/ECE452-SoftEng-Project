@@ -1,24 +1,5 @@
-require('dotenv').config();
-const { MongoClient, ObjectId } = require('mongodb');
-const { connectDB } = require('../dbConfig.js');
-
-const mongoURI = process.env.MONGO_URI;
-
-// Function to connect to MongoDB
-async function connectToMongo() {
-    try {
-        if (!mongoURI) {
-            throw new Error('MongoDB URI is not provided');
-        }
-
-        const client = await MongoClient.connect(mongoURI);
-        const db = client.db();
-        return db;
-    } catch (error) {
-        console.error('Error connecting to MongoDB:', error);
-        throw new Error('Failed to connect to MongoDB');
-    }
-}
+const { ObjectId } = require('mongodb');
+const { connectDB } = require('../dbConfig');
 
 // Function to verify address
 async function verifyAddress(address) {

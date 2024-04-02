@@ -20,7 +20,7 @@
                 <button type="submit">Submit <img src="assets/arrow_icon.png"></button>
             </form>
             <div id="confirmation-message" class="confirmation" style="display: none;">
-                <!-- Customized confirmation message will be injected here -->
+                <!-- Confirmation message will be injected here -->
             </div>
 
         </form>
@@ -57,7 +57,6 @@
                         form.style.display = 'none'; // Hide the form
                         result.style.display = 'block'; // Show the confirmation message
                         result.innerHTML = '<h2>Thank you!</h2><p>Your message has been sent. We will get back to you soon.</p>';
-                        // Add any additional styling you need here
                     }
                 })
                 .catch(error => {
