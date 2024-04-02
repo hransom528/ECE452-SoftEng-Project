@@ -386,8 +386,14 @@ const server = http.createServer(async (req, res) => {
                             requestBody.productId,
                             requestBody.quantity
                         );
+
+                        const responseBody = {
+                            message: "Item added to cart successfully",
+                            result: result // Assuming 'result' is the object you want to return
+                        };
+                        
                         res.writeHead(200, { "Content-Type": "application/json" });
-                        res.end(JSON.stringify(result)); // Send back the updated cart
+                        res.end(JSON.stringify(responseBody)); // Send back the updated cart
                         return; // Make sure to return here to stop further execution and prevent additional responses
 
                     case "remove-from-cart":
@@ -413,8 +419,14 @@ const server = http.createServer(async (req, res) => {
                                 requestBody.productId,
                                 requestBody.quantityToRemove
                             );
+
+                            const responseObj = {
+                                message: "Item removed from cart successfully",
+                                cart: result // Assuming 'result' contains the updated cart
+                            };
+                        
                             res.writeHead(200, { "Content-Type": "application/json" });
-                            res.end(JSON.stringify(result)); // Send back the updated cart
+                            res.end(JSON.stringify(responseObj)); // Send back the updated cart
                         } catch (error) {
                             console.error("Error removing item from cart:", error);
                             res.writeHead(500, { "Content-Type": "application/json" });
