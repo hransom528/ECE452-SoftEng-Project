@@ -24,7 +24,7 @@ const {
     fetchTopRatedProductsByType,
 } = require("./Team3/UC9_Product_Performace_Insight.js");
 
-const { addToCart, removeFromCart, getCartDetails} = require("./Team2/Cart.js");
+const { addToCart, removeFromCart, getCart} = require("./Team2/Cart.js");
 
 const {
     updateUserProfile,
@@ -754,23 +754,24 @@ const server = http.createServer(async (req, res) => {
                 let result = null;
 
                 switch (trimmedPath) {
-
-                    case "fetch-cart-details":
+                    case "get-cart":
+                        const { userId: userIdToFind } = requestBody;
                         try {
-                            const userId = parsedUrl.query.userId; // Assuming parsedUrl is defined earlier
-                
-                            const cartDetails = await getCartDetails(userId);
-                            res.writeHead(200, { "Content-Type": "application/json" });
-                            res.end(JSON.stringify({
-                                message: "Cart details fetched successfully",
-                                data: cartDetails,
-                        }));
-                    } catch (error) {
-                            console.error("Error fetching cart details:", error);
+                            const cart = await getCart(userIdToFind);
+                            if (!cart) {
+                                res.writeHead(404, { "Content-Type": "application/json" }); // Not Found status code
+                                res.end(JSON.stringify({ message: "Cart not found for this user" }));
+                            } else {
+                                res.writeHead(200, { "Content-Type": "application/json" });
+                                res.end(JSON.stringify({ cart }));
+                            }
+                        } catch (error) {
+                            console.error("Error retrieving cart:", error);
                             res.writeHead(500, { "Content-Type": "application/json" });
-                            res.end(JSON.stringify({ message: "Error fetching cart details", error: error.toString() }));
-                    }
-                    break;
+                            res.end(JSON.stringify({ error: "Internal Server Error" }));
+                        }
+                        return;
+
 
                     case "get-watchlist":
                         const { userId: userIdToRetrieve } = requestBody;
