@@ -16,7 +16,7 @@ const MONGO_URI = 'mongodb+srv://admin:SoftEng452@cluster0.qecmfqe.mongodb.net/w
 mongoose.connect(MONGO_URI)
   .then(() => console.log('Successfully connected to MongoDB.'))
   .catch(err => console.error('Connection error', err));
-
+// thi is a change
 
 const cartItemSchema = new mongoose.Schema({
 
@@ -51,7 +51,7 @@ const cartSchema = new mongoose.Schema({
         }
     });
 
-
+// this is a change here
 const productSchema = new mongoose.Schema({
     price: Number, // Price field
         // Other fields like description, category, etc.
@@ -127,25 +127,22 @@ async function removeFromCart(userId, productId, quantityToRemove) {
         }
     }
 
-async function getCartDetails(userId) {
-    if (!ObjectId.isValid(userId)) {
-        throw new Error("Invalid user ID");
+async function getCart(userId) {
+    try {
+            const cartDetails = await Cart.findOne({ userId:userId})
+        if (!cartDetails) {
+                throw new Error("Cart not found");
+        }
+        return cartDetails;
+    } catch (error) {
+            console.error("Error retrieving cart:", error);
+            throw new Error("Internal Server Error");
     }
-
-    const cart = await Cart.findOne({ userId }).populate('items.productId').exec();
-
-    if (!cart) {
-        throw new Error("Cart not found");
-    }
-
-   
-    return cart;
 }
-
 module.exports = {
     addToCart,
     removeFromCart,
-    getCartDetails
+    getCart
 
 
 }

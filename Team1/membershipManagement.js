@@ -22,7 +22,9 @@ async function updateUserPremiumStatus(userId, isPremium) {
 }
 
 
-async function createPremiumMembership(userId, stripeCustomerId, stripeToken) {
+async function createPremiumMembership(requestBody) {
+    const { userId, stripeCustomerId, stripeToken } = requestBody;
+
     const user = await getUserById(userId);
 
     // Check if the user is already a premium member

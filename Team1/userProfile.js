@@ -160,7 +160,7 @@ async function addUserShippingAddress(requestBody) {
     }
     
     console.log(`Successfully added a new shipping address for user ID ${userId}`);
-    return result;
+    return { ...result, addressId: newAddress.addressId }; // Include the addressId
 }
 
 async function updateUserShippingAddress(requestBody) {
@@ -203,13 +203,29 @@ async function deleteUserShippingAddress(requestBody) {
 
     const db = await connectDB();
 
+    // First, check if the shipping address exists
+    const user = await db.collection('users').findOne(
+        { _id: new ObjectId(userId), 'shippingAddresses.addressId': addressId },
+        { projection: { 'shippingAddresses.$': 1 } }
+    );
+
+    if (!user) {
+        throw new Error(`No user found with ID ${userId}`);
+    }
+
+    if (user.shippingAddresses.length === 0) {
+        throw new Error(`No shipping address found with ID ${addressId}`);
+    }
+
+    // Proceed with deletion
     const result = await db.collection('users').updateOne(
         { _id: new ObjectId(userId) },
         { $pull: { shippingAddresses: { addressId: addressId } } }
     );
 
-    if (result.matchedCount === 0) {
-        throw new Error(`No user found with ID ${userId} or addressId ${addressId}`);
+    // Check if the address was actually removed
+    if (result.modifiedCount === 0) {
+        throw new Error(`No shipping address found with ID ${addressId} to delete`);
     }
 
     console.log(`Successfully deleted shipping address ${addressId} for user ID ${userId}`);
