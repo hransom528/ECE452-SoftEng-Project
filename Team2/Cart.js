@@ -127,25 +127,22 @@ async function removeFromCart(userId, productId, quantityToRemove) {
         }
     }
 
-async function getCartDetails(userId) {
-    if (!ObjectId.isValid(userId)) {
-        throw new Error("Invalid user ID");
+async function getCart(userId) {
+    try {
+            const cartDetails = await Cart.findOne({ userId:userId})
+        if (!cartDetails) {
+                throw new Error("Cart not found");
+        }
+        return cartDetails;
+    } catch (error) {
+            console.error("Error retrieving cart:", error);
+            throw new Error("Internal Server Error");
     }
-
-    const cart = await Cart.findOne({ userId }).populate('items.productId').exec();
-
-    if (!cart) {
-        throw new Error("Cart not found");
-    }
-
-   
-    return cart;
 }
-
 module.exports = {
     addToCart,
     removeFromCart,
-    getCartDetails
+    getCart
 
 
 }
