@@ -70,8 +70,8 @@ function generateFakeData() {
     };
   }
 
-async function populateDatabase(client, numberOfEntries = 50) {
-    const collection = client.db('website').collection('products');
+async function populateDatabase(client, numberOfEntries = 10) {
+    const collection = client.db('test').collection('products');
     for (let i = 0; i < numberOfEntries; i++) {
         const fakeData = generateFakeData();
         await collection.insertOne(fakeData);
