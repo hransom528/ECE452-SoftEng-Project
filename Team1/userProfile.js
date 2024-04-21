@@ -2,6 +2,7 @@ const { connectDB } = require('../dbConfig');
 const { ObjectId } = require('mongodb');
 const { v4: uuidv4 } = require('uuid');
 const { getUserInfo } = require('./Reg_lgn/oAuthHandler');
+const { verifyAddress } = require('../Team2/AddressValidationAPI');
 
 async function validateAccessTokenAndGetUserInfo(accToken) {
     if (!accToken) {
@@ -146,13 +147,19 @@ async function addUserShippingAddress(requestBody) {
         throw new Error('userId and newAddress are required');
     }
 
-    // Assign a UUID to the new address for the unique addressId
-    newAddress.addressId = uuidv4();
+    // Validate the new address with Google Maps API
+    const validatedAddress = await verifyAddress({address: newAddress});
+    if (!validatedAddress.isValid) {
+        throw new Error('Invalid address');
+    }
+
+    // Assign a UUID to the new, validated address for the unique addressId
+    validatedAddress.addressId = uuidv4();
 
     const db = await connectDB();
     const result = await db.collection('users').updateOne(
         { _id: new ObjectId(userId) },
-        { $push: { shippingAddresses: newAddress } }
+        { $push: { shippingAddresses: validatedAddress } }
     );
 
     if (result.matchedCount === 0) {
@@ -160,7 +167,7 @@ async function addUserShippingAddress(requestBody) {
     }
     
     console.log(`Successfully added a new shipping address for user ID ${userId}`);
-    return { ...result, addressId: newAddress.addressId }; // Include the addressId
+    return { ...result, addressId: validatedAddress.addressId }; // Include the addressId
 }
 
 async function updateUserShippingAddress(requestBody) {
@@ -173,9 +180,15 @@ async function updateUserShippingAddress(requestBody) {
         throw new Error('userId, addressId, and updatedAddress are required');
     }
 
-    // Ensure that updatedAddress does not contain an addressId field
+    // Validate the updated address
+    const validatedAddress = await verifyAddress({address: updatedAddress});
+    if (!validatedAddress.isValid) {
+        throw new Error('Invalid address update');
+    }
+
+    // Ensure that validatedAddress does not contain an addressId field
     // This prevents changing the addressId during an update
-    const { addressId: _, ...updateFields } = updatedAddress;
+    const { addressId: _, ...updateFields } = validatedAddress;
 
     const db = await connectDB();
     const result = await db.collection('users').updateOne(
