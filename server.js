@@ -413,15 +413,15 @@ const server = http.createServer(async (req, res) => {
               return; // Exit the function here to prevent further execution
             }
 
-            // Call addToCart function
-            result = await addToCart(
-              requestBody.userId,
-              requestBody.productId,
-              requestBody.quantity
-            );
-            res.writeHead(200, { "Content-Type": "application/json" });
-            res.end(JSON.stringify(result)); // Send back the updated cart
-            return; // Make sure to return here to stop further execution and prevent additional responses
+                        // Call addToCart function
+                        result = await addToCart(
+                            requestBody.userId,
+                            requestBody.productId,
+                            requestBody.quantity
+                        );
+                        res.writeHead(200, { "Content-Type": "application/json" });
+                        res.end(JSON.stringify(result)); // Send back the updated cart
+                        return; // Make sure to return here to stop further execution and prevent additional responses
 
           case "remove-from-cart":
             if (
@@ -439,26 +439,26 @@ const server = http.createServer(async (req, res) => {
               return; // Exit this case block, ensuring no further code in this case is executed
             }
 
-            // Assuming removeFromCart function is defined and properly handles the logic
-            try {
-              const result = await removeFromCart(
-                requestBody.userId,
-                requestBody.productId,
-                requestBody.quantityToRemove
-              );
-              res.writeHead(200, { "Content-Type": "application/json" });
-              res.end(JSON.stringify(result)); // Send back the updated cart
-            } catch (error) {
-              console.error("Error removing item from cart:", error);
-              res.writeHead(500, { "Content-Type": "application/json" });
-              res.end(
-                JSON.stringify({
-                  message: "Error handling request",
-                  error: error.toString(),
-                })
-              );
-            }
-            return;
+                        // Assuming removeFromCart function is defined and properly handles the logic
+                        try {
+                            const result = await removeFromCart(
+                                requestBody.userId,
+                                requestBody.productId,
+                                requestBody.quantityToRemove
+                            );
+                            res.writeHead(200, { "Content-Type": "application/json" });
+                            res.end(JSON.stringify(result)); // Send back the updated cart
+                        } catch (error) {
+                            console.error("Error removing item from cart:", error);
+                            res.writeHead(500, { "Content-Type": "application/json" });
+                            res.end(
+                                JSON.stringify({
+                                    message: "Error handling request",
+                                    error: error.toString(),
+                                })
+                            );
+                        }
+                        return;
 
           //break here
 
