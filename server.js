@@ -1,4 +1,5 @@
 require("dotenv").config();
+
 const { ObjectId } = require("mongodb");
 const http = require("http");
 const url = require("url");
@@ -10,8 +11,6 @@ const {
 } = require("./Team3/stripe.js");
 const {
     verifyAddress,
-    standardizeAddress,
-    extractAddressComponents,
     checkAddressCompleteness,
     retrieveAddressHistory
 } = require('./Team2/AddressValidationAPI.js');
@@ -248,12 +247,7 @@ const server = http.createServer(async (req, res) => {
                     case 'verify-address':
                         result = await verifyAddress(requestBody);
                         break;
-                    case 'standardize-address':
-                        result = await standardizeAddress(requestBody);
-                        break;
-                    case 'extract-address-components':
-                        result = await extractAddressComponents(requestBody);
-                        break;
+                   
                     case 'check-address-completeness':
                         result = await checkAddressCompleteness(requestBody);
                         break;
@@ -261,34 +255,19 @@ const server = http.createServer(async (req, res) => {
                     case 'add-to-watchlist':
                         const { userId: userIdToAdd, productId: productIdToAdd } = requestBody;
                         try {
-                            const user = await getUser(userIdToAdd);
-                            if (!user) {
+                            const result = await addToWatchlist(userIdToAdd, productIdToAdd);
+                            if (result.error) {
                                 res.writeHead(404, { "Content-Type": "application/json" });
-                                res.end(JSON.stringify({ error: "Please log in before adding to the watchlist." }));
+                                res.end(JSON.stringify({ error: result.error }));
                                 return;
                             }
-
-                            const product = await getProduct(productIdToAdd);
-                            if (!product) {
-                                res.writeHead(404, { "Content-Type": "application/json" });
-                                res.end(JSON.stringify({ error: "Product not found." }));
-                                return;
-                            }
-
-                            const existingWatchlist = await getWatchlist(userIdToAdd);
-                            if (existingWatchlist.some(item => item.productId === productIdToAdd)) {
-                                res.writeHead(404, { "Content-Type": "application/json" });
-                                res.end(JSON.stringify({ error: "Product is already in the watchlist." }));
-                                return;
-                            }
-
-                            await addToWatchlist(userIdToAdd, productIdToAdd);
                             res.writeHead(200, { "Content-Type": "application/json" });
-                            res.end(JSON.stringify({ message: "Product added to watchlist" }));
+                            res.end(JSON.stringify({ message: result.message }));
+                            return;
                         } catch (error) {
-                            console.error("Error adding product to watchlist:", error);
                             res.writeHead(500, { "Content-Type": "application/json" });
                             res.end(JSON.stringify({ error: "Internal Server Error" }));
+                            return;
                         }
                         return;
 
@@ -798,28 +777,29 @@ const server = http.createServer(async (req, res) => {
 
                 switch (trimmedPath) {
                     case "retrieve-address-history":
-                        const { addressId } = requestBody;
-                        try {
-                            if (!addressId) {
-                                throw new Error('Address ID is missing in the request body');
+                        case "retrieve-address-history":
+                            const { userId, addressId } = requestBody; // Assuming userId is provided in the request body
+                            try {
+                                if (!userId || !addressId) {
+                                    throw new Error('User ID or Address ID is missing in the request body');
+                                }
+                                const result = await retrieveAddressHistory(userId, addressId);
+
+                                if (!result) {
+                                    res.writeHead(404, { "Content-Type": "application/json" }); // Not Found status code
+                                    res.end(JSON.stringify({ message: "User or address not found" }));
+                                } else {
+                                    res.writeHead(200, { "Content-Type": "application/json" });
+                                    res.end(JSON.stringify({ addressHistory: result }));
+                                }
+                            } catch (error) {
+                                console.error("Error retrieving address history:", error);
+                                res.writeHead(500, { "Content-Type": "application/json" });
+                                res.end(JSON.stringify({ error: "Internal Server Error" }));
                             }
-                    
-                            const addressCriteria = { _id: new ObjectId(addressId) }; // Assuming addressId is the MongoDB ObjectId
-                            const result = await retrieveAddressHistory(addressCriteria);
-                    
-                            if (!result || result.length === 0) {
-                                res.writeHead(404, { "Content-Type": "application/json" }); // Not Found status code
-                                res.end(JSON.stringify({ message: "Address not found" }));
-                            } else {
-                                res.writeHead(200, { "Content-Type": "application/json" });
-                                res.end(JSON.stringify({ addressHistory: result }));
-                            }
-                        } catch (error) {
-                            console.error("Error retrieving address history:", error);
-                            res.writeHead(500, { "Content-Type": "application/json" });
-                            res.end(JSON.stringify({ error: "Internal Server Error" }));
-                        }
-                        break;
+                            break;
+                        
+
                     
                     case "fetch-cart-details":
                         try {

@@ -8,8 +8,18 @@ const googleMapsClient = createClient({
   key: 'AIzaSyC4zBUWivZ9nJuCidSWFui1HGP2Huo7-7Q'
 });
 
+
 const geocodeAsync = promisify(googleMapsClient.geocode).bind(googleMapsClient);
 
+async function getUser(userId) {
+
+    const db = await connectDB();
+    const collection = db.collection('users');
+
+    const user = await collection.findOne({ _id: new ObjectId(userId) });
+
+    return user;
+}
 async function verifyAddress(data) {
     try {
         // Extract address object from the data
@@ -21,29 +31,34 @@ async function verifyAddress(data) {
             throw new Error('Invalid address object');
         }
 
-        const { street, city, state, postalCode, country } = address;
-
-        // Construct the address string
-        const addressString = `${street}, ${city}, ${state}, ${postalCode}, ${country}`;
-
-        console.log('Constructed address string:', addressString);
+        // Convert the address object to a string
+        const addressString = formatAddress(address);
 
         // Make a request to Google Maps Geocoding API to validate the address
         const response = await geocodeAsync({
             address: addressString
         });
 
-        console.log('Geocoding API response:', response);
+        console.log('Geocoding API response:', response); // Log the response object
 
         // Check if response is undefined or no results found
         if (!response || !response.json || !response.json.results || response.json.results.length === 0) {
             console.log('Invalid response or no results found');
-            const isValid = false;
-            return { ...address, isValid };
+            return "Address is incorrect. Please enter a valid address.";
         } else {
-            console.log('Results found');
-            const isValid = true;
-            return { ...address, isValid };
+            // Check if the formatted address from the response matches the original address
+            const formattedResponseAddress = formatAddress(response.json.results[0].formatted_address);
+            const originalAddressString = formatAddress(address);
+            
+            if (formattedResponseAddress !== originalAddressString) {
+                console.log('Partial match found');
+                return "Address is incorrect. Please enter a valid address.";
+
+            } else {
+                console.log('Exact match found');
+                return "Address is correct.";
+
+            }
         }
 
     } catch (error) {
@@ -51,6 +66,35 @@ async function verifyAddress(data) {
         throw new Error('Failed to verify address');
     }
 }
+
+// Function to format the address object or string
+function formatAddress(address) {
+    if (typeof address === 'object') {
+        const { street, city, state, postalCode, country } = address;
+        return `${street}, ${city}, ${state} ${postalCode}, ${country}`;
+    } else {
+        return address;
+    }
+}
+
+
+// Function to format the address object to a string
+function formatAddress(address) {
+    const { street, city, state, postalCode, country } = address;
+    return `${street}, ${city}, ${state} ${postalCode}, ${country}`;
+}
+
+
+// Function to format the address object to a string
+function formatAddress(address) {
+    const { street, city, state, postalCode, country } = address;
+    return `${street}, ${city}, ${state} ${postalCode}, ${country}`;
+}
+
+
+
+
+
     
 
 // Function to standardize address
@@ -146,14 +190,8 @@ async function getAddressId(addressCriteria) {
 }
 
 // Function to retrieve address history
-async function retrieveAddressHistory(addressCriteria) {
+async function retrieveAddressHistory(userId, addressId) {
     try {
-        // Extracting _id from addressCriteria
-        const { _id } = addressCriteria;
-        
-        // Instantiate ObjectId with 'new'
-        const addressId = new ObjectId(_id);
-        
         // Connecting to the database
         const db = await connectDB();
         
@@ -164,16 +202,28 @@ async function retrieveAddressHistory(addressCriteria) {
             city: 1,
             state: 1,
             postalCode: 1,
+            country: 1,
             _id: 0 // Exclude _id field from the result
         };
 
-        // Querying address history based on addressId with projection
-        const addressHistory = await db.collection('shippingAddresses')
-                                    .find({ _id: addressId })
-                                    .project(projection)
-                                    .toArray();
+        // Querying user document based on userId
+        const user = await getUser(userId);
+        
+        if (!user) {
+            console.log('User not found');
+            return;
+        }
 
-        return addressHistory;
+        // Finding the address from the shippingAddresses array using addressId
+        const address = user.shippingAddresses.find(addr => addr.addressId === addressId);
+
+        if (!address) {
+            console.log('Address not found');
+            return;
+        }
+
+        // Return the address
+        return address;
     } catch (error) {
         console.error('Error retrieving address history:', error);
         throw new Error('Failed to retrieve address history');
@@ -183,8 +233,6 @@ async function retrieveAddressHistory(addressCriteria) {
 
 module.exports = {
     verifyAddress,
-    standardizeAddress,
-    extractAddressComponents,
     checkAddressCompleteness,
     retrieveAddressHistory
 };

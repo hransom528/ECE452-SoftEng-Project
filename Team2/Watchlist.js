@@ -28,8 +28,8 @@ async function addToWatchlist(userId, productId) {
 
     const user = await getUser(userId);
     if (!user) {
-        console.log('User not found. Please log in before adding to the watchlist.');
-        return;
+        return { error: "User not found. Please log in before adding to the watchlist." };
+
     }
     else{
     // Fetch product details
@@ -37,14 +37,14 @@ async function addToWatchlist(userId, productId) {
 
     // Check if product exists
     if (!product) {
-        console.log('Product not found.');
-        return;
+        return { error: "Product not found." };
+
     }
 
     const existingWatchlist = await watchlistCollection.findOne({ userId: userId });
     if (existingWatchlist && existingWatchlist.products.some(item => item.productId === productId)) {
-        console.log('Product is already in the watchlist.');
-        return;
+        return { message: "Product is already in the watchlist." };
+
     }
     // Add product to watchlist with additional details
     await watchlistCollection.updateOne(
@@ -66,6 +66,8 @@ async function addToWatchlist(userId, productId) {
         },
         { upsert: true }
     );
+    return { message: "Product added to watchlist" };
+
 }
 
 }
