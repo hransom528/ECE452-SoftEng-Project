@@ -25,7 +25,6 @@ async function verifyAddress(data) {
         // Extract address object from the data
         const address = data.address;
 
-        console.log('Extracted address object:', address);
 
         if (!address || typeof address !== 'object') {
             throw new Error('Invalid address object');
@@ -39,7 +38,6 @@ async function verifyAddress(data) {
             address: addressString
         });
 
-        console.log('Geocoding API response:', response); // Log the response object
 
         // Check if response is undefined or no results found
         if (!response || !response.json || !response.json.results || response.json.results.length === 0) {
@@ -48,7 +46,9 @@ async function verifyAddress(data) {
         } else {
             // Check if the formatted address from the response matches the original address
             const formattedResponseAddress = formatAddress(response.json.results[0].formatted_address);
+            console.log(formattedResponseAddress);
             const originalAddressString = formatAddress(address);
+            console.log(originalAddressString);
             
             if (formattedResponseAddress !== originalAddressString) {
                 console.log('Partial match found');
@@ -76,26 +76,7 @@ function formatAddress(address) {
         return address;
     }
 }
-
-
-// Function to format the address object to a string
-function formatAddress(address) {
-    const { street, city, state, postalCode, country } = address;
-    return `${street}, ${city}, ${state} ${postalCode}, ${country}`;
-}
-
-
-// Function to format the address object to a string
-function formatAddress(address) {
-    const { street, city, state, postalCode, country } = address;
-    return `${street}, ${city}, ${state} ${postalCode}, ${country}`;
-}
-
-
-
-
-
-    
+   
 
 // Function to standardize address
 async function standardizeAddress(address) {
