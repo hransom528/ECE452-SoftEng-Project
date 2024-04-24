@@ -1,4 +1,5 @@
 require("dotenv").config();
+
 const { ObjectId } = require("mongodb");
 const http = require("http");
 const url = require("url");
@@ -9,12 +10,10 @@ const {
   createPaymentAndProcessing,
 } = require("./Team3/stripe.js");
 const {
-  verifyAddress,
-  standardizeAddress,
-  extractAddressComponents,
-  checkAddressCompleteness,
-  retrieveAddressHistory,
-} = require("./Team2/AddressValidationAPI.js");
+    verifyAddress,
+    checkAddressCompleteness,
+    retrieveAddressHistory
+} = require('./Team2/AddressValidationAPI.js');
 const { updateListings } = require("./Team3/UC8update_listings.js");
 const { deleteListings } = require("./Team3/UC8update_listings.js");
 const { addProduct } = require("./Team3/UCCreateProduct.js");
@@ -63,11 +62,7 @@ const {
 } = require("./Team4/Product_Review.js");
 const productFilterQuery = require("./Team4/Filter_Search.js");
 const { checkout } = require("./Team2/Checkout.js");
-const {
-  addToWatchlist,
-  removeFromWatchlist,
-  getWatchlist,
-} = require("./Team2/Watchlist.js");
+const {addToWatchlist,removeFromWatchlist,getWatchlist,getProduct,getUser} = require("./Team2/Watchlist.js");
 
 let responseSent = false;
 let result;
@@ -237,35 +232,33 @@ const server = http.createServer(async (req, res) => {
         const requestBody = JSON.parse(buffer);
         let result = null;
 
-        switch (trimmedPath) {
-          case "verify-address":
-            result = await verifyAddress(requestBody);
-            break;
-          case "standardize-address":
-            result = await standardizeAddress(requestBody);
-            break;
-          case "extract-address-components":
-            result = await extractAddressComponents(requestBody);
-            break;
-          case "check-address-completeness":
-            result = await checkAddressCompleteness(requestBody);
-            break;
+                switch (trimmedPath) {
+                    case 'verify-address':
+                        result = await verifyAddress(requestBody);
+                        break;
+                   
+                    case 'check-address-completeness':
+                        result = await checkAddressCompleteness(requestBody);
+                        break;
 
-          case "add-to-watchlist":
-            const { userId: userIdToAdd, productId: productIdToAdd } =
-              requestBody;
-            try {
-              await addToWatchlist(userIdToAdd, productIdToAdd);
-              res.writeHead(200, { "Content-Type": "application/json" });
-              res.end(
-                JSON.stringify({ message: "Product added to watchlist" })
-              );
-            } catch (error) {
-              console.error("Error adding product to watchlist:", error);
-              res.writeHead(500, { "Content-Type": "application/json" });
-              res.end(JSON.stringify({ error: "Internal Server Error" }));
-            }
-            return;
+                    case 'add-to-watchlist':
+                        const { userId: userIdToAdd, productId: productIdToAdd } = requestBody;
+                        try {
+                            const result = await addToWatchlist(userIdToAdd, productIdToAdd);
+                            if (result.error) {
+                                res.writeHead(404, { "Content-Type": "application/json" });
+                                res.end(JSON.stringify({ error: result.error }));
+                                return;
+                            }
+                            res.writeHead(200, { "Content-Type": "application/json" });
+                            res.end(JSON.stringify({ message: result.message }));
+                            return;
+                        } catch (error) {
+                            res.writeHead(500, { "Content-Type": "application/json" });
+                            res.end(JSON.stringify({ error: "Internal Server Error" }));
+                            return;
+                        }
+                        return;
 
           case "remove-from-watchlist":
             const { userId: userIdToRemove, productId: productIdToRemove } =
@@ -816,76 +809,66 @@ const server = http.createServer(async (req, res) => {
         const requestBody = JSON.parse(buffer);
         let result = null;
 
-        switch (trimmedPath) {
-          case "retrieve-address-history":
-            const { addressId } = requestBody;
-            try {
-              if (!addressId) {
-                throw new Error("Address ID is missing in the request body");
-              }
+                switch (trimmedPath) {
+                    case "retrieve-address-history":
+                        case "retrieve-address-history":
+                            const { userId, addressId } = requestBody; // Assuming userId is provided in the request body
+                            try {
+                                if (!userId || !addressId) {
+                                    throw new Error('User ID or Address ID is missing in the request body');
+                                }
+                                const result = await retrieveAddressHistory(userId, addressId);
 
-              const addressCriteria = { _id: new ObjectId(addressId) }; // Assuming addressId is the MongoDB ObjectId
-              const result = await retrieveAddressHistory(addressCriteria);
+                                if (!result) {
+                                    res.writeHead(404, { "Content-Type": "application/json" }); // Not Found status code
+                                    res.end(JSON.stringify({ message: "User or address not found" }));
+                                } else {
+                                    res.writeHead(200, { "Content-Type": "application/json" });
+                                    res.end(JSON.stringify({ addressHistory: result }));
+                                }
+                            } catch (error) {
+                                console.error("Error retrieving address history:", error);
+                                res.writeHead(500, { "Content-Type": "application/json" });
+                                res.end(JSON.stringify({ error: "Internal Server Error" }));
+                            }
+                            break;
+                        
 
-              if (!result || result.length === 0) {
-                res.writeHead(404, { "Content-Type": "application/json" }); // Not Found status code
-                res.end(JSON.stringify({ message: "Address not found" }));
-              } else {
-                res.writeHead(200, { "Content-Type": "application/json" });
-                res.end(JSON.stringify({ addressHistory: result }));
-              }
-            } catch (error) {
-              console.error("Error retrieving address history:", error);
-              res.writeHead(500, { "Content-Type": "application/json" });
-              res.end(JSON.stringify({ error: "Internal Server Error" }));
-            }
-            break;
-
-          case "fetch-cart-details":
-            try {
-              const userId = parsedUrl.query.userId; // Assuming parsedUrl is defined earlier
-
-              const cartDetails = await getCartDetails(userId);
-              res.writeHead(200, { "Content-Type": "application/json" });
-              res.end(
-                JSON.stringify({
-                  message: "Cart details fetched successfully",
-                  data: cartDetails,
-                })
-              );
-            } catch (error) {
-              console.error("Error fetching cart details:", error);
-              res.writeHead(500, { "Content-Type": "application/json" });
-              res.end(
-                JSON.stringify({
-                  message: "Error fetching cart details",
-                  error: error.toString(),
-                })
-              );
-            }
-            break;
-
-          case "get-watchlist":
-            const { userId: userIdToRetrieve } = requestBody;
-            try {
-              const watchList = await getWatchlist(userIdToRetrieve);
-              if (watchList.length === 0) {
-                res.writeHead(404, { "Content-Type": "application/json" }); // Not Found status code
-                res.end(
-                  JSON.stringify({
-                    message: "Watchlist not found for this user",
-                  })
-                );
-              } else {
-                res.writeHead(200, { "Content-Type": "application/json" });
-                res.end(JSON.stringify({ watchList }));
-              }
-            } catch (error) {
-              console.error("Error retrieving watchlist:", error);
-              res.writeHead(500, { "Content-Type": "application/json" });
-              res.end(JSON.stringify({ error: "Internal Server Error" }));
-            }
-            return;
+                    
+                    case "fetch-cart-details":
+                        try {
+                            const userId = parsedUrl.query.userId; // Assuming parsedUrl is defined earlier
+                
+                            const cartDetails = await getCartDetails(userId);
+                            res.writeHead(200, { "Content-Type": "application/json" });
+                            res.end(JSON.stringify({
+                                message: "Cart details fetched successfully",
+                                data: cartDetails,
+                        }));
+                    } catch (error) {
+                            console.error("Error fetching cart details:", error);
+                            res.writeHead(500, { "Content-Type": "application/json" });
+                            res.end(JSON.stringify({ message: "Error fetching cart details", error: error.toString() }));
+                    }
+                    break;
+                    
+                    case "get-watchlist":
+                        const { userId: userIdToRetrieve } = requestBody;
+                        try {
+                            const watchList = await getWatchlist(userIdToRetrieve);
+                            if (watchList.length === 0) {
+                                res.writeHead(404, { "Content-Type": "application/json" }); // Not Found status code
+                                res.end(JSON.stringify({ message: "Watchlist not found for this user" }));
+                            } else {
+                                res.writeHead(200, { "Content-Type": "application/json" });
+                                res.end(JSON.stringify({ watchList }));
+                            }
+                        } catch (error) {
+                            console.error("Error retrieving watchlist:", error);
+                            res.writeHead(500, { "Content-Type": "application/json" });
+                            res.end(JSON.stringify({ error: "Internal Server Error" }));
+                        }
+                        return;
 
           case "filterCatalog":
             result = await productFilterQuery(requestBody);
