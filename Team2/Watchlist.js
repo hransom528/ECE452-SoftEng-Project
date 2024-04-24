@@ -13,11 +13,25 @@ async function getProduct(productId) {
     return product;
 }
 
+async function getUser(userId) {
+    const db = await connectDB();
+    const collection = db.collection('users');
+
+    const user = await collection.findOne({ _id: new ObjectId(userId) });
+
+    return user;
+}
+
 async function addToWatchlist(userId, productId) {
     const db = await connectDB();
     const watchlistCollection = db.collection('watchList');
-    const productsCollection = db.collection('products');
 
+    const user = await getUser(userId);
+    if (!user) {
+        console.log('User not found. Please log in before adding to the watchlist.');
+        return;
+    }
+    else{
     // Fetch product details
     const product = await getProduct(productId);
 
@@ -27,12 +41,33 @@ async function addToWatchlist(userId, productId) {
         return;
     }
 
-    // Add product to watchlist
+    const existingWatchlist = await watchlistCollection.findOne({ userId: userId });
+    if (existingWatchlist && existingWatchlist.products.some(item => item.productId === productId)) {
+        console.log('Product is already in the watchlist.');
+        return;
+    }
+    // Add product to watchlist with additional details
     await watchlistCollection.updateOne(
         { userId: userId },
-        { $addToSet: { products: productId } },
+        { 
+            $addToSet: { 
+                products: { 
+                    productId, 
+                    productName: product.name,
+                    spec: product.spec,
+                    price: product.price,
+                    brand: product.brand,
+                    stockQuantity: product.stockQuantity,
+                    type: product.type,
+                    trendingScore: product.trendingScore,
+                    rating: product.rating
+                } 
+            } 
+        },
         { upsert: true }
     );
+}
+
 }
 
 async function removeFromWatchlist(userId, productId) {
@@ -42,15 +77,15 @@ async function removeFromWatchlist(userId, productId) {
     // Remove product from watchlist
     await watchlistCollection.updateOne(
         { userId: userId },
-        { $pull: { products: productId } }
+        { $pull: { products: { productId } } }
     );
 }
 
 async function getWatchlist(userId) {
     const db = await connectDB();
-    const collection = db.collection(watchlistCollection);
+    const watchlistCollection = db.collection('watchList');
 
-    const watchlist = await collection.findOne({ userId: userId });
+    const watchlist = await watchlistCollection.findOne({ userId: userId });
 
     if (!watchlist) {
         console.log('No watchlist found for this user.');
@@ -60,7 +95,19 @@ async function getWatchlist(userId) {
     console.log('Watchlist retrieved:', watchlist.products);
 
     // Fetch product details for each productId in the watchlist
-    const productDetails = await Promise.all(watchlist.products.map(productId => getProduct(productId)));
+    const productDetails = await Promise.all(watchlist.products.map(async ({ productId }) => {
+        const product = await getProduct(productId);
+        return { 
+            productName: product.name,
+            spec: product.spec,
+            price: product.price,
+            brand: product.brand,
+            stockQuantity: product.stockQuantity,
+            type: product.type,
+            trendingScore: product.trendingScore,
+            rating: product.rating
+        };
+    }));
 
     return productDetails;
 }
@@ -68,5 +115,7 @@ async function getWatchlist(userId) {
 module.exports = {
     getWatchlist,
     removeFromWatchlist,
-    addToWatchlist
+    addToWatchlist,
+    getProduct,
+    getUser
 };

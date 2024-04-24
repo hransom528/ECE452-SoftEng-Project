@@ -59,7 +59,7 @@ const {
 } = require("./Team4/Product_Review.js");
 const productFilterQuery = require("./Team4/Filter_Search.js");
 const { checkout } = require("./Team2/Checkout.js");
-const {addToWatchlist,removeFromWatchlist,getWatchlist} = require("./Team2/Watchlist.js");
+const {addToWatchlist,removeFromWatchlist,getWatchlist,getProduct,getUser} = require("./Team2/Watchlist.js");
 
 let responseSent = false;
 let result;
@@ -259,17 +259,38 @@ const server = http.createServer(async (req, res) => {
                         break;
 
                     case 'add-to-watchlist':
-                    const { userId: userIdToAdd, productId: productIdToAdd } = requestBody; 
-                    try {
-                        await addToWatchlist(userIdToAdd, productIdToAdd); 
-                        res.writeHead(200, { "Content-Type": "application/json" });
-                        res.end(JSON.stringify({ message: "Product added to watchlist" }));
-                    } catch (error) {
-                        console.error("Error adding product to watchlist:", error);
-                        res.writeHead(500, { "Content-Type": "application/json" });
-                        res.end(JSON.stringify({ error: "Internal Server Error" }));
-                    }
-                    return;
+                        const { userId: userIdToAdd, productId: productIdToAdd } = requestBody;
+                        try {
+                            const user = await getUser(userIdToAdd);
+                            if (!user) {
+                                res.writeHead(404, { "Content-Type": "application/json" });
+                                res.end(JSON.stringify({ error: "Please log in before adding to the watchlist." }));
+                                return;
+                            }
+
+                            const product = await getProduct(productIdToAdd);
+                            if (!product) {
+                                res.writeHead(404, { "Content-Type": "application/json" });
+                                res.end(JSON.stringify({ error: "Product not found." }));
+                                return;
+                            }
+
+                            const existingWatchlist = await getWatchlist(userIdToAdd);
+                            if (existingWatchlist.some(item => item.productId === productIdToAdd)) {
+                                res.writeHead(404, { "Content-Type": "application/json" });
+                                res.end(JSON.stringify({ error: "Product is already in the watchlist." }));
+                                return;
+                            }
+
+                            await addToWatchlist(userIdToAdd, productIdToAdd);
+                            res.writeHead(200, { "Content-Type": "application/json" });
+                            res.end(JSON.stringify({ message: "Product added to watchlist" }));
+                        } catch (error) {
+                            console.error("Error adding product to watchlist:", error);
+                            res.writeHead(500, { "Content-Type": "application/json" });
+                            res.end(JSON.stringify({ error: "Internal Server Error" }));
+                        }
+                        return;
 
                     case 'remove-from-watchlist':
                         const { userId: userIdToRemove, productId: productIdToRemove } = requestBody; 
