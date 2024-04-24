@@ -61,19 +61,12 @@ const Product = mongoose.model('Product', productSchema, 'products');
 const Cart = mongoose.model('Cart', cartSchema, 'carts');
 
 async function getProductPrice(productId) {
-    const product = await Product.findById(productId); // Use the Product model to find the product by ID
-    
-    // Check if the product was found
-    if (!product) {
-        // Return a default price if the product is not found
-        const defaultPrice = 0; // Set your desired default price here
-        return defaultPrice;
-    }
-
-    // Return the price field of the product if found
-    return product.price;
+        const product = await Product.findById(productId);
+        if (!product) {
+            return 0; // Ensure a number is returned
+        }
+        return product.price; // Ensure this is always a number
 }
-
 
 async function addToCart(userId, productId, quantity) {
     const cart = await Cart.findOne({ userId: userId }) || new Cart({ userId, items: [], cartSubTotal: 0 });
@@ -85,13 +78,22 @@ async function addToCart(userId, productId, quantity) {
     const itemIndex = cart.items.findIndex(item => item.productId.equals(productId));
 
     if (itemIndex > -1) {
+        // Calculate the old total price for this item
+        const oldTotalPrice = cart.items[itemIndex].quantity * pricePerItem;
+
         // Update quantity for existing item
         cart.items[itemIndex].quantity += quantity;
-        cart.cartSubTotal += totalPrice; // Update subtotal
+
+        // Calculate the new total price for this item
+        const newTotalPrice = cart.items[itemIndex].quantity * pricePerItem;
+
+        // Update the cart subtotal by removing the old total and adding the new total
+        cart.cartSubTotal = cart.cartSubTotal - oldTotalPrice + newTotalPrice;
     } else {
         // Add new item
         cart.items.push({ productId, quantity });
-        cart.cartSubTotal += totalPrice; // Update subtotal
+        // Update subtotal
+        cart.cartSubTotal += totalPrice;
     }
 
     await cart.save();
