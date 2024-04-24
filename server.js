@@ -1,4 +1,5 @@
 require("dotenv").config();
+
 const { ObjectId } = require("mongodb");
 const http = require("http");
 const url = require("url");
@@ -9,12 +10,10 @@ const {
   createPaymentAndProcessing,
 } = require("./Team3/stripe.js");
 const {
-  verifyAddress,
-  standardizeAddress,
-  extractAddressComponents,
-  checkAddressCompleteness,
-  retrieveAddressHistory,
-} = require("./Team2/AddressValidationAPI.js");
+    verifyAddress,
+    checkAddressCompleteness,
+    retrieveAddressHistory
+} = require('./Team2/AddressValidationAPI.js');
 const { updateListings } = require("./Team3/UC8update_listings.js");
 const { deleteListings } = require("./Team3/UC8update_listings.js");
 const { addProduct } = require("./Team3/UCCreateProduct.js");
@@ -63,11 +62,7 @@ const {
 } = require("./Team4/Product_Review.js");
 const productFilterQuery = require("./Team4/Filter_Search.js");
 const { checkout } = require("./Team2/Checkout.js");
-const {
-  addToWatchlist,
-  removeFromWatchlist,
-  getWatchlist,
-} = require("./Team2/Watchlist.js");
+const {addToWatchlist,removeFromWatchlist,getWatchlist,getProduct,getUser} = require("./Team2/Watchlist.js");
 
 let responseSent = false;
 let result;
@@ -128,36 +123,6 @@ const server = http.createServer(async (req, res) => {
                 message: "Name successfully updated",
                 data: result,
               })
-            );
-            break;
-          case "update-listings":
-            console.log(
-              "Received productIds for update:",
-              requestBody.productIds
-            );
-            console.log("Received update fields:", requestBody.updateFields);
-            console.log("Received fields to remove:", requestBody.unsetFields); // Log the fields to remove
-
-            if (
-              !Array.isArray(requestBody.productIds) ||
-              typeof requestBody.updateFields !== "object" ||
-              requestBody.productIds.some((id) => !ObjectId.isValid(id)) ||
-              (requestBody.unsetFields &&
-                !Array.isArray(requestBody.unsetFields))
-            ) {
-              // Check if unsetFields is an array if it exists
-              res.writeHead(400, { "Content-Type": "application/json" });
-              res.end(
-                JSON.stringify({
-                  message: "Invalid input for updating listings",
-                })
-              );
-              return;
-            }
-            result = await updateListings(
-              requestBody.productIds,
-              requestBody.updateFields,
-              requestBody.unsetFields
             );
             break;
           case "update-shipping-address":
@@ -267,35 +232,33 @@ const server = http.createServer(async (req, res) => {
         const requestBody = JSON.parse(buffer);
         let result = null;
 
-        switch (trimmedPath) {
-          case "verify-address":
-            result = await verifyAddress(requestBody);
-            break;
-          case "standardize-address":
-            result = await standardizeAddress(requestBody);
-            break;
-          case "extract-address-components":
-            result = await extractAddressComponents(requestBody);
-            break;
-          case "check-address-completeness":
-            result = await checkAddressCompleteness(requestBody);
-            break;
+                switch (trimmedPath) {
+                    case 'verify-address':
+                        result = await verifyAddress(requestBody);
+                        break;
+                   
+                    case 'check-address-completeness':
+                        result = await checkAddressCompleteness(requestBody);
+                        break;
 
-          case "add-to-watchlist":
-            const { userId: userIdToAdd, productId: productIdToAdd } =
-              requestBody;
-            try {
-              await addToWatchlist(userIdToAdd, productIdToAdd);
-              res.writeHead(200, { "Content-Type": "application/json" });
-              res.end(
-                JSON.stringify({ message: "Product added to watchlist" })
-              );
-            } catch (error) {
-              console.error("Error adding product to watchlist:", error);
-              res.writeHead(500, { "Content-Type": "application/json" });
-              res.end(JSON.stringify({ error: "Internal Server Error" }));
-            }
-            return;
+                    case 'add-to-watchlist':
+                        const { userId: userIdToAdd, productId: productIdToAdd } = requestBody;
+                        try {
+                            const result = await addToWatchlist(userIdToAdd, productIdToAdd);
+                            if (result.error) {
+                                res.writeHead(404, { "Content-Type": "application/json" });
+                                res.end(JSON.stringify({ error: result.error }));
+                                return;
+                            }
+                            res.writeHead(200, { "Content-Type": "application/json" });
+                            res.end(JSON.stringify({ message: result.message }));
+                            return;
+                        } catch (error) {
+                            res.writeHead(500, { "Content-Type": "application/json" });
+                            res.end(JSON.stringify({ error: "Internal Server Error" }));
+                            return;
+                        }
+                        return;
 
           case "remove-from-watchlist":
             const { userId: userIdToRemove, productId: productIdToRemove } =
@@ -443,15 +406,15 @@ const server = http.createServer(async (req, res) => {
               return; // Exit the function here to prevent further execution
             }
 
-            // Call addToCart function
-            result = await addToCart(
-              requestBody.userId,
-              requestBody.productId,
-              requestBody.quantity
-            );
-            res.writeHead(200, { "Content-Type": "application/json" });
-            res.end(JSON.stringify(result)); // Send back the updated cart
-            return; // Make sure to return here to stop further execution and prevent additional responses
+                        // Call addToCart function
+                        result = await addToCart(
+                            requestBody.userId,
+                            requestBody.productId,
+                            requestBody.quantity
+                        );
+                        res.writeHead(200, { "Content-Type": "application/json" });
+                        res.end(JSON.stringify(result)); // Send back the updated cart
+                        return; // Make sure to return here to stop further execution and prevent additional responses
 
           case "remove-from-cart":
             if (
@@ -469,26 +432,26 @@ const server = http.createServer(async (req, res) => {
               return; // Exit this case block, ensuring no further code in this case is executed
             }
 
-            // Assuming removeFromCart function is defined and properly handles the logic
-            try {
-              const result = await removeFromCart(
-                requestBody.userId,
-                requestBody.productId,
-                requestBody.quantityToRemove
-              );
-              res.writeHead(200, { "Content-Type": "application/json" });
-              res.end(JSON.stringify(result)); // Send back the updated cart
-            } catch (error) {
-              console.error("Error removing item from cart:", error);
-              res.writeHead(500, { "Content-Type": "application/json" });
-              res.end(
-                JSON.stringify({
-                  message: "Error handling request",
-                  error: error.toString(),
-                })
-              );
-            }
-            return;
+                        // Assuming removeFromCart function is defined and properly handles the logic
+                        try {
+                            const result = await removeFromCart(
+                                requestBody.userId,
+                                requestBody.productId,
+                                requestBody.quantityToRemove
+                            );
+                            res.writeHead(200, { "Content-Type": "application/json" });
+                            res.end(JSON.stringify(result)); // Send back the updated cart
+                        } catch (error) {
+                            console.error("Error removing item from cart:", error);
+                            res.writeHead(500, { "Content-Type": "application/json" });
+                            res.end(
+                                JSON.stringify({
+                                    message: "Error handling request",
+                                    error: error.toString(),
+                                })
+                            );
+                        }
+                        return;
 
           //break here
 
@@ -726,6 +689,36 @@ const server = http.createServer(async (req, res) => {
                 );
               });
             return;
+                   case "update-listings":
+            console.log(
+              "Received productIds for update:",
+              requestBody.productIds
+            );
+            console.log("Received update fields:", requestBody.updateFields);
+            console.log("Received fields to remove:", requestBody.unsetFields); // Log the fields to remove
+
+            if (
+              !Array.isArray(requestBody.productIds) ||
+              typeof requestBody.updateFields !== "object" ||
+              requestBody.productIds.some((id) => !ObjectId.isValid(id)) ||
+              (requestBody.unsetFields &&
+                !Array.isArray(requestBody.unsetFields))
+            ) {
+              // Check if unsetFields is an array if it exists
+              res.writeHead(400, { "Content-Type": "application/json" });
+              res.end(
+                JSON.stringify({
+                  message: "Invalid input for updating listings",
+                })
+              );
+              return;
+            }
+            result = await updateListings(
+              requestBody.productIds,
+              requestBody.updateFields,
+              requestBody.unsetFields
+            );
+            break;
 
           case "update-discount":
             if (!requestBody._id || !requestBody.discountPercentage) {
@@ -816,76 +809,66 @@ const server = http.createServer(async (req, res) => {
         const requestBody = JSON.parse(buffer);
         let result = null;
 
-        switch (trimmedPath) {
-          case "retrieve-address-history":
-            const { addressId } = requestBody;
-            try {
-              if (!addressId) {
-                throw new Error("Address ID is missing in the request body");
-              }
+                switch (trimmedPath) {
+                    case "retrieve-address-history":
+                        case "retrieve-address-history":
+                            const { userId, addressId } = requestBody; // Assuming userId is provided in the request body
+                            try {
+                                if (!userId || !addressId) {
+                                    throw new Error('User ID or Address ID is missing in the request body');
+                                }
+                                const result = await retrieveAddressHistory(userId, addressId);
 
-              const addressCriteria = { _id: new ObjectId(addressId) }; // Assuming addressId is the MongoDB ObjectId
-              const result = await retrieveAddressHistory(addressCriteria);
+                                if (!result) {
+                                    res.writeHead(404, { "Content-Type": "application/json" }); // Not Found status code
+                                    res.end(JSON.stringify({ message: "User or address not found" }));
+                                } else {
+                                    res.writeHead(200, { "Content-Type": "application/json" });
+                                    res.end(JSON.stringify({ addressHistory: result }));
+                                }
+                            } catch (error) {
+                                console.error("Error retrieving address history:", error);
+                                res.writeHead(500, { "Content-Type": "application/json" });
+                                res.end(JSON.stringify({ error: "Internal Server Error" }));
+                            }
+                            break;
+                        
 
-              if (!result || result.length === 0) {
-                res.writeHead(404, { "Content-Type": "application/json" }); // Not Found status code
-                res.end(JSON.stringify({ message: "Address not found" }));
-              } else {
-                res.writeHead(200, { "Content-Type": "application/json" });
-                res.end(JSON.stringify({ addressHistory: result }));
-              }
-            } catch (error) {
-              console.error("Error retrieving address history:", error);
-              res.writeHead(500, { "Content-Type": "application/json" });
-              res.end(JSON.stringify({ error: "Internal Server Error" }));
-            }
-            break;
-
-          case "fetch-cart-details":
-            try {
-              const userId = parsedUrl.query.userId; // Assuming parsedUrl is defined earlier
-
-              const cartDetails = await getCartDetails(userId);
-              res.writeHead(200, { "Content-Type": "application/json" });
-              res.end(
-                JSON.stringify({
-                  message: "Cart details fetched successfully",
-                  data: cartDetails,
-                })
-              );
-            } catch (error) {
-              console.error("Error fetching cart details:", error);
-              res.writeHead(500, { "Content-Type": "application/json" });
-              res.end(
-                JSON.stringify({
-                  message: "Error fetching cart details",
-                  error: error.toString(),
-                })
-              );
-            }
-            break;
-
-          case "get-watchlist":
-            const { userId: userIdToRetrieve } = requestBody;
-            try {
-              const watchList = await getWatchlist(userIdToRetrieve);
-              if (watchList.length === 0) {
-                res.writeHead(404, { "Content-Type": "application/json" }); // Not Found status code
-                res.end(
-                  JSON.stringify({
-                    message: "Watchlist not found for this user",
-                  })
-                );
-              } else {
-                res.writeHead(200, { "Content-Type": "application/json" });
-                res.end(JSON.stringify({ watchList }));
-              }
-            } catch (error) {
-              console.error("Error retrieving watchlist:", error);
-              res.writeHead(500, { "Content-Type": "application/json" });
-              res.end(JSON.stringify({ error: "Internal Server Error" }));
-            }
-            return;
+                    
+                    case "fetch-cart-details":
+                        try {
+                            const userId = parsedUrl.query.userId; // Assuming parsedUrl is defined earlier
+                
+                            const cartDetails = await getCartDetails(userId);
+                            res.writeHead(200, { "Content-Type": "application/json" });
+                            res.end(JSON.stringify({
+                                message: "Cart details fetched successfully",
+                                data: cartDetails,
+                        }));
+                    } catch (error) {
+                            console.error("Error fetching cart details:", error);
+                            res.writeHead(500, { "Content-Type": "application/json" });
+                            res.end(JSON.stringify({ message: "Error fetching cart details", error: error.toString() }));
+                    }
+                    break;
+                    
+                    case "get-watchlist":
+                        const { userId: userIdToRetrieve } = requestBody;
+                        try {
+                            const watchList = await getWatchlist(userIdToRetrieve);
+                            if (watchList.length === 0) {
+                                res.writeHead(404, { "Content-Type": "application/json" }); // Not Found status code
+                                res.end(JSON.stringify({ message: "Watchlist not found for this user" }));
+                            } else {
+                                res.writeHead(200, { "Content-Type": "application/json" });
+                                res.end(JSON.stringify({ watchList }));
+                            }
+                        } catch (error) {
+                            console.error("Error retrieving watchlist:", error);
+                            res.writeHead(500, { "Content-Type": "application/json" });
+                            res.end(JSON.stringify({ error: "Internal Server Error" }));
+                        }
+                        return;
 
           case "filterCatalog":
             result = await productFilterQuery(requestBody);
