@@ -49,7 +49,7 @@ async function reviewProduct(userId, productId, title, rating, review) {
         const reviewsCollection = db.collection('reviews');
         const result = await reviewsCollection.insertOne({
             userId: userId,
-            productId: productId,
+            productId: product,
             title: title,
             rating: rating,
             review: review,
