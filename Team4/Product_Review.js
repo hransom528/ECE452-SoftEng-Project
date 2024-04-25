@@ -38,7 +38,7 @@ async function hasPurchasedProduct(userId, productId) {
 
 // Function to allow the user to give a star rating and leave a review for a product
 async function reviewProduct(userId, productId, title, rating, review) {
-      const productId = await getProductById(productId);
+      const product = await getProductById(productId);
       const ratingInt = parseInt(rating);
   if (isNaN(ratingInt) || ratingInt < 1 || ratingInt > 5) {
     throw new Error("Rating must be a number between 1 and 5");
