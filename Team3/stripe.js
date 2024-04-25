@@ -231,7 +231,6 @@ async function verifyCardAndUpdateDB(userObjectId, stripeCustomerId, stripeToken
     }
 }
 
-  
 module.exports = {
     createStripeCustomerAndUpdateDB,
     verifyCardAndUpdateDB,
