@@ -76,11 +76,11 @@ const server = http.createServer(async (req, res) => {
   let buffer = "";
 
   // Log HTTP method, request URL, and headers
-  console.log(`HTTP Method: ${req.method}`);
-  console.log(`Request URL: ${req.url}`);
-  console.log(`Headers: ${JSON.stringify(req.headers, null, 2)}`);
-  // Assuming the buffer contains the full request body
-  console.log(`Request Body: ${buffer}`);
+  // console.log(`HTTP Method: ${req.method}`);
+  // console.log(`Request URL: ${req.url}`);
+  // console.log(`Headers: ${JSON.stringify(req.headers, null, 2)}`);
+  // // Assuming the buffer contains the full request body
+  // console.log(`Request Body: ${buffer}`);
 
   req.on("data", (data) => {
     buffer += decoder.write(data);
@@ -88,7 +88,7 @@ const server = http.createServer(async (req, res) => {
 
   req.on("end", async () => {
     buffer += decoder.end();
-    console.log(`Request Body: ${buffer}`);
+    // console.log(`Request Body: ${buffer}`);
 
     // Wrap res.write and res.end to capture and log response details
     const originalWrite = res.write.bind(res);
@@ -103,12 +103,17 @@ const server = http.createServer(async (req, res) => {
     res.end = (chunk, ...args) => {
       if (chunk) responseBody += chunk;
       // Log the response just before sending it
-      console.log(`Response Status: ${res.statusCode}`);
-      console.log(`Response Headers: ${JSON.stringify(res.getHeaders())}`);
-      console.log(`Response Body: ${responseBody}`);
+      // console.log(`Response Status: ${res.statusCode}`);
+      // console.log(`Response Headers: ${JSON.stringify(res.getHeaders())}`);
+      // console.log(`Response Body: ${responseBody}`);
 
       originalEnd(chunk, ...args);
     };
+
+    // ACCESS TOKEN 
+    const authHeader = req.headers['authorization'] || '';
+    const token = authHeader.split(' ')[1]; // Assumes Bearer token
+
     try {
       if (req.method === "PATCH") {
         const requestBody = JSON.parse(buffer);
@@ -499,8 +504,10 @@ const server = http.createServer(async (req, res) => {
             break;
 
           case "registerUser":
-            const accessToken = requestBody.accessToken; // part of post request JSON
-            if (!accessToken) {
+            // const accessToken = requestBody.accessToken; // part of post request JSON
+            // const authHeader3 = req.headers['authorization'] || '';
+            // const token3 = authHeader3.split(' ')[1]; // Assumes Bearer token
+            if (!token) {
               throw new Error("Not able to authorize"); // maybe give res writehead here
             }
             try {
@@ -508,7 +515,7 @@ const server = http.createServer(async (req, res) => {
               // const accessToken = await getAccessTokenFromCode(authCode);
 
               // use access token to get user's info from google account
-              const userInfo = await getUserInfo(accessToken);
+              const userInfo = await getUserInfo(token);
 
               //use the info we got to finish registering the user
               result = await registerUser(userInfo, requestBody);
@@ -534,8 +541,10 @@ const server = http.createServer(async (req, res) => {
             break;
 
           case "loginUser":
-            const accToken = requestBody.accToken; // part of post request JSON
-            if (!accToken) {
+            // const accToken = requestBody.accToken; // part of post request JSON
+            // const authHeader2 = req.headers['authorization'] || '';
+            // const token2 = authHeader2.split(' ')[1]; // Assumes Bearer token
+            if (!token) {
               res.writeHead(400, { "Content-Type": "application/json" });
               res.end(JSON.stringify({ message: "Access Token is required" }));
               responseSent = true;
@@ -543,7 +552,7 @@ const server = http.createServer(async (req, res) => {
             }
             try {
               // Use access token to get user's info from Google account
-              const userInfo = await getUserInfo(accToken);
+              const userInfo = await getUserInfo(token);
 
               // Use the info we got to log the user in
               result = await loginUser(userInfo, requestBody);
@@ -575,9 +584,11 @@ const server = http.createServer(async (req, res) => {
             break;
 
           case "talkToAI":
-            const aToken = requestBody.aToken; // part of post request JSON
-            const userInfo = await getUserInfo(aToken);
-            if (!aToken) {
+            // const token = requestBody.aToken; // part of post request JSON
+            // const authHeader = req.headers['authorization'] || '';
+            // const token = authHeader.split(' ')[1]; // Assumes Bearer token
+            const userInfo = await getUserInfo(token);
+            if (!token) {
               res.writeHead(400, { "Content-Type": "application/json" });
               res.end(JSON.stringify({ message: "Access Token is required" }));
               responseSent = true;

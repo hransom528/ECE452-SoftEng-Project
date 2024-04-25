@@ -50,8 +50,8 @@
     "description": "The compact iron design is perfect for any home gym setup.",
     "brand": "Brooks",
     "type": "Bench",
-    "price": 201,
-    "stockQuantity": 18,
+    "price": 500,
+    "stockQuantity": 45,
     "specs": {
       "weight": "18 lbs"
     },
@@ -64,8 +64,8 @@
     "description": "The foldable steel design is perfect for any home gym setup.",
     "brand": "ProForm",
     "type": "Bench",
-    "price": 43,
-    "stockQuantity": 8,
+    "price": 500,
+    "stockQuantity": 45,
     "specs": {
       "weight": "44 lbs"
     },
