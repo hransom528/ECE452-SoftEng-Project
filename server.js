@@ -1,5 +1,4 @@
 require("dotenv").config();
-
 const { ObjectId } = require("mongodb");
 const http = require("http");
 const url = require("url");
@@ -8,6 +7,7 @@ const {
   createStripeCustomerAndUpdateDB,
   verifyCardAndUpdateDB,
   createPaymentAndProcessing,
+  refundPayment,
 } = require("./Team3/stripe.js");
 const {
     verifyAddress,
@@ -332,58 +332,98 @@ const server = http.createServer(async (req, res) => {
             );
             result = { message: "Checkout successful" };
             break;
-          case "verify-card-details":
-            try {
-              const { userObjectId, stripeCustomerId, stripeToken } =
-                requestBody;
-              const verifyResult = await verifyCardAndUpdateDB(
-                userObjectId,
-                stripeCustomerId,
-                stripeToken
-              );
-              res.writeHead(200, { "Content-Type": "application/json" });
-              res.end(JSON.stringify({ success: true, data: verifyResult }));
-            } catch (error) {
-              console.error("Error verifying card details:", error);
-              if (!res.headersSent) {
-                res.writeHead(500, { "Content-Type": "application/json" });
-                res.end(
-                  JSON.stringify({
-                    success: false,
-                    message: "Failed to verify card details",
-                    error: error.message,
-                  })
-                );
-              }
-            }
-            return;
-          case "process-payment":
-            try {
-              const { stripeCustomerId, paymentMethodId, amountInDollars } =
-                requestBody;
-              const paymentResult = await createPaymentAndProcessing(
-                stripeCustomerId,
-                paymentMethodId,
-                amountInDollars
-              );
-              res.writeHead(200, { "Content-Type": "application/json" });
-              res.end(
-                JSON.stringify({
-                  message: "Payment processed successfully",
-                  data: paymentResult,
-                })
-              );
-            } catch (error) {
-              console.error("Error processing payment:", error);
-              res.writeHead(500, { "Content-Type": "application/json" });
-              res.end(
-                JSON.stringify({
-                  message: "Failed to process payment",
-                  error: error.message,
-                })
-              );
-            }
-            break;
+            case "verify-card-details":
+                try {
+                  const { userObjectId, stripeCustomerId, stripeToken } = requestBody;
+                  const verifyResult = await verifyCardAndUpdateDB(
+                    userObjectId,
+                    stripeCustomerId,
+                    stripeToken
+                  );
+                  const statusCode = verifyResult.success ? 200 : 400; // Use 400 for client-side error
+                  res.writeHead(statusCode, { "Content-Type": "application/json" });
+                  res.end(JSON.stringify({ success: verifyResult.success, data: verifyResult }));
+                } catch (error) {
+                  console.error("Error verifying card details:", error);
+                  if (!res.headersSent) {
+                    res.writeHead(500, { "Content-Type": "application/json" });
+                    res.end(
+                      JSON.stringify({
+                        success: false,
+                        message: "Failed to verify card details",
+                        error: error.message,
+                      })
+                    );
+                  }
+                }
+                return;
+                case "refund-payment":
+                    try {
+                      const { stripeCustomerId, paymentIntentId, reason } = requestBody;
+                  
+                      // Call your refund function
+                      const refundResult = await refundPayment(stripeCustomerId, paymentIntentId, reason);
+                  
+                      // Determine the status code based on the operation result
+                      const statusCode = refundResult.success ? 200 : 400; // Use 400 for client error
+                  
+                      // Write the appropriate headers and response
+                      res.writeHead(statusCode, { "Content-Type": "application/json" });
+                      res.end(JSON.stringify({ success: refundResult.success, data: refundResult }));
+                    } catch (error) {
+                      console.error("Error processing refund:", error);
+                      if (!res.headersSent) {
+                        // Write the headers for an internal server error
+                        res.writeHead(500, { "Content-Type": "application/json" });
+                        res.end(
+                          JSON.stringify({
+                            success: false,
+                            message: "Failed to process refund",
+                            error: error.message,
+                          })
+                        );
+                      }
+                    }
+                    return;
+            case "process-payment":
+                try {
+                  const { stripeCustomerId, paymentMethodId, amountInDollars } = requestBody;
+                  const paymentResult = await createPaymentAndProcessing(
+                    stripeCustomerId,
+                    paymentMethodId,
+                    amountInDollars
+                  );
+              
+                  // Check if the payment was successful and send the appropriate response
+                  if (paymentResult.success) {
+                    res.writeHead(200, { "Content-Type": "application/json" });
+                    res.end(
+                      JSON.stringify({
+                        message: "Payment processed successfully",
+                        data: paymentResult,
+                      })
+                    );
+                  } else {
+                    // If paymentResult indicates failure, send a client error response
+                    res.writeHead(400, { "Content-Type": "application/json" }); // Using 400 Bad Request for client-side error
+                    res.end(
+                      JSON.stringify({
+                        message: paymentResult.message, // This will contain the actual error message
+                        data: paymentResult,
+                      })
+                    );
+                  }
+                } catch (error) {
+                  console.error("Error processing payment:", error);
+                  res.writeHead(500, { "Content-Type": "application/json" });
+                  res.end(
+                    JSON.stringify({
+                      message: "Failed to process payment",
+                      error: error.message,
+                    })
+                  );
+                }
+                break;               
           // userProfile.js
           case "update-user-profile":
             userInfo = await getUserInfo(token);
@@ -428,30 +468,47 @@ const server = http.createServer(async (req, res) => {
             result = await addUserShippingAddress(requestBody);
             break;
 
-          case "update-listings":
-            if (
-              !Array.isArray(requestBody.productIds) ||
-              typeof requestBody.updateFields !== "object" ||
-              requestBody.productIds.some((id) => !ObjectId.isValid(id)) ||
-              (requestBody.unsetFields &&
-                !Array.isArray(requestBody.unsetFields))
-            ) {
-              res.writeHead(400, { "Content-Type": "application/json" });
-              res.end(
-                JSON.stringify({
-                  message: "Invalid input for updating listings",
-                })
-              );
-              responseSent = true;
-              return;
-            }
-            result = await updateListings(
-              requestBody.productIds,
-              requestBody.updateFields,
-              requestBody.unsetFields
-            );
-            break;
-
+            case "update-listings":
+                // Validate request body structure and content
+                if (!Array.isArray(requestBody.productIds) || requestBody.productIds.length === 0) {
+                    res.writeHead(400, { "Content-Type": "application/json" });
+                    res.end(JSON.stringify({ message: "Product IDs must be a non-empty array." }));
+                    responseSent = true;
+                    return;
+                }
+                if (typeof requestBody.updateFields !== "object" || Object.keys(requestBody.updateFields).length === 0) {
+                    res.writeHead(400, { "Content-Type": "application/json" });
+                    res.end(JSON.stringify({ message: "Update fields must be a non-empty object." }));
+                    responseSent = true;
+                    return;
+                }
+                if (requestBody.productIds.some(id => !ObjectId.isValid(id))) {
+                    res.writeHead(400, { "Content-Type": "application/json" });
+                    res.end(JSON.stringify({ message: "One or more product IDs are invalid." }));
+                    responseSent = true;
+                    return;
+                }
+                if (requestBody.unsetFields && !Array.isArray(requestBody.unsetFields)) {
+                    res.writeHead(400, { "Content-Type": "application/json" });
+                    res.end(JSON.stringify({ message: "Unset fields must be an array if provided." }));
+                    responseSent = true;
+                    return;
+                }
+                try {
+                    const result = await updateListings(
+                        requestBody.productIds,
+                        requestBody.updateFields,
+                        requestBody.unsetFields || []
+                    );
+                    res.writeHead(200, { "Content-Type": "application/json" });
+                    res.end(JSON.stringify({ message: "Listings updated successfully.", result: result }));
+                } catch (error) {
+                    console.error("Error updating listings:", error);
+                    res.writeHead(500, { "Content-Type": "application/json" });
+                    res.end(JSON.stringify({ message: "Internal server error while updating listings." }));
+                }
+                break;
+            
           case "add-to-cart":
             if (
               !ObjectId.isValid(requestBody.userId) ||
@@ -983,31 +1040,32 @@ const server = http.createServer(async (req, res) => {
               })
             );
             break;
-          case "create-stripe-customer":
-            const { userObjectId, email, name } = requestBody;
-            createStripeCustomerAndUpdateDB(userObjectId, email, name)
-              .then((customerResult) => {
-                if (!res.headersSent) {
-                  res.writeHead(200, { "Content-Type": "application/json" });
-                  res.end(
-                    JSON.stringify({ success: true, data: customerResult })
-                  );
-                }
-              })
-              .catch((error) => {
-                console.error("Error creating Stripe customer:", error);
-                if (!res.headersSent) {
-                  res.writeHead(500, { "Content-Type": "application/json" });
-                  res.end(
-                    JSON.stringify({
-                      success: false,
-                      message: "Failed to create Stripe customer",
-                      error: error.message,
-                    })
-                  );
-                }
-              });
-            return;
+            case "create-stripe-customer":
+                const { userObjectId, email, name } = requestBody;
+                createStripeCustomerAndUpdateDB(userObjectId, email, name)
+                  .then((customerResult) => {
+                    if (!res.headersSent) {
+                      const statusCode = customerResult.success ? 200 : 400; // Use 400 to indicate a user-related error
+                      res.writeHead(statusCode, { "Content-Type": "application/json" });
+                      res.end(
+                        JSON.stringify({ success: customerResult.success, data: customerResult })
+                      );
+                    }
+                  })
+                  .catch((error) => {
+                    console.error("Error creating Stripe customer:", error);
+                    if (!res.headersSent) {
+                      res.writeHead(500, { "Content-Type": "application/json" });
+                      res.end(
+                        JSON.stringify({
+                          success: false,
+                          message: "Failed to create Stripe customer",
+                          error: error.message,
+                        })
+                      );
+                    }
+                  });
+                return;
           case "autocomplete":
             result = await autocompleteProductSearch(requestBody.query);
             res.writeHead(200, { "Content-Type": "application/json" });
