@@ -7,8 +7,6 @@ async function addProduct(productDetails) {
         throw new Error('\'productDetails\' are required');
     }
 
-    
-
     const db = await connectDB();
     const collection = db.collection('products');
 
