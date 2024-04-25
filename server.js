@@ -120,6 +120,14 @@ const server = http.createServer(async (req, res) => {
 
         switch (trimmedPath) {
           case "update-name":
+            const userInfo = await getUserInfo(token);
+            if (!token) {
+              res.writeHead(400, { "Content-Type": "application/json" });
+              res.end(JSON.stringify({ message: "Access Token is required" }));
+              responseSent = true;
+              return;
+            }
+
             result = await updateUserName(requestBody);
             res.writeHead(200, { "Content-Type": "application/json" });
             res.end(
@@ -130,6 +138,14 @@ const server = http.createServer(async (req, res) => {
             );
             break;
           case "update-shipping-address":
+            userInfo = await getUserInfo(token);
+            if (!token) {
+              res.writeHead(400, { "Content-Type": "application/json" });
+              res.end(JSON.stringify({ message: "Access Token is required" }));
+              responseSent = true;
+              return;
+            }
+
             result = await updateUserShippingAddress(requestBody);
             res.writeHead(200, { "Content-Type": "application/json" });
             res.end(
@@ -151,6 +167,14 @@ const server = http.createServer(async (req, res) => {
 
         switch (trimmedPath) {
           case "update-user-profile":
+            const userInfo = await getUserInfo(token);
+            if (!token) {
+              res.writeHead(400, { "Content-Type": "application/json" });
+              res.end(JSON.stringify({ message: "Access Token is required" }));
+              responseSent = true;
+              return;
+            }
+
             result = await updateUserProfile(requestBody);
             res.writeHead(200, { "Content-Type": "application/json" });
             res.end(
@@ -172,6 +196,14 @@ const server = http.createServer(async (req, res) => {
 
         switch (trimmedPath) {
           case "delete-shipping-address":
+            const userInfo = await getUserInfo(token);
+            if (!token) {
+              res.writeHead(400, { "Content-Type": "application/json" });
+              res.end(JSON.stringify({ message: "Access Token is required" }));
+              responseSent = true;
+              return;
+            }
+
             result = await deleteUserShippingAddress(requestBody);
             res.writeHead(200, { "Content-Type": "application/json" });
             res.end(
@@ -217,6 +249,14 @@ const server = http.createServer(async (req, res) => {
             }
             return;
           case "delete-user-profile":
+            userInfo = await getUserInfo(token);
+            if (!token) {
+              res.writeHead(400, { "Content-Type": "application/json" });
+              res.end(JSON.stringify({ message: "Access Token is required" }));
+              responseSent = true;
+              return;
+            }
+
             result = await deleteUserProfile(requestBody);
             res.writeHead(200, { "Content-Type": "application/json" });
             res.end(
@@ -346,6 +386,14 @@ const server = http.createServer(async (req, res) => {
             break;
           // userProfile.js
           case "update-user-profile":
+            userInfo = await getUserInfo(token);
+            if (!token) {
+              res.writeHead(400, { "Content-Type": "application/json" });
+              res.end(JSON.stringify({ message: "Access Token is required" }));
+              responseSent = true;
+              return;
+            }
+
             try {
               // Directly passing requestBody to updateUserProfile
               const result = await updateUserProfile(requestBody);
@@ -369,6 +417,14 @@ const server = http.createServer(async (req, res) => {
             }
             break;
           case "add-shipping-address":
+            userInfo = await getUserInfo(token);
+            if (!token) {
+              res.writeHead(400, { "Content-Type": "application/json" });
+              res.end(JSON.stringify({ message: "Access Token is required" }));
+              responseSent = true;
+              return;
+            }
+
             result = await addUserShippingAddress(requestBody);
             break;
 
@@ -643,6 +699,14 @@ const server = http.createServer(async (req, res) => {
 
           // membershipManagement.js
           case "create-premium-membership":
+            userInfo = await getUserInfo(token);
+            if (!token) {
+              res.writeHead(400, { "Content-Type": "application/json" });
+              res.end(JSON.stringify({ message: "Access Token is required" }));
+              responseSent = true;
+              return;
+            }
+
             if (
               !requestBody.userId ||
               !requestBody.stripeCustomerId ||
@@ -659,6 +723,14 @@ const server = http.createServer(async (req, res) => {
             );
             break;
           case "cancel-premium-membership":
+            userInfo = await getUserInfo(token);
+            if (!token) {
+              res.writeHead(400, { "Content-Type": "application/json" });
+              res.end(JSON.stringify({ message: "Access Token is required" }));
+              responseSent = true;
+              return;
+            }
+
             if (!requestBody.userId) {
               throw new Error(
                 "Missing userId for cancelling premium membership"
@@ -670,6 +742,16 @@ const server = http.createServer(async (req, res) => {
           // contact.html
           case "send-email":
             // Forward the request to the web3forms API
+            // need to implement token here
+
+            userInfo = await getUserInfo(token);
+            if (!token) {
+              res.writeHead(400, { "Content-Type": "application/json" });
+              res.end(JSON.stringify({ message: "Access Token is required" }));
+              responseSent = true;
+              return;
+            }
+
             fetch("https://api.web3forms.com/submit", {
               method: "POST",
               headers: {
