@@ -63,7 +63,6 @@ async function reviewProduct(userId, productId, title, rating, review) {
 }
 
 module.exports = {
-    getProductByName,
     hasPurchasedProduct,
     reviewProduct
 };

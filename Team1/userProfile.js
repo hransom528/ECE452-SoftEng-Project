@@ -19,20 +19,25 @@ async function validateAccessTokenAndGetUserInfo(accToken) {
 }
 
 function validateEmail(email) {
-    const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return re.test(String(email).toLowerCase());
 }
 
 async function updateUserProfile(requestBody) {
     const { userId, profileUpdates, accToken } = requestBody;
     
-    // Validate the access token and get user info
-    const userInfo = await validateAccessTokenAndGetUserInfo(accToken);
-    
     if (!userId || !profileUpdates) {
         throw new Error('userId and profileUpdates are required');
     }
-
+    
+    // Validate that userId is a valid MongoDB ObjectId
+    if (!ObjectId.isValid(userId)) {
+        throw new Error('Invalid userId format');
+    }
+    
+    // Validate the access token and get user info
+    const userInfo = await validateAccessTokenAndGetUserInfo(accToken);
+    
     const db = await connectDB();
     const collection = db.collection('users');
     const userObjectId = new ObjectId(userId);

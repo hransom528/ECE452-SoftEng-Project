@@ -109,7 +109,7 @@ const server = http.createServer(async (req, res) => {
       originalEnd(chunk, ...args);
     };
 
-    // ACCESS TOKEN 
+    // ACCESS TOKEN
     const authHeader = req.headers['authorization'] || '';
     const token = authHeader.split(' ')[1]; // Assumes Bearer token
 
