@@ -1,8 +1,8 @@
-const { connectDB } = require('../dbConfig');
+const { connectDB } = require('../../dbConfig');
 const { ObjectId } = require('mongodb');
 const { v4: uuidv4 } = require('uuid');
-const { getUserInfo } = require('./Reg_lgn/oAuthHandler');
-const { verifyAddress } = require('../Team2/AddressValidationAPI');
+const { getUserInfo } = require('../Reg_lgn/oAuthHandler');
+const { verifyAddress } = require('../../Team2/AddressValidationAPI');
 
 async function validateAccessTokenAndGetUserInfo(accToken) {
     if (!accToken) {
