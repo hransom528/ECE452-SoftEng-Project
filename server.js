@@ -1,5 +1,5 @@
 require("dotenv").config();
-
+const {checkoutCart} = require("./Team2/checkoutV2");
 const { ObjectId } = require("mongodb");
 const http = require("http");
 const url = require("url");
@@ -263,7 +263,7 @@ const server = http.createServer(async (req, res) => {
                             res.end(JSON.stringify({ error: "Internal Server Error" }));
                             return;
                         }
-                        return;
+                        
 
           case "remove-from-watchlist":
             const { userId: userIdToRemove, productId: productIdToRemove } =
@@ -282,16 +282,26 @@ const server = http.createServer(async (req, res) => {
             return;
 
           case "checkout":
-            const { userId, cartId, address, paymentToken, stripeCustomerId } =
-              requestBody;
-            await checkout(
-              userId,
-              cartId,
-              address,
-              paymentToken,
-              stripeCustomerId
-            );
-            result = { message: "Checkout successful" };
+            // const { userId, cartId, address, paymentToken, stripeCustomerId } =
+            //   requestBody;
+            // await checkout(
+            //   userId,
+            //   cartId,
+            //   address,
+            //   paymentToken,
+            //   stripeCustomerId
+            // );
+            // result = { message: "Checkout successful" };
+            const { userId, billingAddr, shippingAddr, paymentInfo } = requestBody;
+            checkoutCart(userId, billingAddr, shippingAddr, paymentInfo)
+                       .then(checkoutDetails => {
+                         console.log('Checkout Successful:', checkoutDetails);
+                       })
+                       .catch(error => {
+                         console.error('Checkout Failed:', error.message);
+                       });
+
+
             break;
           case "verify-card-details":
             try {
@@ -821,6 +831,18 @@ const server = http.createServer(async (req, res) => {
         let result = null;
 
                 switch (trimmedPath) {
+
+                    case "chrisTest":
+                      
+                    checkoutCart('65fb26fd8ee7dfe76e1b0dcd')
+                       .then(checkoutDetails => {
+                         console.log('Checkout Successful:', checkoutDetails);
+                       })
+                       .catch(error => {
+                         console.error('Checkout Failed:', error.message);
+                       });
+                      break;
+                      
                     case "retrieve-address-history":
                         case "retrieve-address-history":
                             const { userId, addressId } = requestBody; // Assuming userId is provided in the request body
