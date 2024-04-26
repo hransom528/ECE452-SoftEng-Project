@@ -2,6 +2,7 @@ require("dotenv").config();
 const { ObjectId } = require("mongodb");
 const http = require("http");
 const url = require("url");
+
 const { StringDecoder } = require("string_decoder");
 const {
   createStripeCustomerAndUpdateDB,
@@ -67,6 +68,7 @@ let responseSent = false;
 let result;
 
 const server = http.createServer(async (req, res) => {
+
   const parsedUrl = url.parse(req.url, true);
   const path = parsedUrl.pathname;
   const trimmedPath = path.replace(/^\/+|\/+$/g, "");
@@ -278,7 +280,8 @@ const server = http.createServer(async (req, res) => {
 
                 switch (trimmedPath) {
                     case 'verify-address':
-                        result = await verifyAddress(requestBody);
+                        const add = requestBody.address;
+                        result = await verifyAddress(add);
                         break;
                    
                     case 'check-address-completeness':

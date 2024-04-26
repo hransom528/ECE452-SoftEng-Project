@@ -21,12 +21,8 @@ async function getUser(userId) {
     return user;
 }
 
-async function verifyAddress(data) {
+async function verifyAddress(address) {
     try {
-        // Extract address object from the data
-        const address = data.address;
-
-
         if (!address || typeof address !== 'object') {
             throw new Error('Invalid address object');
         }
@@ -39,32 +35,27 @@ async function verifyAddress(data) {
             address: addressString
         });
 
-
         // Check if response is undefined or no results found
         if (!response || !response.json || !response.json.results || response.json.results.length === 0) {
             console.log('Invalid response or no results found');
-            return "Address is incorrect. Please enter a valid address.";
+            return { message: "Address is incorrect. Please enter a valid address.", isValid: false };
         } else {
             // Check if the formatted address from the response matches the original address
             const formattedResponseAddress = formatAddress(response.json.results[0].formatted_address);
-            console.log(formattedResponseAddress);
             const originalAddressString = formatAddress(address);
-            console.log(originalAddressString);
             
             if (formattedResponseAddress !== originalAddressString) {
                 console.log('Partial match found');
-                return "Address is incorrect. Please enter a valid address.";
-
+                return { message: "Address is incorrect. Please enter a valid address.", isValid: false };
             } else {
                 console.log('Exact match found');
-                return "Address is correct.";
-
+                return { message: "Address is correct.", isValid: true };
             }
         }
 
     } catch (error) {
         console.error('Error verifying address:', error);
-        throw new Error('Failed to verify address');
+        return { message: 'Failed to verify address', isValid: false };
     }
 }
 

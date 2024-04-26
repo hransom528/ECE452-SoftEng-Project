@@ -29,6 +29,11 @@ async function addToWatchlist(userId, productId) {
         return { error: "User not found. Please log in before adding to the watchlist." };
     }
 
+    // Check if the product already exists in the watchlist
+    if (user.watchlist && user.watchlist.some(item => item.productId === productId)) {
+        return { error: "Product already exists in the watchlist." };
+    }
+
     // Fetch product details
     const product = await getProduct(productId);
 
