@@ -47,7 +47,7 @@ const {
   updateUserShippingAddress,
   deleteUserShippingAddress,
   deleteUserProfile,
-} = require("./Team1/userProfile");
+} = require("./Team1/UserProfile/userProfile");
 const {
   createPremiumMembership,
   cancelPremiumMembership,
