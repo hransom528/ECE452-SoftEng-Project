@@ -50,7 +50,7 @@ const {
 } = require("./Team1/userProfile");
 const {
   createPremiumMembership,
-  cancelPremiumMembersçhip,
+  cancelPremiumMembership,
 } = require("./Team1/membershipManagement.js");
 const { registerUser, loginUser } = require("./Team1/Reg_lgn/regLogin");
 const {
@@ -118,6 +118,8 @@ const server = http.createServer(async (req, res) => {
     const authHeader = req.headers['authorization'] || '';
     const token = authHeader.split(' ')[1]; // Assumes Bearer token
 
+    let userInfo;
+
     try {
       if (req.method === "PATCH") {
         const requestBody = JSON.parse(buffer);
@@ -125,7 +127,7 @@ const server = http.createServer(async (req, res) => {
 
         switch (trimmedPath) {
           case "update-name":
-            const userInfo = await getUserInfo(token);
+            userInfo = await getUserInfo(token);
             if (!token) {
               res.writeHead(400, { "Content-Type": "application/json" });
               res.end(JSON.stringify({ message: "Access Token is required" }));
@@ -172,7 +174,7 @@ const server = http.createServer(async (req, res) => {
 
         switch (trimmedPath) {
           case "update-user-profile":
-            const userInfo = await getUserInfo(token);
+            userInfo = await getUserInfo(token);
             if (!token) {
               res.writeHead(400, { "Content-Type": "application/json" });
               res.end(JSON.stringify({ message: "Access Token is required" }));
@@ -201,7 +203,7 @@ const server = http.createServer(async (req, res) => {
 
         switch (trimmedPath) {
           case "delete-shipping-address":
-            const userInfo = await getUserInfo(token);
+            userInfo = await getUserInfo(token);
             if (!token) {
               res.writeHead(400, { "Content-Type": "application/json" });
               res.end(JSON.stringify({ message: "Access Token is required" }));
@@ -680,7 +682,7 @@ const server = http.createServer(async (req, res) => {
               // const accessToken = await getAccessTokenFromCode(authCode);
 
               // use access token to get user's info from google account
-              const userInfo = await getUserInfo(token);
+              userInfo = await getUserInfo(token);
 
               //use the info we got to finish registering the user
               result = await registerUser(userInfo, requestBody);
@@ -717,7 +719,7 @@ const server = http.createServer(async (req, res) => {
             }
             try {
               // Use access token to get user's info from Google account
-              const userInfo = await getUserInfo(token);
+              userInfo = await getUserInfo(token);
 
               // Use the info we got to log the user in
               result = await loginUser(userInfo, requestBody);
@@ -752,7 +754,7 @@ const server = http.createServer(async (req, res) => {
             // const token = requestBody.aToken; // part of post request JSON
             // const authHeader = req.headers['authorization'] || '';
             // const token = authHeader.split(' ')[1]; // Assumes Bearer token
-            const userInfo = await getUserInfo(token);
+            userInfo = await getUserInfo(token);
             if (!token) {
               res.writeHead(400, { "Content-Type": "application/json" });
               res.end(JSON.stringify({ message: "Access Token is required" }));
@@ -809,13 +811,14 @@ const server = http.createServer(async (req, res) => {
 
           // membershipManagement.js
           case "create-premium-membership":
-            userInfo = await getUserInfo(token);
             if (!token) {
               res.writeHead(400, { "Content-Type": "application/json" });
               res.end(JSON.stringify({ message: "Access Token is required" }));
               responseSent = true;
               return;
             }
+
+            userInfo = await getUserInfo(token);
 
             if (
               !requestBody.userId ||
@@ -826,20 +829,16 @@ const server = http.createServer(async (req, res) => {
                 "Missing required parameters for creating premium membership"
               );
             }
-            result = await createPremiumMembership(
-              requestBody.userId,
-              requestBody.stripeCustomerId,
-              requestBody.stripeToken
-            );
+            result = await createPremiumMembership(requestBody);
             break;
           case "cancel-premium-membership":
-            userInfo = await getUserInfo(token);
             if (!token) {
               res.writeHead(400, { "Content-Type": "application/json" });
               res.end(JSON.stringify({ message: "Access Token is required" }));
               responseSent = true;
               return;
             }
+            userInfo = await getUserInfo(token);
 
             if (!requestBody.userId) {
               throw new Error(

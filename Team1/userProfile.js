@@ -165,32 +165,50 @@ async function addUserShippingAddress(requestBody) {
 
 async function updateUserShippingAddress(requestBody) {
     const { userId, addressId, updatedAddress } = requestBody;
-    
+
     if (!userId || !addressId || !updatedAddress) {
         throw new Error('userId, addressId, and updatedAddress are required');
     }
 
-    // Validate the updated address
-    const validatedAddress = await verifyAddress({address: updatedAddress});
-    if (!validatedAddress.isValid) {
-        throw new Error('Invalid address update');
+    if (!ObjectId.isValid(userId)) {
+        throw new Error('Invalid userId format');
     }
-
-    // Ensure that validatedAddress does not contain an addressId field
-    // This prevents changing the addressId during an update
-    const { addressId: _, ...updateFields } = validatedAddress;
 
     const db = await connectDB();
-    const result = await db.collection('users').updateOne(
-        { _id: new ObjectId(userId), "shippingAddresses.addressId": addressId },
-        { $set: { "shippingAddresses.$": { ...updateFields, addressId } } }
-    );
+    const user = await db.collection('users').findOne({ _id: new ObjectId(userId) });
 
-    if (result.matchedCount === 0) {
-        throw new Error(`No user found with ID ${userId} or addressId ${addressId}`);
+    if (!user) {
+        throw new Error(`No user found with ID ${userId}`);
     }
 
-    console.log(`Successfully updated a shipping address for user ID ${userId}`);
+    console.log("User found:", user);
+
+    // Validate the updated address
+    const validatedAddress = await verifyAddress(updatedAddress);
+    if (!validatedAddress.isValid) {
+        console.log('Failed address validation:', validatedAddress.message);
+        throw new Error(validatedAddress.message);
+    }
+
+    // Find the specific address and update it if it exists
+    const addressIndex = user.shippingAddresses.findIndex(addr => addr.addressId === addressId);
+    if (addressIndex === -1) {
+        throw new Error(`No shipping address found with ID ${addressId}`);
+    }
+
+    // Update the specific address
+    user.shippingAddresses[addressIndex] = { ...user.shippingAddresses[addressIndex], ...updatedAddress, addressId: addressId };
+
+    const result = await db.collection('users').updateOne(
+        { _id: new ObjectId(userId) },
+        { $set: { shippingAddresses: user.shippingAddresses } }
+    );
+
+    if (result.modifiedCount === 0) {
+        throw new Error(`Failed to update shipping address with ID ${addressId}`);
+    }
+
+    console.log(`Successfully updated shipping address for user ID ${userId}`, result);
     return result;
 }
 
@@ -203,29 +221,39 @@ async function deleteUserShippingAddress(requestBody) {
 
     const db = await connectDB();
 
-    // First, check if the shipping address exists
+    // Validate the format of the userId and addressId
+    if (!ObjectId.isValid(userId)) {
+        throw new Error('Invalid userId format');
+    }
+
+    // Find the user with the given userId
     const user = await db.collection('users').findOne(
-        { _id: new ObjectId(userId), 'shippingAddresses.addressId': addressId },
-        { projection: { 'shippingAddresses.$': 1 } }
+        { _id: new ObjectId(userId) }
     );
 
     if (!user) {
         throw new Error(`No user found with ID ${userId}`);
     }
 
-    if (user.shippingAddresses.length === 0) {
-        throw new Error(`No shipping address found with ID ${addressId}`);
+    console.log("User found:", user);
+
+    // Check if the shipping address with the specified addressId exists for the user
+    const addressExists = user.shippingAddresses && user.shippingAddresses.some(address => address.addressId === addressId);
+
+    if (!addressExists) {
+        throw new Error(`No shipping address found with ID ${addressId} for user ID ${userId}`);
     }
 
-    // Proceed with deletion
+    // Proceed with deletion of the address
     const result = await db.collection('users').updateOne(
         { _id: new ObjectId(userId) },
         { $pull: { shippingAddresses: { addressId: addressId } } }
     );
 
-    // Check if the address was actually removed
+    console.log("Deletion result:", result);
+
     if (result.modifiedCount === 0) {
-        throw new Error(`No shipping address found with ID ${addressId} to delete`);
+        throw new Error(`Failed to delete shipping address with ID ${addressId} for user ID ${userId}`);
     }
 
     console.log(`Successfully deleted shipping address ${addressId} for user ID ${userId}`);
