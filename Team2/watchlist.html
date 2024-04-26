@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Watchlist</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        .form-container {
+            margin-bottom: 20px;
+        }
+
+        form {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        form > * {
+            margin: 0 10px;
+        }
+
+        .watchlist-container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .watchlist-item {
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+
+        .watchlist-item h3 {
+            margin: 0;
+        }
+
+        .watchlist-item p {
+            margin: 5px 0;
+        }
+
+        .remove-button {
+            background-color: #ff6347;
+            color: #fff;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+
+        .remove-button:hover {
+            background-color: #d43f3a;
+        }
+    </style>
+</head>
+<body>
+    <h1>Watchlist</h1>
+
+    <!-- Add to Watchlist Form -->
+    <div class="form-container">
+        <h2>Add Product to Watchlist</h2>
+        <form id="addToWatchlistForm">
+            <input type="text" id="productId" placeholder="Product ID" required>
+            <button type="submit">Add to Watchlist</button>
+        </form>
+    </div>
+
+    <!-- Remove from Watchlist Form -->
+    <div class="form-container">
+        <h2>Remove Product from Watchlist</h2>
+        <form id="removeFromWatchlistForm">
+            <input type="text" id="removeProductId" placeholder="Product ID" required>
+            <button type="submit">Remove from Watchlist</button>
+        </form>
+    </div>
+
+    <!-- Watchlist Display -->
+    <div class="watchlist-container">
+        <h2>My Watchlist</h2>
+        <div id="watchlist"></div>
+    </div>
+
+    <script>
+        // Function to fetch and display the user's watchlist
+        async function displayWatchlist() {
+            const userId = '660c7a749cc75da2a5a01f09'; // Replace with actual user ID
+
+            const response = await fetch(`/api/watchlist/${userId}`);
+            const watchlist = await response.json();
+
+            const watchlistContainer = document.getElementById('watchlist');
+            watchlistContainer.innerHTML = '';
+
+            watchlist.forEach(item => {
+                const watchlistItem = document.createElement('div');
+                watchlistItem.classList.add('watchlist-item');
+
+                const productName = document.createElement('h3');
+                productName.textContent = item.productName;
+
+                const productDetails = document.createElement('p');
+                productDetails.textContent = `Price: ${item.price}, Brand: ${item.brand}, Stock Quantity: ${item.stockQuantity}`;
+
+                const removeButton = document.createElement('button');
+                removeButton.classList.add('remove-button');
+                removeButton.textContent = 'Remove';
+                removeButton.addEventListener('click', () => removeFromWatchlist(item.productId));
+
+                watchlistItem.appendChild(productName);
+                watchlistItem.appendChild(productDetails);
+                watchlistItem.appendChild(removeButton);
+
+                watchlistContainer.appendChild(watchlistItem);
+            });
+        }
+
+        // Function to add product to watchlist
+        async function addToWatchlist(productId) {
+            const userId = '660c7a749cc75da2a5a01f09'; // Replace with actual user ID
+
+            const response = await fetch(`/api/watchlist/add-to-watchlist/${userId}/${productId}`, {
+                method: 'POST'
+            });
+
+            if (response.ok) {
+                await displayWatchlist();
+            } else {
+                const error = await response.json();
+                alert(error.message);
+            }
+        }
+
+        // Function to remove product from watchlist
+        async function removeFromWatchlist(productId) {
+            const userId = '660c7a749cc75da2a5a01f09'; // Replace with actual user ID
+
+            const response = await fetch(`/api/watchlist/remove/${userId}/${productId}`, {
+                method: 'DELETE'
+            });
+
+            if (response.ok) {
+                await displayWatchlist();
+            } else {
+                const error = await response.json();
+                alert(error.message);
+            }
+        }
+
+        // Event listener for adding product to watchlist form submission
+        document.getElementById('addToWatchlistForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const productId = document.getElementById('productId').value;
+            await addToWatchlist(productId);
+        });
+
+        // Event listener for removing product from watchlist form submission
+        document.getElementById('removeFromWatchlistForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const productId = document.getElementById('removeProductId').value;
+            await removeFromWatchlist(productId);
+        });
+
+        // Initial display of watchlist
+        displayWatchlist();
+    </script>
+</body>
+</html>
