@@ -19,20 +19,22 @@ async function validateAccessTokenAndGetUserInfo(accToken) {
 }
 
 function validateEmail(email) {
-    const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return re.test(String(email).toLowerCase());
 }
 
 async function updateUserProfile(requestBody) {
-    const { userId, profileUpdates, accToken } = requestBody;
-    
-    // Validate the access token and get user info
-    const userInfo = await validateAccessTokenAndGetUserInfo(accToken);
+    const { userId, profileUpdates } = requestBody;
     
     if (!userId || !profileUpdates) {
         throw new Error('userId and profileUpdates are required');
     }
-
+    
+    // Validate that userId is a valid MongoDB ObjectId
+    if (!ObjectId.isValid(userId)) {
+        throw new Error('Invalid userId format');
+    }
+        
     const db = await connectDB();
     const collection = db.collection('users');
     const userObjectId = new ObjectId(userId);
@@ -90,11 +92,8 @@ async function updateUserProfile(requestBody) {
 }
 
 async function updateUserName(requestBody) {
-    const { userId, newName, accToken } = requestBody;
+    const { userId, newName } = requestBody;
     
-    // Validate the access token and get user info
-    const userInfo = await validateAccessTokenAndGetUserInfo(accToken);
-
     if (!userId || !newName) {
         throw new Error('userId and newName are required');
     }
@@ -114,11 +113,8 @@ async function updateUserName(requestBody) {
 }
 
 async function updateUserPremiumStatus(requestBody) {
-    const { userId, isPremium, accToken } = requestBody;
+    const { userId, isPremium } = requestBody;
     
-    // Validate the access token and get user info
-    const userInfo = await validateAccessTokenAndGetUserInfo(accToken);
-
     if (!userId || isPremium === undefined) {
         throw new Error('userId and isPremium status are required');
     }
@@ -138,11 +134,8 @@ async function updateUserPremiumStatus(requestBody) {
 }
 
 async function addUserShippingAddress(requestBody) {
-    const { userId, newAddress, accToken } = requestBody;
+    const { userId, newAddress } = requestBody;
     
-    // Validate the access token and get user info
-    const userInfo = await validateAccessTokenAndGetUserInfo(accToken);
-
     if (!userId || !newAddress) {
         throw new Error('userId and newAddress are required');
     }
@@ -171,11 +164,8 @@ async function addUserShippingAddress(requestBody) {
 }
 
 async function updateUserShippingAddress(requestBody) {
-    const { userId, addressId, updatedAddress, accToken } = requestBody;
+    const { userId, addressId, updatedAddress } = requestBody;
     
-    // Validate the access token and get user info
-    const userInfo = await validateAccessTokenAndGetUserInfo(accToken);
-
     if (!userId || !addressId || !updatedAddress) {
         throw new Error('userId, addressId, and updatedAddress are required');
     }
@@ -205,11 +195,8 @@ async function updateUserShippingAddress(requestBody) {
 }
 
 async function deleteUserShippingAddress(requestBody) {
-    const { userId, addressId, accToken } = requestBody;
+    const { userId, addressId } = requestBody;
     
-    // Validate the access token and get user info
-    const userInfo = await validateAccessTokenAndGetUserInfo(accToken);
-
     if (!userId || !addressId) {
         throw new Error('userId and addressId are required');
     }
@@ -246,10 +233,7 @@ async function deleteUserShippingAddress(requestBody) {
 }
 
 async function deleteUserProfile(requestBody) {
-    const { userId, accToken } = requestBody;
-    
-    // Validate the access token and get user info
-    const userInfo = await validateAccessTokenAndGetUserInfo(accToken);
+    const { userId } = requestBody;
 
     if (!userId) {
         throw new Error('userId is required');

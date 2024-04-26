@@ -20,6 +20,7 @@ async function getUser(userId) {
 
     return user;
 }
+
 async function verifyAddress(data) {
     try {
         // Extract address object from the data
