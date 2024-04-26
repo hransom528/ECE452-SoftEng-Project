@@ -63,6 +63,8 @@ async function reviewProduct(userId, productId, title, rating, review) {
 }
 
 module.exports = {
+    getProductById,
+
     hasPurchasedProduct,
     reviewProduct
 };
