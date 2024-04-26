@@ -64,7 +64,7 @@ async function verifyAddress(data) {
 
     } catch (error) {
         console.error('Error verifying address:', error);
-        throw new Error('Failed to verify address');
+        throw new Error('Failed to verify address', error);
     }
 }
 
