@@ -153,56 +153,107 @@ async function verifyCardAndUpdateDB(userObjectId, stripeCustomerId, stripeToken
       return { success: false, message: error.message };
     }
   }
-  async function createPaymentAndProcessing(stripeCustomerId, paymentMethodId, amountInDollars) {
+  async function addBankTransferAccount(stripeCustomerId, accountNumber, routingNumber, accountHolderName, accountHolderType) {
     const errors = [];
-  
-    // Input validation for Stripe customer ID and payment method ID
+
+    // Input validation for the Stripe customer ID
     if (typeof stripeCustomerId !== "string" || stripeCustomerId.trim().length === 0) {
-      errors.push("Invalid Stripe customer ID.");
+        errors.push("Invalid Stripe customer ID.");
     }
-    if (typeof paymentMethodId !== "string" || paymentMethodId.trim().length === 0) {
-      errors.push("Invalid payment method ID.");
-    }
-    // Validate the amount to ensure it's a positive number
-    if (typeof amountInDollars !== "number" || amountInDollars <= 0) {
-      errors.push("Invalid amount to be charged. Amount must be a positive number.");
-    }
-  
+
+    // More input validations can be added here as needed...
+
     // Aggregate and return all input validation errors
     if (errors.length > 0) {
-      return { success: false, message: errors.join(" ") };
+        return { success: false, message: errors.join(" ") };
     }
-  
+
     try {
-      console.log("Creating and processing payment...");
-      
-      // Verify Stripe customer and payment method exist and are valid
-      try {
-        await stripe.customers.retrieve(stripeCustomerId);
-        await stripe.paymentMethods.retrieve(paymentMethodId);
-      } catch (err) {
-        // If there's an error in retrieving Stripe customer or payment method, it's likely invalid
-        return { success: false, message: "Stripe customer ID or payment method ID is invalid." };
-      }
-  
-      // Convert amount from dollars to cents for Stripe
-      const amountInCents = Math.round(amountInDollars * 100); // Ensures amount is in whole cents
-      // Create a payment intent
-      const paymentIntent = await stripe.paymentIntents.create({
-        amount: amountInCents,
-        currency: 'usd',
-        customer: stripeCustomerId,
-        payment_method: paymentMethodId,
-        off_session: true,
-        confirm: true,
-      });
-      console.log("Payment intent created:", paymentIntent.id);
-      return { success: true, paymentIntentId: paymentIntent.id, status: paymentIntent.status };
+        // Create a bank account token
+        const bankAccountToken = await stripe.tokens.create({
+            bank_account: {
+                country: 'US',
+                currency: 'usd',
+                account_holder_name: accountHolderName,
+                account_holder_type: accountHolderType, 
+                routing_number: routingNumber,
+                account_number: accountNumber,
+            },
+        });
+
+        // Attach the bank account token to the Stripe customer as a new payment method
+        const bankAccount = await stripe.customers.createSource(stripeCustomerId, {
+            source: bankAccountToken.id,
+        });
+
+        console.log("Bank account attached to customer:", bankAccount.id);
+        return { success: true, bankAccountId: bankAccount.id };
     } catch (error) {
-      console.error("Error creating and processing payment:", error);
-      return { success: false, message: "Failed to create or process payment. " + error.message };
+        console.error("Error attaching bank account:", error);
+        return { success: false, message: "Failed to attach bank account. " + error.message };
     }
-  }  
+}
+
+async function createPaymentAndProcessing(stripeCustomerId, id, amount, currency, idType) {
+    const errors = [];
+
+    // Input validation for Stripe customer ID
+    if (typeof stripeCustomerId !== "string" || stripeCustomerId.trim().length === 0) {
+        errors.push("Invalid Stripe customer ID.");
+    }
+    
+    // Validate the ID based on the type
+    if (typeof id !== "string" || id.trim().length === 0) {
+        errors.push(`Invalid ${idType} ID.`);
+    }
+
+    // Validate the amount to ensure it's a positive number
+    if (typeof amount !== "number" || amount <= 0) {
+        errors.push("Invalid amount to be charged. Amount must be a positive number.");
+    }
+
+    // Validate the currency code
+    if (typeof currency !== "string" || currency.trim().length !== 3) {
+        errors.push("Invalid currency code. Currency code must be in ISO 4217 format.");
+    }
+
+    // Aggregate and return all input validation errors
+    if (errors.length > 0) {
+        return { success: false, message: errors.join(" ") };
+    }
+
+    try {
+        console.log("Creating and processing payment...");
+
+        // Validate currency and calculate amount in minor units appropriately
+        // This is a simplified example, you might need more complex logic to handle all currencies correctly
+        let amountInMinorUnits;
+        if (currency.toLowerCase() === 'jpy') { // Japanese Yen does not have minor currency units
+            amountInMinorUnits = amount;
+        } else {
+            amountInMinorUnits = Math.round(amount * 100);
+        }
+
+        // Specify payment method types based on the idType
+        const paymentMethodTypes = idType === 'ach_debit' ? ['ach_debit'] : ['card'];
+
+        // Create a payment intent with the specified currency
+        const paymentIntent = await stripe.paymentIntents.create({
+            amount: amountInMinorUnits,
+            currency: currency.toLowerCase(),
+            customer: stripeCustomerId,
+            off_session: true,
+            confirm: true,
+            [idType === 'ach_debit' ? 'payment_method_types' : 'payment_method']: idType === 'ach_debit' ? paymentMethodTypes : id,
+        });
+
+        console.log("Payment intent created:", paymentIntent.id);
+        return { success: true, paymentIntentId: paymentIntent.id, status: paymentIntent.status };
+    } catch (error) {
+        console.error("Error creating and processing payment:", error);
+        return { success: false, message: "Failed to create or process payment. " + error.message };
+    }
+}
 
   async function refundPayment(stripeCustomerId, paymentIntentId, reason) {
     // Input validation
@@ -236,4 +287,5 @@ module.exports = {
     verifyCardAndUpdateDB,
     createPaymentAndProcessing,
     refundPayment,
+    addBankTransferAccount,
 };
