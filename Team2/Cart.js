@@ -130,17 +130,29 @@ async function removeFromCart(userId, productId, quantityToRemove) {
     }
 
 async function getCart(userId) {
+    console.log("Received userId:", userId);  // Log the received userId
     try {
-            const cartDetails = await Cart.findOne({ userId:userId})
+                // Convert userId from string to ObjectId
+        const userIdAsObjectId = new mongoose.Types.ObjectId(userId);
+        const cartDetails = await Cart.findOne({ userId: userIdAsObjectId });
+    
+    
         if (!cartDetails) {
-                throw new Error("Cart not found");
+                    throw new Error("Cart not found");
         }
         return cartDetails;
-    } catch (error) {
+    
+    
+        } catch (error) {
             console.error("Error retrieving cart:", error);
-            throw new Error("Internal Server Error");
+                // Provide a more specific error message if the ObjectId conversion fails
+            if (error instanceof mongoose.Error.CastError) {
+                    throw new Error("Invalid UserId format");
+                }
+                throw new Error("Internal Server Error");
+        }
     }
-}
+    
 module.exports = {
     addToCart,
     removeFromCart,
