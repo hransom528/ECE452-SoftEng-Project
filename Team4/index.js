@@ -34,12 +34,13 @@ searchInput.addEventListener("input", (e) => {
     } else {
         // 5. return nothing
         // input is invalid -- show an error message or show no results
-
+        clearList();
     }
 });
 
 clearButton.addEventListener("click", () => {
     // 1. write a function that removes any previous results from the page
+    clearList();
 });
 
 // creating and declaring a function called "setList"
@@ -62,4 +63,29 @@ function setList(results){
         // appending the result item to the list
         list.appendChild(resultItem)
     }
+
+    if (results.length === 0){
+        noResults()
+    }
+}
+
+function clearList(){
+    // looping through each child of the search results list and remove each child
+    while (list.firstChild){
+        list.removeChild(list.firstChild)
+    }
+}
+
+function noResults(){
+    // create an element for the error; a list item ("li")
+    const error = document.createElement('li')
+    // adding a class name of "error-message" to our error element
+    error.classList.add('error-message')
+
+    // creating text for our element
+    const text = document.createTextNode('No results found. Sorry!')
+    // appending the text to our element
+    error.appendChild(text)
+    // appending the error to our list element
+    list.appendChild(error)
 }
