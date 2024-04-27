@@ -3,9 +3,20 @@ const fs = require('fs');
 const path = require('path');
 
 const server = http.createServer((req, res) => {
-    let baseDir = path.join(__dirname, 'Team1', 'UserProfile');
-    let filePath = path.join(baseDir, req.url === '/' ? 'userProfile.html' : req.url.substring(1));
-    let extname = path.extname(filePath);
+    // Resolve the base directory safely using path.resolve()
+    let baseDir = path.resolve(__dirname, 'Team1', 'UserProfile');
+    
+    // Normalize the request URL and prevent directory traversal
+    let safeSuffix = path.normalize(req.url).replace(/^(\.\.[\/\\])+/, '');
+    let safeFilePath = path.join(baseDir, safeSuffix === '/' ? 'userProfile.html' : safeSuffix);
+    
+    // Ensure that the resulting path starts with the base directory path
+    if (!safeFilePath.startsWith(baseDir + path.sep)) {
+        res.writeHead(400);
+        return res.end('Invalid path');
+    }
+
+    let extname = path.extname(safeFilePath);
     let contentType = 'text/html';
 
     switch (extname) {
@@ -17,8 +28,13 @@ const server = http.createServer((req, res) => {
             break;
     }
 
-    fs.readFile(filePath, (error, content) => {
-        if (error) {
+    // Use fs.promises.readFile to read the file asynchronously
+    fs.promises.readFile(safeFilePath)
+        .then(content => {
+            res.writeHead(200, { 'Content-Type': contentType });
+            res.end(content, 'utf-8');
+        })
+        .catch(error => {
             if (error.code === 'ENOENT') {
                 res.writeHead(404);
                 res.end('File not found');
@@ -26,18 +42,15 @@ const server = http.createServer((req, res) => {
                 res.writeHead(500);
                 res.end('Server error: ' + error.code);
             }
-        } else {
-            res.writeHead(200, { 'Content-Type': contentType });
-            res.end(content, 'utf-8');
-        }
-    });
+        });
 });
 
-const PORT = 3000;
+const PORT = 3001;
 server.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
-    // Dynamically import the 'open' module and open the browser
     import('open').then(open => {
         open.default(`http://localhost:${PORT}`);
+    }).catch(error => {
+        console.error('Failed to open browser:', error);
     });
 });
