@@ -1,6 +1,6 @@
 const { connectDB } = require('../../dbConfig');
 const { ObjectId } = require('mongodb');
-const { verifyCardAndUpdateDB } = require('../../Team3/stripe.js'); // Adjust the path as necessary
+const { verifyCardAndUpdateDB } = require('../../Team3/stripe.js');
 
 async function getUserById(userId) {
     const db = await connectDB();
@@ -28,7 +28,7 @@ async function updateUserPremiumStatus(userId, isPremium) {
 }
 
 
-async function createPremiumMembership(requestBody) {
+async function purchasePremiumMembership(requestBody) {
     const { userId, stripeCustomerId, stripeToken } = requestBody;
 
     const user = await getUserById(userId);
@@ -86,4 +86,4 @@ async function cancelPremiumMembership(userId) {
 
 
 
-module.exports = { createPremiumMembership, cancelPremiumMembership };
+module.exports = { purchasePremiumMembership, cancelPremiumMembership };
