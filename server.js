@@ -68,6 +68,17 @@ let responseSent = false;
 let result;
 
 const server = http.createServer(async (req, res) => {
+   // Set CORS headers
+   res.setHeader('Access-Control-Allow-Origin', '*');
+   res.setHeader('Access-Control-Allow-Methods', 'OPTIONS, GET, POST, PUT, PATCH, DELETE');
+   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+
+   // Handle OPTIONS pre-flight request
+   if (req.method === 'OPTIONS') {
+       res.writeHead(204);
+       res.end();
+       return;
+   }
   const parsedUrl = url.parse(req.url, true);
   const path = parsedUrl.pathname;
   const trimmedPath = path.replace(/^\/+|\/+$/g, "");

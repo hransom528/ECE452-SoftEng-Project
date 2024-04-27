@@ -9,7 +9,6 @@ async function createStripeCustomerAndUpdateDB(userObjectId, email, name) {
     if (!mongoURI || !process.env.STRIPE_SECRET_KEY) {
         throw new Error("Configuration error: Ensure all environment variables are set.");
     }
-
     // Input validation
     if (!ObjectId.isValid(userObjectId)) {
         return { success: false, message: "Invalid user object ID." };

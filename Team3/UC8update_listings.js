@@ -16,7 +16,13 @@ const updateListings = async (productIds, updateFields, removeFields = []) => {
 
     try {
         const updates = validProductIds.map(id => {
-            let updateOperation = { $set: updateFields };
+            const updateOperation = {};
+            if (updateFields) {
+                updateOperation.$set = {};
+                for (const [key, value] of Object.entries(updateFields)) {
+                    updateOperation.$set[key] = isNaN(Number(value)) ? value : Number(value);
+                }
+            }
             if (removeFields.length > 0) {
                 updateOperation.$unset = removeFields.reduce((acc, field) => {
                     acc[field] = "";
@@ -24,8 +30,7 @@ const updateListings = async (productIds, updateFields, removeFields = []) => {
                 }, {});
             }
             return products.updateOne({ _id: new ObjectId(id) }, updateOperation);
-        });
-
+        });        
         const results = await Promise.allSettled(updates);
         return results.map(result => {
             if (result.status === 'rejected') {
