@@ -3,43 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="userProfile.css">
     <title>User Profile</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            padding: 20px;
-            margin: auto;
-            width: 50%;
-            box-shadow: 0 3px 6px rgba(0,0,0,0.1);
-        }
-        form {
-            margin-bottom: 20px;
-        }
-        input[type="text"], input[type="checkbox"], input[type="button"] {
-            margin: 5px;
-            padding: 8px;
-            width: 95%;
-            box-sizing: border-box;
-        }
-        button {
-            padding: 10px 20px;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            cursor: pointer;
-            width: 100%;
-        }
-        button:hover {
-            background-color: #45a049;
-        }
-        h2 {
-            color: #333;
-        }
-    </style>
 </head>
 <body>
     <h1>Your Profile</h1>
-    <div class="name-update-section">
+
+    <div class="form-section name-update-section">
         <h2>Name</h2>
         <form id="updateNameForm">
             <input type="text" id="newName" placeholder="Enter new name" required>
@@ -47,7 +17,7 @@
         </form>
     </div>
 
-    <div class="address-update-section">
+    <div class="form-section address-update-section">
         <h2>Shipping Address</h2>
         <form id="updateAddressForm">
             <input type="text" id="recipientName" placeholder="Recipient Name" required>
@@ -64,17 +34,17 @@
         </form>
     </div>
 
-    <div class="membership-management-section">
+    <div class="form-section membership-management-section">
         <h2>Membership Management</h2>
         <button id="purchaseMembership" onclick="purchaseMembership()">Purchase Membership</button>
         <button id="cancelMembership" onclick="cancelMembership()">Cancel Membership</button>
     </div>
 
-    <div class="profile-delete-section">
+    <div class="form-section profile-delete-section">
         <h2>Delete Profile</h2>
         <button id="deleteProfile" onclick="deleteProfile()">Delete Profile</button>
     </div>
 
-    <script src="app.js"></script>
+    <script src="upApp.js"></script>
 </body>
 </html>

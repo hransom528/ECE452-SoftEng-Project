@@ -49,7 +49,7 @@ const {
   deleteUserProfile,
 } = require("./Team1/UserProfile/userProfile");
 const {
-  createPremiumMembership,
+  purchasePremiumMembership,
   cancelPremiumMembership,
 } = require("./Team1/UserProfile/membershipManagement.js");
 const { registerUser, loginUser } = require("./Team1/Reg_lgn/regLogin");
@@ -810,7 +810,7 @@ const server = http.createServer(async (req, res) => {
             break;
 
           // membershipManagement.js
-          case "create-premium-membership":
+          case "purchase-premium-membership":
             if (!token) {
               res.writeHead(400, { "Content-Type": "application/json" });
               res.end(JSON.stringify({ message: "Access Token is required" }));
@@ -826,10 +826,10 @@ const server = http.createServer(async (req, res) => {
               !requestBody.stripeToken
             ) {
               throw new Error(
-                "Missing required parameters for creating premium membership"
+                "Missing required parameters for purchasing premium membership"
               );
             }
-            result = await createPremiumMembership(requestBody);
+            result = await purchasePremiumMembership(requestBody);
             break;
           case "cancel-premium-membership":
             if (!token) {

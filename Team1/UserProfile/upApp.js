@@ -7,10 +7,16 @@ document.addEventListener('DOMContentLoaded', function() {
         updateAddress();
     });
 
-    // Handle Membership Management
-    document.getElementById('manageMembership').addEventListener('click', function(event) {
+    // Handle Purchase Membership
+    document.getElementById('purchaseMembership').addEventListener('click', function(event) {
         event.preventDefault();
-        manageMembership();
+        purchaseMembership();
+    });
+
+    // Handle Cancel Membership
+    document.getElementById('cancelMembership').addEventListener('click', function(event) {
+        event.preventDefault();
+        cancelMembership();
     });
 });
 
@@ -25,7 +31,7 @@ function updateAddress() {
 
     const addressDetails = { recipientName, street, city, state, postalCode, country, isDefault };
 
-    fetch('/update-address', {
+    fetch('/update-shipping-address', {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify(addressDetails)
@@ -37,18 +43,26 @@ function updateAddress() {
     .catch(error => console.error('Error updating address:', error));
 }
 
-function manageMembership() {
-    fetch('/manage-membership', {
+function purchaseMembership() {
+    fetch('/purchase-premium-membership', {
         method: 'POST',
         headers: {'Content-Type': 'application/json'}
     })
     .then(response => response.json())
     .then(data => {
-        if (data.success) {
-            alert(data.message);
-        } else {
-            alert(data.message);
-        }
+        alert(data.message);
     })
-    .catch(error => console.error('Error managing membership:', error));
+    .catch(error => console.error('Error purchasing membership:', error));
+}
+
+function cancelMembership() {
+    fetch('/cancel-premium-membership', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'}
+    })
+    .then(response => response.json())
+    .then(data => {
+        alert(data.message);
+    })
+    .catch(error => console.error('Error cancelling membership:', error));
 }
