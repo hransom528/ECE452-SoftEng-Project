@@ -41,8 +41,13 @@ async function verifyAddress(address) {
             return { message: "Address is incorrect. Please enter a valid address.", isValid: false };
         } else {
             // Check if the formatted address from the response matches the original address
+            // console.log("original google response: ", response);
+
             const formattedResponseAddress = formatAddress(response.json.results[0].formatted_address);
+            // console.log("formated repsonse",formattedResponseAddress);
+
             const originalAddressString = formatAddress(address);
+            // console.log("original Address: ", originalAddressString);
             
             if (formattedResponseAddress !== originalAddressString) {
                 console.log('Partial match found');
