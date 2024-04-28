@@ -158,5 +158,4 @@ module.exports = {
     removeFromCart,
     getCart
 
-
 }
