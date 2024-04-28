@@ -8,7 +8,7 @@ reviewForm.addEventListener('submit', function (e) {
 
     // Gather form data
     const formData = {
-        userId: reviewForm.userId.value,
+        userid: reviewForm.userid.value,
         productId: reviewForm.productId.value,
         title: reviewForm.title.value,
         rating: reviewForm.rating.value,
@@ -16,7 +16,7 @@ reviewForm.addEventListener('submit', function (e) {
     };
 
     // Make a POST request to the server
-    fetch('http://localhost:3000/reviewProduct', {
+    fetch('http://localhost:3000/Product_Review', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -26,13 +26,10 @@ reviewForm.addEventListener('submit', function (e) {
     .then(response => response.json())
     .then(data => {
         // Display a success or error message
-        if (data.success) {
+     
             resultMessage.textContent = 'Review submitted successfully!';
             resultMessage.style.color = 'green';
-        } else {
-            resultMessage.textContent = 'Error: ' + data.message;
-            resultMessage.style.color = 'red';
-        }
+        
     })
     .catch(error => {
         resultMessage.textContent = 'Error: ' + error.message;
