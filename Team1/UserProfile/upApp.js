@@ -1,24 +1,39 @@
 document.addEventListener('DOMContentLoaded', function() {
-    const updateAddressForm = document.getElementById('updateAddressForm');
-
-    // Handle Address Updates
-    updateAddressForm.addEventListener('submit', function(event) {
-        event.preventDefault();
-        updateAddress();
-    });
-
-    // Handle Purchase Membership
-    document.getElementById('purchaseMembership').addEventListener('click', function(event) {
-        event.preventDefault();
-        purchaseMembership();
-    });
-
-    // Handle Cancel Membership
-    document.getElementById('cancelMembership').addEventListener('click', function(event) {
-        event.preventDefault();
-        cancelMembership();
-    });
+    populateUserProfile(); // Call this function on load to fetch and display user data
 });
+
+async function populateUserProfile() {
+    const accessToken = sessionStorage.getItem('accessToken');
+    if (!accessToken) {
+        console.log('No access token found');
+        return;
+    }
+
+    const response = await fetch('/get-user-profile', {
+        method: 'GET',
+        headers: {
+            'Authorization': `Bearer ${accessToken}`
+        }
+    });
+
+    if (!response.ok) {
+        console.error('Failed to fetch user profile:', response.statusText);
+        return;
+    }
+
+    const userProfile = await response.json();
+    document.getElementById('name').value = userProfile.name;
+    document.getElementById('email').value = userProfile.email;
+    document.getElementById('isPremium').checked = userProfile.isPremium;
+
+    // Assuming shippingAddresses is an array of address objects
+    userProfile.shippingAddresses.forEach(address => {
+        // Append each address to a container or handle as needed
+        console.log('Address:', address);
+    });
+
+    // Similar handling for shoppingCart, watchlist, orderHistory, and reviews
+}
 
 function updateAddress() {
     const recipientName = document.getElementById('recipientName').value;

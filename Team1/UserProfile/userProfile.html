@@ -3,17 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="userProfile.css">
+    <link rel="stylesheet" href="/profile/userProfile.css">
     <title>User Profile</title>
 </head>
 <body>
     <h1>Your Profile</h1>
 
-    <div class="form-section name-update-section">
-        <h2>Name</h2>
-        <form id="updateNameForm">
-            <input type="text" id="newName" placeholder="Enter new name" required>
-            <button type="submit">Update Name</button>
+    <div class="form-section user-info-section">
+        <h2>Personal Information</h2>
+        <form id="updateUserInfoForm">
+            <label for="name">Name:</label>
+            <input type="text" id="name" placeholder="Your name" required>
+            
+            <label for="email">Email:</label>
+            <input type="email" id="email" placeholder="Your email" required disabled>
+            
+            <label for="isPremium">Premium Status:</label>
+            <span id="isPremium">False</span> <!-- This will be dynamically updated -->
         </form>
     </div>
 
@@ -31,6 +37,10 @@
             </label>
             <button type="submit">Update Address</button>
             <button type="button" id="deleteAddress" onclick="deleteAddress()">Delete Address</button>
+            <button type="button" id="addAddress">Add Address</button>
+            <div id="addressesContainer">
+                <!-- List of addresses will be rendered here -->
+            </div>        
         </form>
     </div>
 
@@ -45,6 +55,6 @@
         <button id="deleteProfile" onclick="deleteProfile()">Delete Profile</button>
     </div>
 
-    <script src="upApp.js"></script>
+    <script src="/profile/upApp.js"></script>
 </body>
 </html>
