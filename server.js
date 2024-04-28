@@ -1021,6 +1021,30 @@ const server = http.createServer(async (req, res) => {
               );
             }
             break;
+
+            case "filterCatalog":
+            result = await productFilterQuery(requestBody);
+            res.writeHead(200, { "Content-Type": "application/json" });
+            res.end(
+              JSON.stringify({
+                message: "Products filtered succesfully",
+                data: result,
+              })
+            );
+            responseSent=true;
+            break;
+
+          case "searchProducts":
+            result = await productSearchQuery(requestBody.query);
+            res.writeHead(200, { "Content-Type": "application/json" });
+            res.end(
+              JSON.stringify({
+                message: "Products searched succesfully",
+                data: result,
+              })
+            );
+            responseSent=true;
+            break;
         }
 
         if (!responseSent) {
@@ -1117,27 +1141,7 @@ const server = http.createServer(async (req, res) => {
 
 
 
-          case "filterCatalog":
-            result = await productFilterQuery(requestBody);
-            res.writeHead(200, { "Content-Type": "application/json" });
-            res.end(
-              JSON.stringify({
-                message: "Products filtered succesfully",
-                data: result,
-              })
-            );
-            break;
-
-          case "searchProducts":
-            result = await productSearchQuery(requestBody.query);
-            res.writeHead(200, { "Content-Type": "application/json" });
-            res.end(
-              JSON.stringify({
-                message: "Products searched succesfully",
-                data: result,
-              })
-            );
-            break;
+          
           case "create-stripe-customer":
             const { userObjectId, email, name } = requestBody;
             createStripeCustomerAndUpdateDB(userObjectId, email, name)
