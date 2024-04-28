@@ -4,20 +4,6 @@ const { v4: uuidv4 } = require('uuid');
 const { getUserInfo } = require('../Reg_lgn/oAuthHandler');
 const { verifyAddress } = require('../../Team2/AddressValidationAPI');
 
-async function validateAccessTokenAndGetUserInfo(accToken) {
-    if (!accToken) {
-        throw new Error("Access Token is required for authorization.");
-    }
-
-    try {
-        const userInfo = await getUserInfo(accToken);
-        return userInfo; // Return the user info if the token is valid
-    } catch (error) {
-        console.error("Error during access token validation:", error);
-        throw new Error("Failed to authorize with provided Access Token.");
-    }
-}
-
 function validateEmail(email) {
     const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return re.test(String(email).toLowerCase());

@@ -3,11 +3,23 @@ h3,h5 {
     padding-bottom: 15px;
 }
 
+nav {
+  background-color: #457b9d
+}
+
+#personal1 {
+  padding-top: 12px;
+}
+
+#lastOne {
+  padding-bottom: 12px;
+}
+
 button { 
     background: #f7ede2;
     color:#457b9d;
     border: 2px solid;
-    padding: 1em 2em;
+    padding: 1em 3em;
     font-size: 1em;
     transition: color 0.25s, border-color 0.25s, box-shadow 0.25s,transform 0.25s;
   }

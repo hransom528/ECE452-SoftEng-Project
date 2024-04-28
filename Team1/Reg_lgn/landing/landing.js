@@ -48,11 +48,11 @@ async function fetchUserData(accessToken) {
 
             if (userInfo.exists) {
                 // Redirect to the home page
-                window.location.href = '../home/home.html';
+                window.location.href = '../Reg_lgn/home/home.html';
                 console.log(userInfo);
             } else {
                 // Redirect to the registration page or some other handling
-                window.location.href = '../onBoard/onBoard.html'; // Adjust the path as needed
+                window.location.href = '../Reg_lgn/onBoard/onBoard.html'; // Adjust the path as needed
             }
         } catch (error) {
             console.error('Error during user data fetch or user check:', error);

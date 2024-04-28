@@ -3,48 +3,62 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="userProfile.css">
+    <link rel="stylesheet" href="/profile/userProfile.css">
     <title>User Profile</title>
 </head>
 <body>
     <h1>Your Profile</h1>
 
-    <div class="form-section name-update-section">
-        <h2>Name</h2>
-        <form id="updateNameForm">
-            <input type="text" id="newName" placeholder="Enter new name" required>
-            <button type="submit">Update Name</button>
+    <div class="form-section user-info-section">
+        <h2>Personal Information</h2>
+        <form id="updateUserInfoForm">
+            <label for="name">Name:</label>
+            <input type="text" id="name" placeholder="Your name" required disabled>
+            
+            <label for="email">Email:</label>
+            <input type="email" id="email" placeholder="Your email" required disabled>
+            
+            <label for="isPremium">Premium Status:</label>
+            <span id="isPremium">False</span> <!-- This will be dynamically updated -->
         </form>
     </div>
 
-    <div class="form-section address-update-section">
-        <h2>Shipping Address</h2>
-        <form id="updateAddressForm">
-            <input type="text" id="recipientName" placeholder="Recipient Name" required>
-            <input type="text" id="street" placeholder="Street" required>
-            <input type="text" id="city" placeholder="City" required>
-            <input type="text" id="state" placeholder="State" required>
-            <input type="text" id="postalCode" placeholder="Postal Code" required>
-            <input type="text" id="country" placeholder="Country" required>
-            <label for="isDefault">Default Address:
+    <div class="form-section address-section">
+        <h2>Shipping Addresses</h2>
+        <div id="defaultAddressContainer">
+            <!-- Default address will be rendered here -->
+        </div>
+        <button type="button" id="toggleAddresses">View Other Addresses</button>
+        <div id="additionalAddressesContainer" style="display:none;">
+            <!-- Additional addresses will be rendered here -->
+        </div>
+        <!-- Address form for adding or editing addresses -->
+        <form id="addressForm" style="display:none;">
+            <input type="text" id="recipientName" placeholder="Recipient Name">
+            <input type="text" id="street" placeholder="Street">
+            <input type="text" id="city" placeholder="City">
+            <input type="text" id="state" placeholder="State">
+            <input type="text" id="postalCode" placeholder="Postal Code">
+            <input type="text" id="country" placeholder="Country">
+            <label>Set as Default:
                 <input type="checkbox" id="isDefault">
             </label>
-            <button type="submit">Update Address</button>
-            <button type="button" id="deleteAddress" onclick="deleteAddress()">Delete Address</button>
+            <button type="submit" id="saveAddress">Save Address</button>
         </form>
+        <button type="button" id="addAddress" onclick="showAddressForm()">Add New Address</button>
     </div>
 
     <div class="form-section membership-management-section">
         <h2>Membership Management</h2>
-        <button id="purchaseMembership" onclick="purchaseMembership()">Purchase Membership</button>
-        <button id="cancelMembership" onclick="cancelMembership()">Cancel Membership</button>
+        <button id="purchaseMembership">Purchase Membership</button>
+        <button id="cancelMembership">Cancel Membership</button>
     </div>
 
     <div class="form-section profile-delete-section">
         <h2>Delete Profile</h2>
-        <button id="deleteProfile" onclick="deleteProfile()">Delete Profile</button>
+        <button id="deleteProfile">Delete Profile</button>
     </div>
 
-    <script src="upApp.js"></script>
+    <script src="/profile/upApp.js"></script>
 </body>
 </html>
