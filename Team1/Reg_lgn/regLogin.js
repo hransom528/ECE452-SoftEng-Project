@@ -1,4 +1,3 @@
-// registration.js
 const { connectDB } = require("../../dbConfig");
 // const { ObjectId } = require("mongodb");
 
