@@ -91,6 +91,8 @@ function handlePostRequests(req, res, pathname) {
         if (pathname === '/check-user') {
             const userInfo = JSON.parse(body);
             checkUser(userInfo, res);
+        } else if (pathname === 'registerUser') {
+
         } else {
             res.writeHead(404, { 'Content-Type': 'application/json' });
             res.end(JSON.stringify({ error: 'Endpoint not found' }));
