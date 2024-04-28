@@ -1,4 +1,5 @@
 require("dotenv").config();
+
 const { ObjectId } = require("mongodb");
 const http = require("http");
 const url = require("url");
@@ -44,11 +45,11 @@ const {
   updateUserShippingAddress,
   deleteUserShippingAddress,
   deleteUserProfile,
-} = require("./Team1/userProfile");
+} = require("./Team1/UserProfile/userProfile");
 const {
-  createPremiumMembership,
-  cancelPremiumMembersçhip,
-} = require("./Team1/membershipManagement.js");
+  purchasePremiumMembership,
+  cancelPremiumMembership,
+} = require("./Team1/UserProfile/membershipManagement.js");
 const { registerUser, loginUser } = require("./Team1/Reg_lgn/regLogin");
 const {
   getAccessTokenFromCode,
@@ -61,13 +62,25 @@ const {
   reviewProduct
 } = require("./Team4/Product_Review.js");
 const productFilterQuery = require("./Team4/Filter_Search.js");
-const { checkout } = require("./Team2/Checkout.js");
 const {addToWatchlist,removeFromWatchlist,getWatchlist,getProduct,getUser} = require("./Team2/Watchlist.js");
 
 let responseSent = false;
 let result;
 
 const server = http.createServer(async (req, res) => {
+
+  //add frontent capability
+  //Set CORS headers
+   res.setHeader('Access-Control-Allow-Origin', '*');
+   res.setHeader('Access-Control-Allow-Methods', 'OPTIONS, GET, POST, PUT, PATCH, DELETE');
+   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+
+   // Handle OPTIONS pre-flight request
+   if (req.method === 'OPTIONS') {
+       res.writeHead(204);
+       res.end();
+       return;
+   }
 
   const parsedUrl = url.parse(req.url, true);
   const path = parsedUrl.pathname;
@@ -115,6 +128,8 @@ const server = http.createServer(async (req, res) => {
     const authHeader = req.headers['authorization'] || '';
     const token = authHeader.split(' ')[1]; // Assumes Bearer token
 
+    let userInfo;
+
     try {
       if (req.method === "PATCH") {
         const requestBody = JSON.parse(buffer);
@@ -122,7 +137,7 @@ const server = http.createServer(async (req, res) => {
 
         switch (trimmedPath) {
           case "update-name":
-            const userInfo = await getUserInfo(token);
+            userInfo = await getUserInfo(token);
             if (!token) {
               res.writeHead(400, { "Content-Type": "application/json" });
               res.end(JSON.stringify({ message: "Access Token is required" }));
@@ -169,7 +184,7 @@ const server = http.createServer(async (req, res) => {
 
         switch (trimmedPath) {
           case "update-user-profile":
-            const userInfo = await getUserInfo(token);
+            userInfo = await getUserInfo(token);
             if (!token) {
               res.writeHead(400, { "Content-Type": "application/json" });
               res.end(JSON.stringify({ message: "Access Token is required" }));
@@ -198,7 +213,7 @@ const server = http.createServer(async (req, res) => {
 
         switch (trimmedPath) {
           case "delete-shipping-address":
-            const userInfo = await getUserInfo(token);
+            userInfo = await getUserInfo(token);
             if (!token) {
               res.writeHead(400, { "Content-Type": "application/json" });
               res.end(JSON.stringify({ message: "Access Token is required" }));
@@ -332,17 +347,30 @@ const server = http.createServer(async (req, res) => {
 
 
           case "checkout":
-            const { userId, cartId, address, paymentToken, stripeCustomerId } =
-              requestBody;
-            await checkout(
-              userId,
-              cartId,
-              address,
-              paymentToken,
-              stripeCustomerId
-            );
-            result = { message: "Checkout successful" };
-            break;
+            // const { userId, cartId, address, paymentToken, stripeCustomerId } =
+            //   requestBody;
+            // await checkout(
+            //   userId,
+            //   cartId,
+            //   address,
+            //   paymentToken,
+            //   stripeCustomerId
+            // );
+            // result = { message: "Checkout successful" };
+            const { userId, billingAddr, shippingAddr, paymentInfo } = requestBody;
+            const addr1 = requestBody.billingAddr;
+            const addr2 = requestBody.shippingAddr;
+            checkoutCart(userId, billingAddr, shippingAddr, paymentInfo)
+                       .then(checkoutDetails => {
+                         console.log('Checkout Successful:', checkoutDetails);
+                       })
+                       .catch(error => {
+                         console.error('Checkout Failed:', error.message);
+                       });
+
+
+
+         
             case "verify-card-details":
                 try {
                   const { userObjectId, stripeCustomerId, stripeToken } = requestBody;
@@ -638,7 +666,7 @@ const server = http.createServer(async (req, res) => {
               // const accessToken = await getAccessTokenFromCode(authCode);
 
               // use access token to get user's info from google account
-              const userInfo = await getUserInfo(token);
+              userInfo = await getUserInfo(token);
 
               //use the info we got to finish registering the user
               result = await registerUser(userInfo, requestBody);
@@ -675,7 +703,7 @@ const server = http.createServer(async (req, res) => {
             }
             try {
               // Use access token to get user's info from Google account
-              const userInfo = await getUserInfo(token);
+              userInfo = await getUserInfo(token);
 
               // Use the info we got to log the user in
               result = await loginUser(userInfo, requestBody);
@@ -710,7 +738,7 @@ const server = http.createServer(async (req, res) => {
             // const token = requestBody.aToken; // part of post request JSON
             // const authHeader = req.headers['authorization'] || '';
             // const token = authHeader.split(' ')[1]; // Assumes Bearer token
-            const userInfo = await getUserInfo(token);
+            userInfo = await getUserInfo(token);
             if (!token) {
               res.writeHead(400, { "Content-Type": "application/json" });
               res.end(JSON.stringify({ message: "Access Token is required" }));
@@ -766,8 +794,7 @@ const server = http.createServer(async (req, res) => {
             break;
 
           // membershipManagement.js
-          case "create-premium-membership":
-            userInfo = await getUserInfo(token);
+          case "purchase-premium-membership":
             if (!token) {
               res.writeHead(400, { "Content-Type": "application/json" });
               res.end(JSON.stringify({ message: "Access Token is required" }));
@@ -775,29 +802,27 @@ const server = http.createServer(async (req, res) => {
               return;
             }
 
+            userInfo = await getUserInfo(token);
+
             if (
               !requestBody.userId ||
               !requestBody.stripeCustomerId ||
               !requestBody.stripeToken
             ) {
               throw new Error(
-                "Missing required parameters for creating premium membership"
+                "Missing required parameters for purchasing premium membership"
               );
             }
-            result = await createPremiumMembership(
-              requestBody.userId,
-              requestBody.stripeCustomerId,
-              requestBody.stripeToken
-            );
+            result = await purchasePremiumMembership(requestBody);
             break;
           case "cancel-premium-membership":
-            userInfo = await getUserInfo(token);
             if (!token) {
               res.writeHead(400, { "Content-Type": "application/json" });
               res.end(JSON.stringify({ message: "Access Token is required" }));
               responseSent = true;
               return;
             }
+            userInfo = await getUserInfo(token);
 
             if (!requestBody.userId) {
               throw new Error(
@@ -807,7 +832,7 @@ const server = http.createServer(async (req, res) => {
             result = await cancelPremiumMembership(requestBody.userId);
             break;
 
-          // contact.html
+          // contact.htmlf
           case "send-email":
             // Forward the request to the web3forms API
             // need to implement token here
@@ -968,8 +993,8 @@ const server = http.createServer(async (req, res) => {
       } else if (req.method === "GET") {
 
                 switch (trimmedPath) {
+
                     case "retrieve-address-history":
-                        case "retrieve-address-history":
                             const { userId, addressId } = requestBody; // Assuming userId is provided in the request body
                             try {
                                 if (!userId || !addressId) {
@@ -1018,6 +1043,7 @@ const server = http.createServer(async (req, res) => {
                         break;
 
 
+
                         
 
 
@@ -1033,7 +1059,7 @@ const server = http.createServer(async (req, res) => {
                             }
                             // Retrieve the watchlist using the user information
                             const watchList = await getWatchlist(userInfo);
-                            
+
                             if (watchList.length === 0) {
                                 res.writeHead(404, { "Content-Type": "application/json" }); // Not Found status code
                                 res.end(JSON.stringify({ message: "Watchlist not found for this user" }));

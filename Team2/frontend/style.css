@@ -1,0 +1,68 @@
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f7f7f7; /* Light grey background for slight contrast */
+    color: #333; /* Dark grey text for better readability */
+    margin: 0;
+    padding: 0;
+}
+
+header, footer {
+    text-align: center;
+    padding: 1.5em;
+    background-color: #404040; /* Darker shade for header and footer */
+    color: white; /* White text on dark backgrounds */
+}
+
+main {
+    padding: 2em;
+    display: flex;
+    justify-content: center;
+}
+
+#cart {
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1); /* Subtle shadow for depth */
+    border: none; /* Removing border for a cleaner look */
+    background-color: white; /* White background for the cart */
+    padding: 2em;
+    width: 300px;
+    border-radius: 8px; /* Rounded corners for the cart */
+}
+
+#cartItems li {
+    list-style: none;
+    margin-bottom: 10px;
+    padding: 10px;
+    background-color: #eee; /* Light gray background for each item */
+    border-radius: 5px; /* Rounded corners for cart items */
+    transition: background-color 0.3s; /* Smooth transition for hover effects */
+}
+
+button {
+    padding: 10px 20px;
+    background-color: #008cba; /* Stylish blue */
+    color: white;
+    border: none;
+    border-radius: 5px; /* Rounded corners for buttons */
+    cursor: pointer;
+    transition: background-color 0.3s, box-shadow 0.3s; /* Smooth transitions for hover effects */
+}
+
+button:hover {
+    background-color: #005f86; /* Darker blue on hover */
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2); /* Slight shadow on hover for a "lifted" effect */
+}
+
+#cartItems li:hover {
+    background-color: #d9d9d9; /* Lighter gray when hovering over items */
+}
+
+#cart h2 {
+    display: flex;
+    align-items: center;
+}
+
+#cartImage {
+    width: 34px; /* Adjust size as needed */
+    height: auto; /* Keeps the aspect ratio intact */
+    margin-right: 10px; /* Adds some space between the icon and the text */
+}
