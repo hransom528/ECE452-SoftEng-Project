@@ -1,5 +1,6 @@
 require("dotenv").config();
 const {checkoutCart} = require("./Team2/checkoutV2");
+const {getPurchaseHistoryByUserId} = require("./Team2/purchaseHistory.js");
 
 const { ObjectId } = require("mongodb");
 const http = require("http");
@@ -1032,6 +1033,27 @@ const server = http.createServer(async (req, res) => {
       } else if (req.method === "GET") {
 
                 switch (trimmedPath) {
+                  case "retrieve-pruchase-history":
+ 
+                  try {
+                  if (!requestBody.userId) {
+                  throw new Error('User ID is missing in the request body');
+                  }
+                  const purchaseHistory = await getPurchaseHistoryByUserId(requestBody.userId);
+                  
+                  if (!purchaseHistory || purchaseHistory.data.length === 0) {//!purchaseHistory || purchaseHistory.data.length === 0
+                  res.writeHead(404, { "Content-Type": "application/json" }); // Not Found status code
+                  res.end(JSON.stringify({ message: "No purchase history found for the given user ID." }));
+                  } else {
+                  res.writeHead(200, { "Content-Type": "application/json" });
+                  res.end(JSON.stringify({ purchaseHistory: purchaseHistory.data }));
+                  }
+                  } catch (error) {
+                  console.error("Error retrieving purchase history:", error);
+                  res.writeHead(500, { "Content-Type": "application/json" });
+                  res.end(JSON.stringify({ error: "Internal Server Error" }));
+                  }
+                  break;
 
                     case "retrieve-address-history":
                             const { userId, addressId } = requestBody; // Assuming userId is provided in the request body
