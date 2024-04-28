@@ -1098,9 +1098,6 @@ const server = http.createServer(async (req, res) => {
                         break;
 
 
-                        
-
-
                     case "get-watchlist":
                         const { userId: userIdToRetrieve } = requestBody;
                         try {
