@@ -1,116 +1,123 @@
 // watchlist.js
 const { ObjectId } = require('mongodb');
 const { connectDB } = require('../dbConfig');
+const { getUserInfo } = require('../Team1/Reg_lgn/oAuthHandler');
 
 async function getProduct(productId) {
     const db = await connectDB();
     const collection = db.collection('products');
-
     const product = await collection.findOne({ _id: new ObjectId(productId) }, { specs: 1 }); // Only fetch 'specs' field
-
     return product;
 }
 
-async function getUser(userId) {
-    const db = await connectDB();
-    const collection = db.collection('users');
-
-    const user = await collection.findOne({ _id: new ObjectId(userId) });
-
+async function getUser(token) {
+    // Assuming getUserInfo extracts user information from the token
+    const user = await getUserInfo(token); // Implement this according to your token structure
     return user;
 }
 
-async function addToWatchlist(userId, productId) {
-    const db = await connectDB();
-    const collection = db.collection('users');
-
-    const user = await getUser(userId);
+async function addToWatchlist(token, productName) {
+    const user = await getUser(token);
     if (!user) {
         return { error: "User not found. Please log in before adding to the watchlist." };
     }
 
-    // Check if the product already exists in the watchlist
-    if (user.watchlist && user.watchlist.some(item => item.productId === productId)) {
-        return { error: "Product already exists in the watchlist." };
-    }
+    const db = await connectDB();
+    const productCollection = db.collection('products');
+    const userCollection = db.collection('users');
 
-    // Fetch product details
-    const product = await getProduct(productId);
-
-    // Check if product exists
+    // Find the product by name
+    const product = await productCollection.findOne({ name: productName });
     if (!product) {
         return { error: "Product not found." };
     }
 
-    // If user doesn't have a watchlist yet, initialize an empty array
-    if (!user.watchlist) {
-        user.watchlist = [];
+    // Check if the product is already in the user's watchlist
+    const userWatchlist = await userCollection.findOne({ email: user.email });
+    if (userWatchlist && userWatchlist.watchlist && userWatchlist.watchlist.some(item => item.name === productName)) {
+        return { error: "Product already in watchlist" };
     }
 
-    // Add the product to the watchlist
-    user.watchlist.push({
-        productId,
-        productName: product.name,
-        spec: product.specs ? product.specs.weight : null, // Extracting weight from the specs object
-        price: product.price,
-        brand: product.brand,
-        stockQuantity: product.stockQuantity,
-        type: product.type,
-        trendingScore: product.trendingScore,
-        rating: product.rating
-    });
+    console.log("Adding product to watchlist:", product);
 
-    // Update the user document with the modified watchlist
-    await collection.updateOne(
-        { _id: new ObjectId(userId) },
-        { $set: { watchlist: user.watchlist } }
+    // Update the user's watchlist directly in the database
+    await userCollection.updateOne(
+        { email: user.email }, // Assuming email is a unique identifier for users
+        { 
+            $addToSet: { 
+                watchlist: { 
+                    name: product.name,
+                    description: product.description,
+                    brand: product.brand,
+                    type: product.type,
+                    price: product.price,
+                    stockQuantity: product.stockQuantity,
+                    specs: product.specs,
+                    trendingScore: product.trendingScore,
+                    rating: product.rating,
+                    discount: product.discount,
+                    originalPrice: product.originalPrice
+                } 
+            } 
+        }
     );
 
     return { message: "Product added to watchlist" };
 }
 
 
-async function removeFromWatchlist(userId, productId) {
-    const db = await connectDB();
-    const collection = db.collection('users');
 
-    // Remove product from user's watchlist
-    await collection.updateOne(
-        { _id: new ObjectId(userId) },
-        { $pull: { watchlist: { productId } } }
-    );
-}
-
-async function getWatchlist(userId) {
-    const db = await connectDB();
-    const collection = db.collection('users');
-
-    const user = await getUser(userId);
-
-    if (!user || !user.watchlist) {
-        console.log('No watchlist found for this user.');
-        return [];
+async function removeFromWatchlist(token, productName) {
+    const user = await getUser(token);
+    if (!user) {
+        return { error: "User not found." };
     }
 
-    console.log('Watchlist retrieved:', user.watchlist);
+    const db = await connectDB();
+    const userCollection = db.collection('users');
 
-    // Fetch product details for each productId in the watchlist
-    const productDetails = await Promise.all(user.watchlist.map(async ({ productId }) => {
-        const product = await getProduct(productId);
-        return {
-            productName: product.name,
-            spec: product.specs ? product.specs.weight : null, // Extracting weight from the specs object
-            price: product.price,
-            brand: product.brand,
-            stockQuantity: product.stockQuantity,
-            type: product.type,
-            trendingScore: product.trendingScore,
-            rating: product.rating
-        };
-    }));
+    // Find the product by name
+    const product = await userCollection.findOne({ email: user.email, 'watchlist.name': productName }, { 'watchlist.$': 1 });
+    if (!product) {
+        return { error: "Product not found in watchlist." };
+    }
 
-    return productDetails;
+    // Remove the product from the user's watchlist
+    await userCollection.updateOne(
+        { email: user.email },
+        { $pull: { watchlist: { name: productName } } }
+    );
+
+    return { message: "Product removed from watchlist" };
 }
+
+
+
+async function getWatchlist(userInfo) {
+    if (!userInfo) {
+        return { error: "User not found." };
+    }
+
+    const db = await connectDB();
+    const collection = db.collection('users');
+
+    // Find the user document based on email or name
+    const user = await collection.findOne({ email: userInfo.email });
+    if (!user) {
+        return { error: "User not found." };
+    }
+
+    const watchlist = user.watchlist;
+
+    if (!watchlist) {
+        return { error: "Watchlist not found for this user." };
+    }
+
+    return watchlist;
+}
+
+
+
 
 module.exports = {
     getWatchlist,
