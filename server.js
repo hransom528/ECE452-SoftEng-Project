@@ -1,6 +1,5 @@
 require("dotenv").config();
-const {checkoutCart} = require("./Team2/checkoutV2");
-const {getPurchaseHistoryByUserId} = require("./Team2/purchaseHistory.js");
+
 const { ObjectId } = require("mongodb");
 const http = require("http");
 const url = require("url");
@@ -11,7 +10,6 @@ const {
   verifyCardAndUpdateDB,
   createPaymentAndProcessing,
   refundPayment,
-  addBankTransferAccount,
 } = require("./Team3/stripe.js");
 const {
     verifyAddress,
@@ -306,9 +304,11 @@ const server = http.createServer(async (req, res) => {
                         break;
 
                     case 'add-to-watchlist':
-                        const { userId: userIdToAdd, productId: productIdToAdd } = requestBody;
                         try {
-                            const result = await addToWatchlist(userIdToAdd, productIdToAdd);
+                            // Call the addToWatchlist function, passing the access token from request headers
+                            const result = await addToWatchlist(token, requestBody.productName);
+                            
+                            // Handle the result and send appropriate response
                             if (result.error) {
                                 res.writeHead(404, { "Content-Type": "application/json" });
                                 res.end(JSON.stringify({ error: result.error }));
@@ -318,27 +318,33 @@ const server = http.createServer(async (req, res) => {
                             res.end(JSON.stringify({ message: result.message }));
                             return;
                         } catch (error) {
+                            console.error("Error adding product to watchlist:", error);
                             res.writeHead(500, { "Content-Type": "application/json" });
                             res.end(JSON.stringify({ error: "Internal Server Error" }));
                             return;
                         }
-                        
 
-          case "remove-from-watchlist":
-            const { userId: userIdToRemove, productId: productIdToRemove } =
-              requestBody;
-            try {
-              await removeFromWatchlist(userIdToRemove, productIdToRemove);
-              res.writeHead(200, { "Content-Type": "application/json" });
-              res.end(
-                JSON.stringify({ message: "Product removed from watchlist" })
-              );
-            } catch (error) {
-              console.error("Error removing product from watchlist:", error);
-              res.writeHead(500, { "Content-Type": "application/json" });
-              res.end(JSON.stringify({ error: "Internal Server Error" }));
-            }
-            return;
+                        case 'remove-from-watchlist':
+                          try {
+                              const result = await removeFromWatchlist(token, requestBody.productName);
+                              if (result.error) {
+                                  res.writeHead(404, { "Content-Type": "application/json" });
+                                  res.end(JSON.stringify({ error: result.error }));
+                                  return;
+                              }
+                              
+                              res.writeHead(200, { "Content-Type": "application/json" });
+                              res.end(JSON.stringify({ message: "Product removed from watchlist" }));
+                          } catch (error) {
+                              console.error("Error removing product from watchlist:", error);
+                              res.writeHead(500, { "Content-Type": "application/json" });
+                              res.end(JSON.stringify({ error: "Internal Server Error" }));
+                          }
+                          return;
+                      
+                      
+
+
 
           case "checkout":
             // const { userId, cartId, address, paymentToken, stripeCustomerId } =
@@ -363,7 +369,8 @@ const server = http.createServer(async (req, res) => {
                        });
 
 
-            break;
+
+         
             case "verify-card-details":
                 try {
                   const { userObjectId, stripeCustomerId, stripeToken } = requestBody;
@@ -417,82 +424,45 @@ const server = http.createServer(async (req, res) => {
                       }
                     }
                     return;
-                    case "add-bank-account":
-  try {
-    const { stripeCustomerId, accountNumber, routingNumber, accountHolderName, accountHolderType } = requestBody;
-
-    const result = await addBankTransferAccount(
-      stripeCustomerId, 
-      accountNumber, 
-      routingNumber, 
-      accountHolderName, 
-      accountHolderType
-    );
-
-    if (result.success) {
-      res.writeHead(200, { "Content-Type": "application/json" });
-      res.end(JSON.stringify({
-        message: "Bank account added successfully.",
-        bankAccountId: result.bankAccountId
-      }));
-    } else {
-      res.writeHead(400, { "Content-Type": "application/json" });
-      res.end(JSON.stringify({
-        message: "Failed to add bank account.",
-        error: result.message
-      }));
-    }
-  } catch (error) {
-    console.error("Error adding bank account:", error);
-    res.writeHead(500, { "Content-Type": "application/json" });
-    res.end(JSON.stringify({
-      message: "Internal server error while adding bank account.",
-      error: error.message
-    }));
-  }
-  break;
-  case "process-payment":
-    try {
-      const { stripeCustomerId, id, amount, currency, idType } = requestBody;
-      const finalCurrency = currency || 'usd'; // Default to 'USD' if currency is not provided
-  
-      const paymentResult = await createPaymentAndProcessing(
-        stripeCustomerId,
-        id,
-        amount,
-        finalCurrency,
-        idType // This new parameter should be either 'payment_method' or 'bank_account'
-      );
-  
-      if (paymentResult.success) {
-        res.writeHead(200, { "Content-Type": "application/json" });
-        res.end(
-          JSON.stringify({
-            message: "Payment processed successfully",
-            data: paymentResult,
-          })
-        );
-      } else {
-        res.writeHead(400, { "Content-Type": "application/json" });
-        res.end(
-          JSON.stringify({
-            message: paymentResult.message,
-            data: paymentResult,
-          })
-        );
-      }
-    } catch (error) {
-      console.error("Error processing payment:", error);
-      res.writeHead(500, { "Content-Type": "application/json" });
-      res.end(
-        JSON.stringify({
-          message: "Failed to process payment",
-          error: error.message,
-        })
-      );
-    }
-    break;
-                                  
+            case "process-payment":
+                try {
+                  const { stripeCustomerId, paymentMethodId, amountInDollars } = requestBody;
+                  const paymentResult = await createPaymentAndProcessing(
+                    stripeCustomerId,
+                    paymentMethodId,
+                    amountInDollars
+                  );
+              
+                  // Check if the payment was successful and send the appropriate response
+                  if (paymentResult.success) {
+                    res.writeHead(200, { "Content-Type": "application/json" });
+                    res.end(
+                      JSON.stringify({
+                        message: "Payment processed successfully",
+                        data: paymentResult,
+                      })
+                    );
+                  } else {
+                    // If paymentResult indicates failure, send a client error response
+                    res.writeHead(400, { "Content-Type": "application/json" }); // Using 400 Bad Request for client-side error
+                    res.end(
+                      JSON.stringify({
+                        message: paymentResult.message, // This will contain the actual error message
+                        data: paymentResult,
+                      })
+                    );
+                  }
+                } catch (error) {
+                  console.error("Error processing payment:", error);
+                  res.writeHead(500, { "Content-Type": "application/json" });
+                  res.end(
+                    JSON.stringify({
+                      message: "Failed to process payment",
+                      error: error.message,
+                    })
+                  );
+                }
+                break;               
           // userProfile.js
           case "update-user-profile":
             userInfo = await getUserInfo(token);
@@ -1021,34 +991,9 @@ const server = http.createServer(async (req, res) => {
           );
         }
       } else if (req.method === "GET") {
-        const requestBody = JSON.parse(buffer);
-        let result = null;
 
                 switch (trimmedPath) {
 
-                    case "retrieve-pruchase-history":
-                  
-                     try {
-                         if (!requestBody.userId) {
-                             throw new Error('User ID is missing in the request body');
-                         }
-                         const purchaseHistory = await getPurchaseHistoryByUserId(requestBody.userId);
-         
-                         if (!purchaseHistory || purchaseHistory.data.length === 0) {
-                             res.writeHead(404, { "Content-Type": "application/json" }); // Not Found status code
-                             res.end(JSON.stringify({ message: "No purchase history found for the given user ID." }));
-                         } else {
-                             res.writeHead(200, { "Content-Type": "application/json" });
-                             res.end(JSON.stringify({ purchaseHistory: purchaseHistory.data }));
-                         }
-                     } catch (error) {
-                         console.error("Error retrieving purchase history:", error);
-                         res.writeHead(500, { "Content-Type": "application/json" });
-                         res.end(JSON.stringify({ error: "Internal Server Error" }));
-                     }
-                      break;
-                      
-                    
                     case "retrieve-address-history":
                             const { userId, addressId } = requestBody; // Assuming userId is provided in the request body
                             try {
@@ -1098,10 +1043,23 @@ const server = http.createServer(async (req, res) => {
                         break;
 
 
-                    case "get-watchlist":
-                        const { userId: userIdToRetrieve } = requestBody;
-                        try {
-                            const watchList = await getWatchlist(userIdToRetrieve);
+
+                        
+
+
+                   case "get-watchlist":
+                        try {                        
+                            // Extract user information using the access token
+                            const userInfo = await getUserInfo(token);
+                            // Ensure that the user information is available
+                            if (!userInfo) {
+                                res.writeHead(401, { "Content-Type": "application/json" }); // Unauthorized status code
+                                res.end(JSON.stringify({ error: "Unauthorized: Access token invalid or expired" }));
+                                return;
+                            }
+                            // Retrieve the watchlist using the user information
+                            const watchList = await getWatchlist(userInfo);
+
                             if (watchList.length === 0) {
                                 res.writeHead(404, { "Content-Type": "application/json" }); // Not Found status code
                                 res.end(JSON.stringify({ message: "Watchlist not found for this user" }));
@@ -1115,6 +1073,8 @@ const server = http.createServer(async (req, res) => {
                             res.end(JSON.stringify({ error: "Internal Server Error" }));
                         }
                         return;
+
+
 
           case "filterCatalog":
             result = await productFilterQuery(requestBody);

@@ -29,11 +29,16 @@ async function verifyAddress(address) {
 
         // Convert the address object to a string
         const addressString = formatAddress(address);
-
+        
+        console.log('Formatted address:', addressString); // Log formatted address
+        
         // Make a request to Google Maps Geocoding API to validate the address
         const response = await geocodeAsync({
             address: addressString
         });
+
+        // Log geocoding response
+        console.log('Geocoding response:', response);
 
         // Check if response is undefined or no results found
         if (!response || !response.json || !response.json.results || response.json.results.length === 0) {
@@ -42,7 +47,9 @@ async function verifyAddress(address) {
         } else {
             // Check if the formatted address from the response matches the original address
             const formattedResponseAddress = formatAddress(response.json.results[0].formatted_address);
+            console.log(formattedResponseAddress);
             const originalAddressString = formatAddress(address);
+            console.log(originalAddressString);
             
             if (formattedResponseAddress !== originalAddressString) {
                 console.log('Partial match found');
@@ -58,6 +65,7 @@ async function verifyAddress(address) {
         return { message: 'Failed to verify address', isValid: false };
     }
 }
+
 
 // Function to format the address object or string
 function formatAddress(address) {
