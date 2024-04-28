@@ -22,12 +22,39 @@ Get Purchase History w/ curl:
 ------------
 Cart.js
 ------------
-This is an implementation of the Cart where a user can add or remove items based on the userID, productId, and quantity. 
-Additionally a user can retrieve their cart through a GET request. 
+This is an implementation of the cart which a user can request to create. Additionally, they can add or remove items from the cart
 
-// curl -X POST http://localhost:3000/remove-from-cart -H "Content-Type: application/json" -d '{"userId":"65fb26fd8ee7dfe76e1b0dcd", "productId":"65f8ede18c06f461ae617087", "quantityToRemove":50}'
-// curl -X POST http://localhost:3000/add-to-cart -H "Content-Type: application/json" -d '{"userId":"65fb26fd8ee7dfe76e1b0dcd", "productId":"65f8ede18c06f461ae617087", "quantity":50}'  
-//curl "http://localhost:3000/remove-from-cart?userId=65fb26fd8ee7dfe76e1b0dcd&productId=65f8ede18c06f461ae617087&quantityToRemove=50"
+- Add Product to Cart
+  Method: POST
+  Endpoint: http://localhost:3000/add-to-cart
+  Body (JSON):
+  {
+    "userId": "user_id_here",
+    "productId": "product_id_here"
+    "quantity": "quantity_here"
+  
+  }
+
+- Remove Product from Cart
+  Method: POST
+  Endpoint: http://localhost:3000/remove-from-cart
+  Body (JSON):
+  {
+    "userId": "user_id_here",
+    "productId": "product_id_here"
+    "quantityToRemove: "quantity_To_Remove
+  }
+
+- retrieve your Cart
+  Method: GET
+  Endpoint: http://localhost:3000/fetch-cart-details
+  Body (JSON):
+  {
+    "userId": "user_id_here",
+  }
+
+
+
 
 ------------
 Watchlist.js
