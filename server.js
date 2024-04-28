@@ -1,6 +1,4 @@
 require("dotenv").config();
-const {checkoutCart} = require("./Team2/checkoutV2");
-
 const { ObjectId } = require("mongodb");
 const http = require("http");
 const url = require("url");
@@ -11,7 +9,6 @@ const {
   verifyCardAndUpdateDB,
   createPaymentAndProcessing,
   refundPayment,
-  addBankTransferAccount,
 } = require("./Team3/stripe.js");
 const {
     verifyAddress,
@@ -308,7 +305,7 @@ const server = http.createServer(async (req, res) => {
                             res.end(JSON.stringify({ error: "Internal Server Error" }));
                             return;
                         }
-                        
+                        return;
 
           case "remove-from-watchlist":
             const { userId: userIdToRemove, productId: productIdToRemove } =
@@ -327,26 +324,16 @@ const server = http.createServer(async (req, res) => {
             return;
 
           case "checkout":
-            // const { userId, cartId, address, paymentToken, stripeCustomerId } =
-            //   requestBody;
-            // await checkout(
-            //   userId,
-            //   cartId,
-            //   address,
-            //   paymentToken,
-            //   stripeCustomerId
-            // );
-            // result = { message: "Checkout successful" };
-            const { userId, billingAddr, shippingAddr, paymentInfo } = requestBody;
-            checkoutCart(userId, billingAddr, shippingAddr, paymentInfo)
-                       .then(checkoutDetails => {
-                         console.log('Checkout Successful:', checkoutDetails);
-                       })
-                       .catch(error => {
-                         console.error('Checkout Failed:', error.message);
-                       });
-
-
+            const { userId, cartId, address, paymentToken, stripeCustomerId } =
+              requestBody;
+            await checkout(
+              userId,
+              cartId,
+              address,
+              paymentToken,
+              stripeCustomerId
+            );
+            result = { message: "Checkout successful" };
             break;
             case "verify-card-details":
                 try {
@@ -401,82 +388,45 @@ const server = http.createServer(async (req, res) => {
                       }
                     }
                     return;
-                    case "add-bank-account":
-  try {
-    const { stripeCustomerId, accountNumber, routingNumber, accountHolderName, accountHolderType } = requestBody;
-
-    const result = await addBankTransferAccount(
-      stripeCustomerId, 
-      accountNumber, 
-      routingNumber, 
-      accountHolderName, 
-      accountHolderType
-    );
-
-    if (result.success) {
-      res.writeHead(200, { "Content-Type": "application/json" });
-      res.end(JSON.stringify({
-        message: "Bank account added successfully.",
-        bankAccountId: result.bankAccountId
-      }));
-    } else {
-      res.writeHead(400, { "Content-Type": "application/json" });
-      res.end(JSON.stringify({
-        message: "Failed to add bank account.",
-        error: result.message
-      }));
-    }
-  } catch (error) {
-    console.error("Error adding bank account:", error);
-    res.writeHead(500, { "Content-Type": "application/json" });
-    res.end(JSON.stringify({
-      message: "Internal server error while adding bank account.",
-      error: error.message
-    }));
-  }
-  break;
-  case "process-payment":
-    try {
-      const { stripeCustomerId, id, amount, currency, idType } = requestBody;
-      const finalCurrency = currency || 'usd'; // Default to 'USD' if currency is not provided
-  
-      const paymentResult = await createPaymentAndProcessing(
-        stripeCustomerId,
-        id,
-        amount,
-        finalCurrency,
-        idType // This new parameter should be either 'payment_method' or 'bank_account'
-      );
-  
-      if (paymentResult.success) {
-        res.writeHead(200, { "Content-Type": "application/json" });
-        res.end(
-          JSON.stringify({
-            message: "Payment processed successfully",
-            data: paymentResult,
-          })
-        );
-      } else {
-        res.writeHead(400, { "Content-Type": "application/json" });
-        res.end(
-          JSON.stringify({
-            message: paymentResult.message,
-            data: paymentResult,
-          })
-        );
-      }
-    } catch (error) {
-      console.error("Error processing payment:", error);
-      res.writeHead(500, { "Content-Type": "application/json" });
-      res.end(
-        JSON.stringify({
-          message: "Failed to process payment",
-          error: error.message,
-        })
-      );
-    }
-    break;
-                                  
+            case "process-payment":
+                try {
+                  const { stripeCustomerId, paymentMethodId, amountInDollars } = requestBody;
+                  const paymentResult = await createPaymentAndProcessing(
+                    stripeCustomerId,
+                    paymentMethodId,
+                    amountInDollars
+                  );
+              
+                  // Check if the payment was successful and send the appropriate response
+                  if (paymentResult.success) {
+                    res.writeHead(200, { "Content-Type": "application/json" });
+                    res.end(
+                      JSON.stringify({
+                        message: "Payment processed successfully",
+                        data: paymentResult,
+                      })
+                    );
+                  } else {
+                    // If paymentResult indicates failure, send a client error response
+                    res.writeHead(400, { "Content-Type": "application/json" }); // Using 400 Bad Request for client-side error
+                    res.end(
+                      JSON.stringify({
+                        message: paymentResult.message, // This will contain the actual error message
+                        data: paymentResult,
+                      })
+                    );
+                  }
+                } catch (error) {
+                  console.error("Error processing payment:", error);
+                  res.writeHead(500, { "Content-Type": "application/json" });
+                  res.end(
+                    JSON.stringify({
+                      message: "Failed to process payment",
+                      error: error.message,
+                    })
+                  );
+                }
+                break;               
           // userProfile.js
           case "update-user-profile":
             userInfo = await getUserInfo(token);
@@ -1012,18 +962,6 @@ const server = http.createServer(async (req, res) => {
         let result = null;
 
                 switch (trimmedPath) {
-
-                    case "chrisTest":
-                      
-                    checkoutCart('65fb26fd8ee7dfe76e1b0dcd')
-                       .then(checkoutDetails => {
-                         console.log('Checkout Successful:', checkoutDetails);
-                       })
-                       .catch(error => {
-                         console.error('Checkout Failed:', error.message);
-                       });
-                      break;
-                      
                     case "retrieve-address-history":
                         case "retrieve-address-history":
                             const { userId, addressId } = requestBody; // Assuming userId is provided in the request body
