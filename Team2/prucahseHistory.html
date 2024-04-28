@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Purchase History</title>
+    <script>
+        // Simulate user login by storing a user ID in localStorage
+        function simulateUserLogin() {
+            // This would be set to the user's actual ID upon logging in
+            const simulatedUserId = '660c85edd02294473a01cb09';
+            localStorage.setItem('userId', simulatedUserId);
+        }
+
+        // Immediately simulate login for testing purposes
+        simulateUserLogin();
+    </script>
+</head>
+<body>
+    <h1>Retrieve Purchase History</h1>
+    <button onclick="getPurchaseHistory()">Get Purchase History</button>
+
+    <div id="responseContainer"></div>
+
+    <script>
+        function getPurchaseHistory() {
+    // Retrieve the stored user ID
+    const userId = localStorage.getItem('userId');
+    if (!userId) {
+        alert('User ID not found. Please log in again.');
+        return;
+    }
+
+    // Construct the URL with the userId as a query parameter
+    const url = `http://localhost:3000/retrieve-purchase-history?userId=${encodeURIComponent(userId)}`;
+
+    fetch(url)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json(); // Parse JSON data from the response
+        })
+        .then(data => {
+            document.getElementById('responseContainer').textContent = JSON.stringify(data, null, 2);
+        })
+        .catch(error => {
+            console.error('There has been a problem with your fetch operation:', error);
+            document.getElementById('responseContainer').textContent = 'Error: ' + error.message;
+        });
+}
+
+    </script>
+</body>
+</html>

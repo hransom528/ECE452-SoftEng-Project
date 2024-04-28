@@ -1,6 +1,6 @@
 require("dotenv").config();
 const {checkoutCart} = require("./Team2/checkoutV2");
-
+const {getPurchaseHistoryByUserId} = require("./Team2/purchaseHistory.js");
 const { ObjectId } = require("mongodb");
 const http = require("http");
 const url = require("url");
@@ -64,7 +64,6 @@ const {
   reviewProduct
 } = require("./Team4/Product_Review.js");
 const productFilterQuery = require("./Team4/Filter_Search.js");
-const { checkout } = require("./Team2/Checkout.js");
 const {addToWatchlist,removeFromWatchlist,getWatchlist,getProduct,getUser} = require("./Team2/Watchlist.js");
 
 let responseSent = false;
@@ -338,6 +337,8 @@ const server = http.createServer(async (req, res) => {
             // );
             // result = { message: "Checkout successful" };
             const { userId, billingAddr, shippingAddr, paymentInfo } = requestBody;
+            const addr1 = requestBody.billingAddr;
+            const addr2 = requestBody.shippingAddr;
             checkoutCart(userId, billingAddr, shippingAddr, paymentInfo)
                        .then(checkoutDetails => {
                          console.log('Checkout Successful:', checkoutDetails);
@@ -849,7 +850,7 @@ const server = http.createServer(async (req, res) => {
             result = await cancelPremiumMembership(requestBody.userId);
             break;
 
-          // contact.html
+          // contact.htmlf
           case "send-email":
             // Forward the request to the web3forms API
             // need to implement token here
@@ -1013,19 +1014,30 @@ const server = http.createServer(async (req, res) => {
 
                 switch (trimmedPath) {
 
-                    case "chrisTest":
-                      
-                    checkoutCart('65fb26fd8ee7dfe76e1b0dcd')
-                       .then(checkoutDetails => {
-                         console.log('Checkout Successful:', checkoutDetails);
-                       })
-                       .catch(error => {
-                         console.error('Checkout Failed:', error.message);
-                       });
+                    case "retrieve-pruchase-history":
+                  
+                     try {
+                         if (!requestBody.userId) {
+                             throw new Error('User ID is missing in the request body');
+                         }
+                         const purchaseHistory = await getPurchaseHistoryByUserId(requestBody.userId);
+         
+                         if (!purchaseHistory || purchaseHistory.data.length === 0) {
+                             res.writeHead(404, { "Content-Type": "application/json" }); // Not Found status code
+                             res.end(JSON.stringify({ message: "No purchase history found for the given user ID." }));
+                         } else {
+                             res.writeHead(200, { "Content-Type": "application/json" });
+                             res.end(JSON.stringify({ purchaseHistory: purchaseHistory.data }));
+                         }
+                     } catch (error) {
+                         console.error("Error retrieving purchase history:", error);
+                         res.writeHead(500, { "Content-Type": "application/json" });
+                         res.end(JSON.stringify({ error: "Internal Server Error" }));
+                     }
                       break;
                       
+                    
                     case "retrieve-address-history":
-                        case "retrieve-address-history":
                             const { userId, addressId } = requestBody; // Assuming userId is provided in the request body
                             try {
                                 if (!userId || !addressId) {
