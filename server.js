@@ -1,5 +1,5 @@
 require("dotenv").config();
-const {checkoutCart} = require("./Team2/checkoutV2");
+const { checkoutCart } = require("./Team2/checkoutV2");
 
 const { ObjectId } = require("mongodb");
 const http = require("http");
@@ -13,9 +13,9 @@ const {
   refundPayment,
 } = require("./Team3/stripe.js");
 const {
-    verifyAddress,
-    checkAddressCompleteness,
-    retrieveAddressHistory
+  verifyAddress,
+  checkAddressCompleteness,
+  retrieveAddressHistory
 } = require('./Team2/AddressValidationAPI.js');
 const { updateListings } = require("./Team3/UC8update_listings.js");
 const { deleteListings } = require("./Team3/UC8update_listings.js");
@@ -63,7 +63,9 @@ const {
   reviewProduct
 } = require("./Team4/Product_Review.js");
 const productFilterQuery = require("./Team4/Filter_Search.js");
-const {addToWatchlist,removeFromWatchlist,getWatchlist,getProduct,getUser} = require("./Team2/Watchlist.js");
+const { addToWatchlist, removeFromWatchlist, getWatchlist, getProduct, getUser } = require("./Team2/Watchlist.js");
+const { autocompleteProductSearch } = require("./Team4/autocomplete.js");
+const { productSearchQuery } = require("./Team4/Product_Search.js");
 
 let responseSent = false;
 let result;
@@ -72,16 +74,16 @@ const server = http.createServer(async (req, res) => {
 
   //add frontent capability
   //Set CORS headers
-   res.setHeader('Access-Control-Allow-Origin', '*');
-   res.setHeader('Access-Control-Allow-Methods', 'OPTIONS, GET, POST, PUT, PATCH, DELETE');
-   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'OPTIONS, GET, POST, PUT, PATCH, DELETE');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
 
-   // Handle OPTIONS pre-flight request
-   if (req.method === 'OPTIONS') {
-       res.writeHead(204);
-       res.end();
-       return;
-   }
+  // Handle OPTIONS pre-flight request
+  if (req.method === 'OPTIONS') {
+    res.writeHead(204);
+    res.end();
+    return;
+  }
 
   const parsedUrl = url.parse(req.url, true);
   const path = parsedUrl.pathname;
@@ -294,56 +296,56 @@ const server = http.createServer(async (req, res) => {
         const requestBody = JSON.parse(buffer);
         let result = null;
 
-                switch (trimmedPath) {
-                    case 'verify-address':
-                        const add = requestBody.address;
-                        result = await verifyAddress(add);
-                        break;
-                   
-                    case 'check-address-completeness':
-                        result = await checkAddressCompleteness(requestBody);
-                        break;
+        switch (trimmedPath) {
+          case 'verify-address':
+            const add = requestBody.address;
+            result = await verifyAddress(add);
+            break;
 
-                    case 'add-to-watchlist':
-                        try {
-                            // Call the addToWatchlist function, passing the access token from request headers
-                            const result = await addToWatchlist(token, requestBody.productName);
-                            
-                            // Handle the result and send appropriate response
-                            if (result.error) {
-                                res.writeHead(404, { "Content-Type": "application/json" });
-                                res.end(JSON.stringify({ error: result.error }));
-                                return;
-                            }
-                            res.writeHead(200, { "Content-Type": "application/json" });
-                            res.end(JSON.stringify({ message: result.message }));
-                            return;
-                        } catch (error) {
-                            console.error("Error adding product to watchlist:", error);
-                            res.writeHead(500, { "Content-Type": "application/json" });
-                            res.end(JSON.stringify({ error: "Internal Server Error" }));
-                            return;
-                        }
+          case 'check-address-completeness':
+            result = await checkAddressCompleteness(requestBody);
+            break;
 
-                        case 'remove-from-watchlist':
-                          try {
-                              const result = await removeFromWatchlist(token, requestBody.productName);
-                              if (result.error) {
-                                  res.writeHead(404, { "Content-Type": "application/json" });
-                                  res.end(JSON.stringify({ error: result.error }));
-                                  return;
-                              }
-                              
-                              res.writeHead(200, { "Content-Type": "application/json" });
-                              res.end(JSON.stringify({ message: "Product removed from watchlist" }));
-                          } catch (error) {
-                              console.error("Error removing product from watchlist:", error);
-                              res.writeHead(500, { "Content-Type": "application/json" });
-                              res.end(JSON.stringify({ error: "Internal Server Error" }));
-                          }
-                          return;
-                      
-                      
+          case 'add-to-watchlist':
+            try {
+              // Call the addToWatchlist function, passing the access token from request headers
+              const result = await addToWatchlist(token, requestBody.productName);
+
+              // Handle the result and send appropriate response
+              if (result.error) {
+                res.writeHead(404, { "Content-Type": "application/json" });
+                res.end(JSON.stringify({ error: result.error }));
+                return;
+              }
+              res.writeHead(200, { "Content-Type": "application/json" });
+              res.end(JSON.stringify({ message: result.message }));
+              return;
+            } catch (error) {
+              console.error("Error adding product to watchlist:", error);
+              res.writeHead(500, { "Content-Type": "application/json" });
+              res.end(JSON.stringify({ error: "Internal Server Error" }));
+              return;
+            }
+
+          case 'remove-from-watchlist':
+            try {
+              const result = await removeFromWatchlist(token, requestBody.productName);
+              if (result.error) {
+                res.writeHead(404, { "Content-Type": "application/json" });
+                res.end(JSON.stringify({ error: result.error }));
+                return;
+              }
+
+              res.writeHead(200, { "Content-Type": "application/json" });
+              res.end(JSON.stringify({ message: "Product removed from watchlist" }));
+            } catch (error) {
+              console.error("Error removing product from watchlist:", error);
+              res.writeHead(500, { "Content-Type": "application/json" });
+              res.end(JSON.stringify({ error: "Internal Server Error" }));
+            }
+            return;
+
+
 
 
 
@@ -362,146 +364,146 @@ const server = http.createServer(async (req, res) => {
             const addr1 = requestBody.billingAddr;
             const addr2 = requestBody.shippingAddr;
             checkoutCart(userId, billingAddr, shippingAddr, paymentInfo)
-                       .then(checkoutDetails => {
-                         console.log('Checkout Successful:', checkoutDetails);
-                       })
-                       .catch(error => {
-                         console.error('Checkout Failed:', error.message);
-                       });
+              .then(checkoutDetails => {
+                console.log('Checkout Successful:', checkoutDetails);
+              })
+              .catch(error => {
+                console.error('Checkout Failed:', error.message);
+              });
 
 
 
-                       break;
+            break;
 
-            case "verify-card-details":
-                try {
-                  const { userObjectId, stripeCustomerId, stripeToken } = requestBody;
-                  const verifyResult = await verifyCardAndUpdateDB(
-                    userObjectId,
-                    stripeCustomerId,
-                    stripeToken
-                  );
-                  const statusCode = verifyResult.success ? 200 : 400; // Use 400 for client-side error
-                  res.writeHead(statusCode, { "Content-Type": "application/json" });
-                  res.end(JSON.stringify({ success: verifyResult.success, data: verifyResult }));
-                } catch (error) {
-                  console.error("Error verifying card details:", error);
-                  if (!res.headersSent) {
-                    res.writeHead(500, { "Content-Type": "application/json" });
-                    res.end(
-                      JSON.stringify({
-                        success: false,
-                        message: "Failed to verify card details",
-                        error: error.message,
-                      })
-                    );
-                  }
-                }
-                return;
-                case "add-bank-account":
-                  try {
-                    const { stripeCustomerId, accountNumber, routingNumber, accountHolderName, accountHolderType } = requestBody;
-                
-                    const result = await addBankTransferAccount(
-                      stripeCustomerId, 
-                      accountNumber, 
-                      routingNumber, 
-                      accountHolderName, 
-                      accountHolderType
-                    );
-                
-                    if (result.success) {
-                      res.writeHead(200, { "Content-Type": "application/json" });
-                      res.end(JSON.stringify({
-                        message: "Bank account added successfully.",
-                        bankAccountId: result.bankAccountId
-                      }));
-                    } else {
-                      res.writeHead(400, { "Content-Type": "application/json" });
-                      res.end(JSON.stringify({
-                        message: "Failed to add bank account.",
-                        error: result.message
-                      }));
-                    }
-                  } catch (error) {
-                    console.error("Error adding bank account:", error);
-                    res.writeHead(500, { "Content-Type": "application/json" });
-                    res.end(JSON.stringify({
-                      message: "Internal server error while adding bank account.",
-                      error: error.message
-                    }));
-                  }
-                  break;
-                  case "process-payment":
-                    try {
-                      const { stripeCustomerId, id, amount, currency, idType } = requestBody;
-                      const finalCurrency = currency || 'usd'; // Default to 'USD' if currency is not provided
-                
-                      const paymentResult = await createPaymentAndProcessing(
-                        stripeCustomerId,
-                        id,
-                        amount,
-                        finalCurrency,
-                        idType // This new parameter should be either 'payment_method' or 'bank_account'
-                      );
-                
-                      if (paymentResult.success) {
-                        res.writeHead(200, { "Content-Type": "application/json" });
-                        res.end(
-                          JSON.stringify({
-                            message: "Payment processed successfully",
-                            data: paymentResult,
-                          })
-                        );
-                      } else {
-                        res.writeHead(400, { "Content-Type": "application/json" });
-                        res.end(
-                          JSON.stringify({
-                            message: paymentResult.message,
-                            data: paymentResult,
-                          })
-                        );
-                      }
-                    } catch (error) {
-                      console.error("Error processing payment:", error);
-                      res.writeHead(500, { "Content-Type": "application/json" });
-                      res.end(
-                        JSON.stringify({
-                          message: "Failed to process payment",
-                          error: error.message,
-                        })
-                      );
-                    }
-                    break;
-                case "refund-payment":
-                    try {
-                      const { stripeCustomerId, paymentIntentId, reason } = requestBody;
-                  
-                      // Call your refund function
-                      const refundResult = await refundPayment(stripeCustomerId, paymentIntentId, reason);
-                  
-                      // Determine the status code based on the operation result
-                      const statusCode = refundResult.success ? 200 : 400; // Use 400 for client error
-                  
-                      // Write the appropriate headers and response
-                      res.writeHead(statusCode, { "Content-Type": "application/json" });
-                      res.end(JSON.stringify({ success: refundResult.success, data: refundResult }));
-                    } catch (error) {
-                      console.error("Error processing refund:", error);
-                      if (!res.headersSent) {
-                        // Write the headers for an internal server error
-                        res.writeHead(500, { "Content-Type": "application/json" });
-                        res.end(
-                          JSON.stringify({
-                            success: false,
-                            message: "Failed to process refund",
-                            error: error.message,
-                          })
-                        );
-                      }
-                    }
-                    return;
-                        
+          case "verify-card-details":
+            try {
+              const { userObjectId, stripeCustomerId, stripeToken } = requestBody;
+              const verifyResult = await verifyCardAndUpdateDB(
+                userObjectId,
+                stripeCustomerId,
+                stripeToken
+              );
+              const statusCode = verifyResult.success ? 200 : 400; // Use 400 for client-side error
+              res.writeHead(statusCode, { "Content-Type": "application/json" });
+              res.end(JSON.stringify({ success: verifyResult.success, data: verifyResult }));
+            } catch (error) {
+              console.error("Error verifying card details:", error);
+              if (!res.headersSent) {
+                res.writeHead(500, { "Content-Type": "application/json" });
+                res.end(
+                  JSON.stringify({
+                    success: false,
+                    message: "Failed to verify card details",
+                    error: error.message,
+                  })
+                );
+              }
+            }
+            return;
+          case "add-bank-account":
+            try {
+              const { stripeCustomerId, accountNumber, routingNumber, accountHolderName, accountHolderType } = requestBody;
+
+              const result = await addBankTransferAccount(
+                stripeCustomerId,
+                accountNumber,
+                routingNumber,
+                accountHolderName,
+                accountHolderType
+              );
+
+              if (result.success) {
+                res.writeHead(200, { "Content-Type": "application/json" });
+                res.end(JSON.stringify({
+                  message: "Bank account added successfully.",
+                  bankAccountId: result.bankAccountId
+                }));
+              } else {
+                res.writeHead(400, { "Content-Type": "application/json" });
+                res.end(JSON.stringify({
+                  message: "Failed to add bank account.",
+                  error: result.message
+                }));
+              }
+            } catch (error) {
+              console.error("Error adding bank account:", error);
+              res.writeHead(500, { "Content-Type": "application/json" });
+              res.end(JSON.stringify({
+                message: "Internal server error while adding bank account.",
+                error: error.message
+              }));
+            }
+            break;
+          case "process-payment":
+            try {
+              const { stripeCustomerId, id, amount, currency, idType } = requestBody;
+              const finalCurrency = currency || 'usd'; // Default to 'USD' if currency is not provided
+
+              const paymentResult = await createPaymentAndProcessing(
+                stripeCustomerId,
+                id,
+                amount,
+                finalCurrency,
+                idType // This new parameter should be either 'payment_method' or 'bank_account'
+              );
+
+              if (paymentResult.success) {
+                res.writeHead(200, { "Content-Type": "application/json" });
+                res.end(
+                  JSON.stringify({
+                    message: "Payment processed successfully",
+                    data: paymentResult,
+                  })
+                );
+              } else {
+                res.writeHead(400, { "Content-Type": "application/json" });
+                res.end(
+                  JSON.stringify({
+                    message: paymentResult.message,
+                    data: paymentResult,
+                  })
+                );
+              }
+            } catch (error) {
+              console.error("Error processing payment:", error);
+              res.writeHead(500, { "Content-Type": "application/json" });
+              res.end(
+                JSON.stringify({
+                  message: "Failed to process payment",
+                  error: error.message,
+                })
+              );
+            }
+            break;
+          case "refund-payment":
+            try {
+              const { stripeCustomerId, paymentIntentId, reason } = requestBody;
+
+              // Call your refund function
+              const refundResult = await refundPayment(stripeCustomerId, paymentIntentId, reason);
+
+              // Determine the status code based on the operation result
+              const statusCode = refundResult.success ? 200 : 400; // Use 400 for client error
+
+              // Write the appropriate headers and response
+              res.writeHead(statusCode, { "Content-Type": "application/json" });
+              res.end(JSON.stringify({ success: refundResult.success, data: refundResult }));
+            } catch (error) {
+              console.error("Error processing refund:", error);
+              if (!res.headersSent) {
+                // Write the headers for an internal server error
+                res.writeHead(500, { "Content-Type": "application/json" });
+                res.end(
+                  JSON.stringify({
+                    success: false,
+                    message: "Failed to process refund",
+                    error: error.message,
+                  })
+                );
+              }
+            }
+            return;
+
           // userProfile.js
           case "update-user-profile":
             userInfo = await getUserInfo(token);
@@ -546,47 +548,47 @@ const server = http.createServer(async (req, res) => {
             result = await addUserShippingAddress(requestBody);
             break;
 
-            case "update-listings":
-                // Validate request body structure and content
-                if (!Array.isArray(requestBody.productIds) || requestBody.productIds.length === 0) {
-                    res.writeHead(400, { "Content-Type": "application/json" });
-                    res.end(JSON.stringify({ message: "Product IDs must be a non-empty array." }));
-                    responseSent = true;
-                    return;
-                }
-                if (typeof requestBody.updateFields !== "object" || Object.keys(requestBody.updateFields).length === 0) {
-                    res.writeHead(400, { "Content-Type": "application/json" });
-                    res.end(JSON.stringify({ message: "Update fields must be a non-empty object." }));
-                    responseSent = true;
-                    return;
-                }
-                if (requestBody.productIds.some(id => !ObjectId.isValid(id))) {
-                    res.writeHead(400, { "Content-Type": "application/json" });
-                    res.end(JSON.stringify({ message: "One or more product IDs are invalid." }));
-                    responseSent = true;
-                    return;
-                }
-                if (requestBody.unsetFields && !Array.isArray(requestBody.unsetFields)) {
-                    res.writeHead(400, { "Content-Type": "application/json" });
-                    res.end(JSON.stringify({ message: "Unset fields must be an array if provided." }));
-                    responseSent = true;
-                    return;
-                }
-                try {
-                    const result = await updateListings(
-                        requestBody.productIds,
-                        requestBody.updateFields,
-                        requestBody.unsetFields || []
-                    );
-                    res.writeHead(200, { "Content-Type": "application/json" });
-                    res.end(JSON.stringify({ message: "Listings updated successfully.", result: result }));
-                } catch (error) {
-                    console.error("Error updating listings:", error);
-                    res.writeHead(500, { "Content-Type": "application/json" });
-                    res.end(JSON.stringify({ message: "Internal server error while updating listings." }));
-                }
-                break;
-            
+          case "update-listings":
+            // Validate request body structure and content
+            if (!Array.isArray(requestBody.productIds) || requestBody.productIds.length === 0) {
+              res.writeHead(400, { "Content-Type": "application/json" });
+              res.end(JSON.stringify({ message: "Product IDs must be a non-empty array." }));
+              responseSent = true;
+              return;
+            }
+            if (typeof requestBody.updateFields !== "object" || Object.keys(requestBody.updateFields).length === 0) {
+              res.writeHead(400, { "Content-Type": "application/json" });
+              res.end(JSON.stringify({ message: "Update fields must be a non-empty object." }));
+              responseSent = true;
+              return;
+            }
+            if (requestBody.productIds.some(id => !ObjectId.isValid(id))) {
+              res.writeHead(400, { "Content-Type": "application/json" });
+              res.end(JSON.stringify({ message: "One or more product IDs are invalid." }));
+              responseSent = true;
+              return;
+            }
+            if (requestBody.unsetFields && !Array.isArray(requestBody.unsetFields)) {
+              res.writeHead(400, { "Content-Type": "application/json" });
+              res.end(JSON.stringify({ message: "Unset fields must be an array if provided." }));
+              responseSent = true;
+              return;
+            }
+            try {
+              const result = await updateListings(
+                requestBody.productIds,
+                requestBody.updateFields,
+                requestBody.unsetFields || []
+              );
+              res.writeHead(200, { "Content-Type": "application/json" });
+              res.end(JSON.stringify({ message: "Listings updated successfully.", result: result }));
+            } catch (error) {
+              console.error("Error updating listings:", error);
+              res.writeHead(500, { "Content-Type": "application/json" });
+              res.end(JSON.stringify({ message: "Internal server error while updating listings." }));
+            }
+            break;
+
           case "add-to-cart":
             if (
               !ObjectId.isValid(requestBody.userId) ||
@@ -601,15 +603,15 @@ const server = http.createServer(async (req, res) => {
               return; // Exit the function here to prevent further execution
             }
 
-                        // Call addToCart function
-                        result = await addToCart(
-                            requestBody.userId,
-                            requestBody.productId,
-                            requestBody.quantity
-                        );
-                        res.writeHead(200, { "Content-Type": "application/json" });
-                        res.end(JSON.stringify(result)); // Send back the updated cart
-                        return; // Make sure to return here to stop further execution and prevent additional responses
+            // Call addToCart function
+            result = await addToCart(
+              requestBody.userId,
+              requestBody.productId,
+              requestBody.quantity
+            );
+            res.writeHead(200, { "Content-Type": "application/json" });
+            res.end(JSON.stringify(result)); // Send back the updated cart
+            return; // Make sure to return here to stop further execution and prevent additional responses
 
           case "remove-from-cart":
             if (
@@ -627,26 +629,26 @@ const server = http.createServer(async (req, res) => {
               return; // Exit this case block, ensuring no further code in this case is executed
             }
 
-                        // Assuming removeFromCart function is defined and properly handles the logic
-                        try {
-                            const result = await removeFromCart(
-                                requestBody.userId,
-                                requestBody.productId,
-                                requestBody.quantityToRemove
-                            );
-                            res.writeHead(200, { "Content-Type": "application/json" });
-                            res.end(JSON.stringify(result)); // Send back the updated cart
-                        } catch (error) {
-                            console.error("Error removing item from cart:", error);
-                            res.writeHead(500, { "Content-Type": "application/json" });
-                            res.end(
-                                JSON.stringify({
-                                    message: "Error handling request",
-                                    error: error.toString(),
-                                })
-                            );
-                        }
-                        return;
+            // Assuming removeFromCart function is defined and properly handles the logic
+            try {
+              const result = await removeFromCart(
+                requestBody.userId,
+                requestBody.productId,
+                requestBody.quantityToRemove
+              );
+              res.writeHead(200, { "Content-Type": "application/json" });
+              res.end(JSON.stringify(result)); // Send back the updated cart
+            } catch (error) {
+              console.error("Error removing item from cart:", error);
+              res.writeHead(500, { "Content-Type": "application/json" });
+              res.end(
+                JSON.stringify({
+                  message: "Error handling request",
+                  error: error.toString(),
+                })
+              );
+            }
+            return;
 
           //break here
 
@@ -913,7 +915,7 @@ const server = http.createServer(async (req, res) => {
                 );
               });
             return;
-                   case "update-listings":
+          case "update-listings":
             console.log(
               "Received productIds for update:",
               requestBody.productIds
@@ -1031,87 +1033,87 @@ const server = http.createServer(async (req, res) => {
         }
       } else if (req.method === "GET") {
 
-                switch (trimmedPath) {
+        switch (trimmedPath) {
 
-                    case "retrieve-address-history":
-                            const { userId, addressId } = requestBody; // Assuming userId is provided in the request body
-                            try {
-                                if (!userId || !addressId) {
-                                    throw new Error('User ID or Address ID is missing in the request body');
-                                }
-                                const result = await retrieveAddressHistory(userId, addressId);
+          case "retrieve-address-history":
+            const { userId, addressId } = requestBody; // Assuming userId is provided in the request body
+            try {
+              if (!userId || !addressId) {
+                throw new Error('User ID or Address ID is missing in the request body');
+              }
+              const result = await retrieveAddressHistory(userId, addressId);
 
-                                if (!result) {
-                                    res.writeHead(404, { "Content-Type": "application/json" }); // Not Found status code
-                                    res.end(JSON.stringify({ message: "User or address not found" }));
-                                } else {
-                                    res.writeHead(200, { "Content-Type": "application/json" });
-                                    res.end(JSON.stringify({ addressHistory: result }));
-                                }
-                            } catch (error) {
-                                console.error("Error retrieving address history:", error);
-                                res.writeHead(500, { "Content-Type": "application/json" });
-                                res.end(JSON.stringify({ error: "Internal Server Error" }));
-                            }
-                            break;
-                    
-                    case "fetch-cart-details":
-                        try {
-                          const {userId : userId}  = requestBody;
-                          const cartDetails = await getCart(userId);
-                          res.writeHead(200, { "Content-Type": "application/json" });
-                          res.end(
-                            JSON.stringify({
-                              message: "Cart details fetched successfully",
-                              data: cartDetails,
-                            })
-                          );
-                        } catch (error) {
-                          console.error("Error fetching cart details:", error);
-                          res.writeHead(500, { "Content-Type": "application/json" });
-                          res.end(
-                            JSON.stringify({
-                              message: "Error fetching cart details",
-                              error: error.toString(),
-                            })
-                          );
+              if (!result) {
+                res.writeHead(404, { "Content-Type": "application/json" }); // Not Found status code
+                res.end(JSON.stringify({ message: "User or address not found" }));
+              } else {
+                res.writeHead(200, { "Content-Type": "application/json" });
+                res.end(JSON.stringify({ addressHistory: result }));
+              }
+            } catch (error) {
+              console.error("Error retrieving address history:", error);
+              res.writeHead(500, { "Content-Type": "application/json" });
+              res.end(JSON.stringify({ error: "Internal Server Error" }));
+            }
+            break;
 
-                          
-                          
-                        }
-                        break;
+          case "fetch-cart-details":
+            try {
+              const { userId: userId } = requestBody;
+              const cartDetails = await getCart(userId);
+              res.writeHead(200, { "Content-Type": "application/json" });
+              res.end(
+                JSON.stringify({
+                  message: "Cart details fetched successfully",
+                  data: cartDetails,
+                })
+              );
+            } catch (error) {
+              console.error("Error fetching cart details:", error);
+              res.writeHead(500, { "Content-Type": "application/json" });
+              res.end(
+                JSON.stringify({
+                  message: "Error fetching cart details",
+                  error: error.toString(),
+                })
+              );
 
 
 
-                        
+            }
+            break;
 
 
-                   case "get-watchlist":
-                        try {                        
-                            // Extract user information using the access token
-                            const userInfo = await getUserInfo(token);
-                            // Ensure that the user information is available
-                            if (!userInfo) {
-                                res.writeHead(401, { "Content-Type": "application/json" }); // Unauthorized status code
-                                res.end(JSON.stringify({ error: "Unauthorized: Access token invalid or expired" }));
-                                return;
-                            }
-                            // Retrieve the watchlist using the user information
-                            const watchList = await getWatchlist(userInfo);
 
-                            if (watchList.length === 0) {
-                                res.writeHead(404, { "Content-Type": "application/json" }); // Not Found status code
-                                res.end(JSON.stringify({ message: "Watchlist not found for this user" }));
-                            } else {
-                                res.writeHead(200, { "Content-Type": "application/json" });
-                                res.end(JSON.stringify({ watchList }));
-                            }
-                        } catch (error) {
-                            console.error("Error retrieving watchlist:", error);
-                            res.writeHead(500, { "Content-Type": "application/json" });
-                            res.end(JSON.stringify({ error: "Internal Server Error" }));
-                        }
-                        return;
+
+
+
+          case "get-watchlist":
+            try {
+              // Extract user information using the access token
+              const userInfo = await getUserInfo(token);
+              // Ensure that the user information is available
+              if (!userInfo) {
+                res.writeHead(401, { "Content-Type": "application/json" }); // Unauthorized status code
+                res.end(JSON.stringify({ error: "Unauthorized: Access token invalid or expired" }));
+                return;
+              }
+              // Retrieve the watchlist using the user information
+              const watchList = await getWatchlist(userInfo);
+
+              if (watchList.length === 0) {
+                res.writeHead(404, { "Content-Type": "application/json" }); // Not Found status code
+                res.end(JSON.stringify({ message: "Watchlist not found for this user" }));
+              } else {
+                res.writeHead(200, { "Content-Type": "application/json" });
+                res.end(JSON.stringify({ watchList }));
+              }
+            } catch (error) {
+              console.error("Error retrieving watchlist:", error);
+              res.writeHead(500, { "Content-Type": "application/json" });
+              res.end(JSON.stringify({ error: "Internal Server Error" }));
+            }
+            return;
 
 
 
@@ -1136,32 +1138,32 @@ const server = http.createServer(async (req, res) => {
               })
             );
             break;
-            case "create-stripe-customer":
-                const { userObjectId, email, name } = requestBody;
-                createStripeCustomerAndUpdateDB(userObjectId, email, name)
-                  .then((customerResult) => {
-                    if (!res.headersSent) {
-                      const statusCode = customerResult.success ? 200 : 400; // Use 400 to indicate a user-related error
-                      res.writeHead(statusCode, { "Content-Type": "application/json" });
-                      res.end(
-                        JSON.stringify({ success: customerResult.success, data: customerResult })
-                      );
-                    }
-                  })
-                  .catch((error) => {
-                    console.error("Error creating Stripe customer:", error);
-                    if (!res.headersSent) {
-                      res.writeHead(500, { "Content-Type": "application/json" });
-                      res.end(
-                        JSON.stringify({
-                          success: false,
-                          message: "Failed to create Stripe customer",
-                          error: error.message,
-                        })
-                      );
-                    }
-                  });
-                return;
+          case "create-stripe-customer":
+            const { userObjectId, email, name } = requestBody;
+            createStripeCustomerAndUpdateDB(userObjectId, email, name)
+              .then((customerResult) => {
+                if (!res.headersSent) {
+                  const statusCode = customerResult.success ? 200 : 400; // Use 400 to indicate a user-related error
+                  res.writeHead(statusCode, { "Content-Type": "application/json" });
+                  res.end(
+                    JSON.stringify({ success: customerResult.success, data: customerResult })
+                  );
+                }
+              })
+              .catch((error) => {
+                console.error("Error creating Stripe customer:", error);
+                if (!res.headersSent) {
+                  res.writeHead(500, { "Content-Type": "application/json" });
+                  res.end(
+                    JSON.stringify({
+                      success: false,
+                      message: "Failed to create Stripe customer",
+                      error: error.message,
+                    })
+                  );
+                }
+              });
+            return;
           case "autocomplete":
             result = await autocompleteProductSearch(requestBody.query);
             res.writeHead(200, { "Content-Type": "application/json" });
