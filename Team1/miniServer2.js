@@ -2,8 +2,11 @@ const http = require('http');
 const fs = require('fs');
 const path = require('path');
 const url = require('url');
+const { v4: uuidv4 } = require('uuid');
 const { connectDBandClose } = require("../dbConfig");
 const { getUserInfo } = require('./Reg_lgn/oAuthHandler.js');
+// const {registerUser}=require('./Reg_lgn/regLogin');
+const { verifyAddress } = require('../Team2/AddressValidationAPI.js');
 
 const PORT = 3000;
 
@@ -91,12 +94,65 @@ function handlePostRequests(req, res, pathname) {
         if (pathname === '/check-user') {
             const userInfo = JSON.parse(body);
             checkUser(userInfo, res);
+        } else if (pathname === '/registerUser') {
+            const userRegistrationInfo = JSON.parse(body);
+            registerUser(userRegistrationInfo, res);
         } else {
             res.writeHead(404, { 'Content-Type': 'application/json' });
             res.end(JSON.stringify({ error: 'Endpoint not found' }));
         }
     });
 }
+
+async function registerUser(userData, res) {
+    try {
+        // console.log("here is data coming in: ", userData);
+        const { name, email, address } = userData;
+        // console.log("here is address we get: ", address)
+        // console.log("type: ", typeof address)
+        // // Extract the necessary fields for address verification
+        // const addressForVerification = {
+        //     street: address.street,
+        //     city: address.city,
+        //     state: address.state,
+        //     postalCode: address.postalCode,
+        //     country: address.country
+        // };
+
+        // console.log("Address for verification: ", addressForVerification, addressForVerification.type);
+
+        const validationResponse = await verifyAddress(address);  // Expecting an address object
+        if (!validationResponse.isValid) {
+            res.writeHead(400, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ message: validationResponse.message }));
+            return;
+        }
+
+        const user = {
+            email,
+            name,
+            shippingAddresses: [{ ...address, addressId: require('uuid').v4() }],
+            shoppingCart: { cartId: '', items: [], cartSubtotal: 0 },
+            watchlist: [],
+            orderHistory: [],
+            reviews: [],
+            about: [userData.personal1, userData.personal2]
+        };
+
+        const { db, client } = await connectDBandClose();
+        const result = await db.collection('users').insertOne(user);
+        client.close();
+
+        res.writeHead(201, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ message: 'User registered successfully', userId: result.insertedId }));
+    } catch (error) {
+        console.error('Error registering user:', error);
+        res.writeHead(500, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: 'Internal server error', message: error.message }));
+    }
+}
+
+
 
 async function checkUser(userInfo, res) {
     try {
