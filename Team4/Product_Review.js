@@ -7,28 +7,49 @@ const rl = readline.createInterface({
     output: process.stdout
 });
 
-// Function to retrieve product ID by name
-async function getProductByName(productName) {
-    try {
-        const db = await connectDB();
-        const productsCollection = db.collection('products');
-        const product = await productsCollection.findOne({ name: productName });
-        if (!product) {
-            throw new Error(`Product "${productName}" not found`);
-        }
-        return product.name;
-    } catch (error) {
-        throw error;
+// Function to retrieve product ID
+async function getProductById(productId) {
+  try {
+    const db = await connectDB();
+    const productsCollection = db.collection('products');
+    const product = await productsCollection.findOne({ _id: ObjectId(productId) }); // Use ObjectId for searching by ID
+    if (!product) {
+      throw new Error(`Product with ID "${productId}" not found`);
     }
+    return product._id; // Assuming you want to return the entire product object
+  } catch (error) {
+    throw error;
+  }
+}
+// Function to retrieve userId
+async function hasPurchasedProduct(userId, productId) {
+  try {
+    const db = await connectDB();
+    const purchasesCollection = db.collection('purchases');
+    const purchase = await purchasesCollection.findOne({ userId: userId, productId: productId });
+    if (!purchase) {
+       throw new Error(`Purchase with ID "${productId}" not found`);
+    }
+    return true; // Indicate purchase found (similar to returning product ID)
+  } catch (error) {
+    throw error;
+  }
 }
 
 // Function to allow the user to give a star rating and leave a review for a product
-async function reviewProduct(productName, title, rating, review) {
+async function reviewProduct(userId, productId, title, rating, review) {
+      const product = await getProductById(productId);
+      const ratingInt = parseInt(rating);
+  if (isNaN(ratingInt) || ratingInt < 1 || ratingInt > 5) {
+    throw new Error("Rating must be a number between 1 and 5");
+  }
+    
     try {
         const db = await connectDB();
         const reviewsCollection = db.collection('reviews');
         const result = await reviewsCollection.insertOne({
-            productName: productName,
+            userId: userId,
+            productId: product,
             title: title,
             rating: rating,
             review: review,
@@ -40,69 +61,10 @@ async function reviewProduct(productName, title, rating, review) {
         throw error;
     }
 }
-// Function to gather review data from user input
-async function gatherReviewData() {
-    return new Promise(async (resolve, reject) => {
-        try {
-            const productName = await askForProductName();
-            const productId = await getProductByName(productName);
-            rl.question(`Enter review title for product "${productId}": `, (title) => {
-                rl.question('Enter rating (1-5): ', async (rating) => {
-                    const ratingInt = parseInt(rating);
-                    if (isNaN(ratingInt) || ratingInt < 1 || ratingInt > 5) {
-                        reject(new Error("Rating must be a number between 1 and 5"));
-                        return;
-                    }
-                    rl.question('Enter review: ', (review) => {
-                        resolve({ productName, title, rating: ratingInt, review });
-                    });
-                });
-            });
-        } catch (error) {
-            reject(error);
-        }
-    });
-}
 
-// Function to gather product name from user input
-async function askForProductName() {
-    return new Promise((resolve, reject) => {
-        rl.question('Enter the name of the product you want to review: ', (productName) => {
-            resolve(productName);
-        });
-    });
-}
-
-// Testing
-/*
-async function test() {
-    try {
-        // Test getProductByName
-        const productName = await getProductByName('Fitness Gear Olympic Curl Bar');
-        console.log("Product Name:", productName);
-
-        // Test gatherReviewData
-        console.log("\n--- Gathering Review Data ---");
-        const reviewData = await gatherReviewData();
-        console.log("\nReview Data:", reviewData);
-
-        // Test reviewProduct
-        console.log("\n--- Reviewing Product ---");
-        const reviewId = await reviewProduct(reviewData.productName, reviewData.title, reviewData.rating, reviewData.review);
-        console.log("Review added with ID:", reviewId);
-
-        // Close readline interface
-        rl.close();
-    } catch (error) {
-        console.error("Error during testing:", error);
-    }
-}
-
-test();
-*/
 module.exports = {
-    getProductByName,
-    reviewProduct,
-    gatherReviewData,
-    askForProductName
+    getProductById,
+
+    hasPurchasedProduct,
+    reviewProduct
 };

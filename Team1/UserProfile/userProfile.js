@@ -1,8 +1,8 @@
-const { connectDB } = require('../dbConfig');
+const { connectDB } = require('../../dbConfig');
 const { ObjectId } = require('mongodb');
 const { v4: uuidv4 } = require('uuid');
-const { getUserInfo } = require('./Reg_lgn/oAuthHandler');
-const { verifyAddress } = require('../Team2/AddressValidationAPI');
+const { getUserInfo } = require('../Reg_lgn/oAuthHandler');
+const { verifyAddress } = require('../../Team2/AddressValidationAPI');
 
 async function validateAccessTokenAndGetUserInfo(accToken) {
     if (!accToken) {
@@ -19,20 +19,22 @@ async function validateAccessTokenAndGetUserInfo(accToken) {
 }
 
 function validateEmail(email) {
-    const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return re.test(String(email).toLowerCase());
 }
 
 async function updateUserProfile(requestBody) {
-    const { userId, profileUpdates, accToken } = requestBody;
-    
-    // Validate the access token and get user info
-    const userInfo = await validateAccessTokenAndGetUserInfo(accToken);
+    const { userId, profileUpdates } = requestBody;
     
     if (!userId || !profileUpdates) {
         throw new Error('userId and profileUpdates are required');
     }
-
+    
+    // Validate that userId is a valid MongoDB ObjectId
+    if (!ObjectId.isValid(userId)) {
+        throw new Error('Invalid userId format');
+    }
+        
     const db = await connectDB();
     const collection = db.collection('users');
     const userObjectId = new ObjectId(userId);
@@ -90,11 +92,8 @@ async function updateUserProfile(requestBody) {
 }
 
 async function updateUserName(requestBody) {
-    const { userId, newName, accToken } = requestBody;
+    const { userId, newName } = requestBody;
     
-    // Validate the access token and get user info
-    const userInfo = await validateAccessTokenAndGetUserInfo(accToken);
-
     if (!userId || !newName) {
         throw new Error('userId and newName are required');
     }
@@ -114,11 +113,8 @@ async function updateUserName(requestBody) {
 }
 
 async function updateUserPremiumStatus(requestBody) {
-    const { userId, isPremium, accToken } = requestBody;
+    const { userId, isPremium } = requestBody;
     
-    // Validate the access token and get user info
-    const userInfo = await validateAccessTokenAndGetUserInfo(accToken);
-
     if (!userId || isPremium === undefined) {
         throw new Error('userId and isPremium status are required');
     }
@@ -138,11 +134,8 @@ async function updateUserPremiumStatus(requestBody) {
 }
 
 async function addUserShippingAddress(requestBody) {
-    const { userId, newAddress, accToken } = requestBody;
+    const { userId, newAddress } = requestBody;
     
-    // Validate the access token and get user info
-    const userInfo = await validateAccessTokenAndGetUserInfo(accToken);
-
     if (!userId || !newAddress) {
         throw new Error('userId and newAddress are required');
     }
@@ -171,74 +164,96 @@ async function addUserShippingAddress(requestBody) {
 }
 
 async function updateUserShippingAddress(requestBody) {
-    const { userId, addressId, updatedAddress, accToken } = requestBody;
-    
-    // Validate the access token and get user info
-    const userInfo = await validateAccessTokenAndGetUserInfo(accToken);
+    const { userId, addressId, updatedAddress } = requestBody;
 
     if (!userId || !addressId || !updatedAddress) {
         throw new Error('userId, addressId, and updatedAddress are required');
     }
 
-    // Validate the updated address
-    const validatedAddress = await verifyAddress({address: updatedAddress});
-    if (!validatedAddress.isValid) {
-        throw new Error('Invalid address update');
+    if (!ObjectId.isValid(userId)) {
+        throw new Error('Invalid userId format');
     }
-
-    // Ensure that validatedAddress does not contain an addressId field
-    // This prevents changing the addressId during an update
-    const { addressId: _, ...updateFields } = validatedAddress;
 
     const db = await connectDB();
-    const result = await db.collection('users').updateOne(
-        { _id: new ObjectId(userId), "shippingAddresses.addressId": addressId },
-        { $set: { "shippingAddresses.$": { ...updateFields, addressId } } }
-    );
+    const user = await db.collection('users').findOne({ _id: new ObjectId(userId) });
 
-    if (result.matchedCount === 0) {
-        throw new Error(`No user found with ID ${userId} or addressId ${addressId}`);
+    if (!user) {
+        throw new Error(`No user found with ID ${userId}`);
     }
 
-    console.log(`Successfully updated a shipping address for user ID ${userId}`);
+    console.log("User found:", user);
+
+    // Validate the updated address
+    const validatedAddress = await verifyAddress(updatedAddress);
+    if (!validatedAddress.isValid) {
+        console.log('Failed address validation:', validatedAddress.message);
+        throw new Error(validatedAddress.message);
+    }
+
+    // Find the specific address and update it if it exists
+    const addressIndex = user.shippingAddresses.findIndex(addr => addr.addressId === addressId);
+    if (addressIndex === -1) {
+        throw new Error(`No shipping address found with ID ${addressId}`);
+    }
+
+    // Update the specific address
+    user.shippingAddresses[addressIndex] = { ...user.shippingAddresses[addressIndex], ...updatedAddress, addressId: addressId };
+
+    const result = await db.collection('users').updateOne(
+        { _id: new ObjectId(userId) },
+        { $set: { shippingAddresses: user.shippingAddresses } }
+    );
+
+    if (result.modifiedCount === 0) {
+        throw new Error(`Failed to update shipping address with ID ${addressId}`);
+    }
+
+    console.log(`Successfully updated shipping address for user ID ${userId}`, result);
     return result;
 }
 
 async function deleteUserShippingAddress(requestBody) {
-    const { userId, addressId, accToken } = requestBody;
+    const { userId, addressId } = requestBody;
     
-    // Validate the access token and get user info
-    const userInfo = await validateAccessTokenAndGetUserInfo(accToken);
-
     if (!userId || !addressId) {
         throw new Error('userId and addressId are required');
     }
 
     const db = await connectDB();
 
-    // First, check if the shipping address exists
+    // Validate the format of the userId and addressId
+    if (!ObjectId.isValid(userId)) {
+        throw new Error('Invalid userId format');
+    }
+
+    // Find the user with the given userId
     const user = await db.collection('users').findOne(
-        { _id: new ObjectId(userId), 'shippingAddresses.addressId': addressId },
-        { projection: { 'shippingAddresses.$': 1 } }
+        { _id: new ObjectId(userId) }
     );
 
     if (!user) {
         throw new Error(`No user found with ID ${userId}`);
     }
 
-    if (user.shippingAddresses.length === 0) {
-        throw new Error(`No shipping address found with ID ${addressId}`);
+    console.log("User found:", user);
+
+    // Check if the shipping address with the specified addressId exists for the user
+    const addressExists = user.shippingAddresses && user.shippingAddresses.some(address => address.addressId === addressId);
+
+    if (!addressExists) {
+        throw new Error(`No shipping address found with ID ${addressId} for user ID ${userId}`);
     }
 
-    // Proceed with deletion
+    // Proceed with deletion of the address
     const result = await db.collection('users').updateOne(
         { _id: new ObjectId(userId) },
         { $pull: { shippingAddresses: { addressId: addressId } } }
     );
 
-    // Check if the address was actually removed
+    console.log("Deletion result:", result);
+
     if (result.modifiedCount === 0) {
-        throw new Error(`No shipping address found with ID ${addressId} to delete`);
+        throw new Error(`Failed to delete shipping address with ID ${addressId} for user ID ${userId}`);
     }
 
     console.log(`Successfully deleted shipping address ${addressId} for user ID ${userId}`);
@@ -246,10 +261,7 @@ async function deleteUserShippingAddress(requestBody) {
 }
 
 async function deleteUserProfile(requestBody) {
-    const { userId, accToken } = requestBody;
-    
-    // Validate the access token and get user info
-    const userInfo = await validateAccessTokenAndGetUserInfo(accToken);
+    const { userId } = requestBody;
 
     if (!userId) {
         throw new Error('userId is required');

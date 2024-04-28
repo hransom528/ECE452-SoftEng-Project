@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="userProfile.css">
+    <title>User Profile</title>
+</head>
+<body>
+    <h1>Your Profile</h1>
+
+    <div class="form-section name-update-section">
+        <h2>Name</h2>
+        <form id="updateNameForm">
+            <input type="text" id="newName" placeholder="Enter new name" required>
+            <button type="submit">Update Name</button>
+        </form>
+    </div>
+
+    <div class="form-section address-update-section">
+        <h2>Shipping Address</h2>
+        <form id="updateAddressForm">
+            <input type="text" id="recipientName" placeholder="Recipient Name" required>
+            <input type="text" id="street" placeholder="Street" required>
+            <input type="text" id="city" placeholder="City" required>
+            <input type="text" id="state" placeholder="State" required>
+            <input type="text" id="postalCode" placeholder="Postal Code" required>
+            <input type="text" id="country" placeholder="Country" required>
+            <label for="isDefault">Default Address:
+                <input type="checkbox" id="isDefault">
+            </label>
+            <button type="submit">Update Address</button>
+            <button type="button" id="deleteAddress" onclick="deleteAddress()">Delete Address</button>
+        </form>
+    </div>
+
+    <div class="form-section membership-management-section">
+        <h2>Membership Management</h2>
+        <button id="purchaseMembership" onclick="purchaseMembership()">Purchase Membership</button>
+        <button id="cancelMembership" onclick="cancelMembership()">Cancel Membership</button>
+    </div>
+
+    <div class="form-section profile-delete-section">
+        <h2>Delete Profile</h2>
+        <button id="deleteProfile" onclick="deleteProfile()">Delete Profile</button>
+    </div>
+
+    <script src="upApp.js"></script>
+</body>
+</html>
