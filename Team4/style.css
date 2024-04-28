@@ -1,0 +1,19 @@
+h2 {
+    text-align: center;
+}
+
+.form-container {
+    width: 50%;
+    margin-right: auto;
+    margin-left:auto;
+    margin: auto;
+    align-self: center;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+}
+
+.form {
+    align-self: center;
+    text-align: center;
+}
