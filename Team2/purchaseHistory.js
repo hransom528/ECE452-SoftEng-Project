@@ -43,7 +43,8 @@ async function getPurchaseHistoryByUserId(userId) {
                     shippingAddr: { $first: '$shippingAddr' },
                     billingAddr: { $first: '$billingAddr' },
                     paymentDetails: { $first: '$paymentDetails' },
-                    items: { $push: '$items' } // Collect the items back into an array
+                    items: { $push: '$items' }, // Collect the items back into an array
+                    OrderStatus: {$first: '$OrderStatus'}
                 }
             }
         ]).toArray();

@@ -342,9 +342,11 @@ const server = http.createServer(async (req, res) => {
             checkoutCart(userId, billingAddr, shippingAddr, paymentInfo)
                        .then(checkoutDetails => {
                          console.log('Checkout Successful:', checkoutDetails);
+                         result = { message: checkoutDetails };
                        })
                        .catch(error => {
                          console.error('Checkout Failed:', error.message);
+                         result = { message: error.message };
                        });
 
 
@@ -1022,7 +1024,7 @@ const server = http.createServer(async (req, res) => {
                          }
                          const purchaseHistory = await getPurchaseHistoryByUserId(requestBody.userId);
          
-                         if (!purchaseHistory || purchaseHistory.data.length === 0) {
+                         if (!purchaseHistory || purchaseHistory.data.length === 0) {//!purchaseHistory || purchaseHistory.data.length === 0
                              res.writeHead(404, { "Content-Type": "application/json" }); // Not Found status code
                              res.end(JSON.stringify({ message: "No purchase history found for the given user ID." }));
                          } else {

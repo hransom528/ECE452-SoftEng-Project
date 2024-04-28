@@ -4,6 +4,37 @@ const {createPaymentAndProcessing, verifyCardAndUpdateDB, createStripeCustomerAn
 const { verifyAddress } = require('./AddressValidationAPI.js');
 const fetch = require('node-fetch'); // Ensure you have 'node-fetch' installed if running in Node.js
 
+
+
+//Code to send confirmation email to user
+async function sendConfirmationEmail(user, purchaseDetails) {
+  // Create reusable transporter object using the default SMTP transport
+  let transporter = nodemailer.createTransport({
+    host: 'smtp.example.com', // Your SMTP server
+    port: 587,
+    secure: false, // true for 465, false for other ports
+    auth: {
+      user: 'your-email@example.com', // Your email
+      pass: 'your-email-password' // Your email password
+    }
+  });
+
+
+
+  // Prepare email contents
+  let info = await transporter.sendMail({
+    from: '"Your Store" <your-email@example.com>', // Sender address
+    to: user.email, // Recipient address from the user object
+    subject: 'Purchase Confirmation', // Subject line
+    text: `Hello, ${user.name}\n\nThank you for your purchase.\n\nOrder details:\nTotal: ${purchaseDetails.total}`, // Plain text body
+    html: `<b>Hello, ${user.name}</b><br><br>Thank you for your purchase.<br><br><b>Order details:</b><br>Total: ${purchaseDetails.total}` // HTML body content
+  });
+
+  console.log('Message sent: %s', info.messageId);
+}
+
+
+
 // generate Stripe token using card info
 async function createStripeToken(paymentInfo) {
   try {
@@ -26,14 +57,25 @@ async function createStripeToken(paymentInfo) {
     if (!response.ok) {
       throw new Error(`Error from Stripe: ${data.error && data.error.message}`);
     }
-
-    return {
-      //tokenId: data.id,
-      tokenId: 'tok_visa',
-      cardBrand: data.card.brand,
-      cardLast4: data.card.last4,
-      cardExpDate: `${data.card.exp_month}/${data.card.exp_year}`
-    };
+    // Test card 
+    if (paymentInfo.card == "4242 4242 4242 4242"){
+      return {
+        //tokenId: data.id,
+        tokenId: 'tok_visa',
+        cardBrand: data.card.brand,
+        cardLast4: data.card.last4,
+        cardExpDate: `${data.card.exp_month}/${data.card.exp_year}`
+      };
+    }
+    else {
+      return {
+        tokenId: data.id,
+        cardBrand: data.card.brand,
+        cardLast4: data.card.last4,
+        cardExpDate: `${data.card.exp_month}/${data.card.exp_year}`
+      };
+    }
+    
   } catch (error) {
     console.error('Failed to create token:', error);
     throw error;
@@ -180,18 +222,24 @@ async function checkoutCart(userId, billingAddr, shippingAddr, paymentInfo) {
             cardBrand: paymentDetails.cardBrand,
             cardLast4: paymentDetails.cardLast4,
             cardExpDate: paymentDetails.cardExpDate
-        }
+        },
+        OrderStatus: "pending"
       };
 
       // Insert purchase details into 'purchases' collection
       await db.collection('purchases').insertOne(purchaseDetails);
+      //-----------------------------------------
+      // Send email confirmatoin of purchase
+      //-----------------------------------------
+
+
 
       //-----------------------------------------
       // handle error/return
       //-----------------------------------------
       console.log(`Checkout successful for user ${userId} with total: ${total}`);
 
-        return { success: true, message: 'Checkout successful.', cartSubTotal };
+        return { success: true, message: 'Checkout successful.', total };
     } catch (error) {
         console.error('Error during cart verification and checkout:', error);
         return { success: false, message: error.message };
