@@ -134,3 +134,10 @@ label:hover {
   margin-left: 5px; /* Adds a small space between the text and the icon */
   vertical-align: middle; /* Aligns the icon vertically with the text */
 }
+
+img {
+  width: 30%;
+  /* margin: 1.6666666%; */
+  margin: calc(10%/6);
+  padding-top: 30px;
+}

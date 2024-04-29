@@ -798,7 +798,7 @@ const server = http.createServer(async (req, res) => {
             }
 
             try {
-              await getResponseFromOpenAI(userInfo, requestBody) // implement userInfo on ai function side
+              await getResponseFromOpenAI(requestBody) // implement userInfo on ai function side
                 .then((response) => {
                   // console.log("AI Response:", response);
                   res.writeHead(200, { "Content-Type": "application/json" });

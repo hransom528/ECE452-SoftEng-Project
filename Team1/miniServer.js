@@ -7,6 +7,7 @@ const { connectDBandClose } = require("../dbConfig");
 const { getUserInfo } = require('./Reg_lgn/oAuthHandler.js');
 // const {registerUser}=require('./Reg_lgn/regLogin');
 const { verifyAddress } = require('../Team2/AddressValidationAPI.js');
+const { getResponseFromOpenAI } = require('./ChatBot/openAi')
 
 const PORT = 3000;
 
@@ -28,6 +29,12 @@ const server = http.createServer(async (req, res) => {
     } else if (pathname === '/profile') {
         // Serve the userProfile.html
         serveFile('Team1/UserProfile/userProfile.html', res);
+    } else if (pathname === '/chat') {
+        serveFile('Team1/ChatBot/chat.html', res)
+    } else if (pathname.match(/^\/chat\/.*/)) {
+        // Serve userProfile's assets like CSS and JS files
+        const assetPath = pathname.split('/chat/')[1]; // Get the file name after '/profile/'
+        serveFile(`Team1/ChatBot/${assetPath}`, res);
     } else if (pathname.match(/^\/profile\/.*/)) {
         // Serve userProfile's assets like CSS and JS files
         const assetPath = pathname.split('/profile/')[1]; // Get the file name after '/profile/'
@@ -46,6 +53,12 @@ const server = http.createServer(async (req, res) => {
 
 function serveFile(filePath, res) {
 
+    // Check if 'res' is defined
+    if (!res) {
+        console.error("Response object 'res' is not defined.");
+        // return; // Or handle this scenario in a different way
+    }
+
     console.log('Serving file:', filePath);  // Log which file is being served
     const extname = path.extname(filePath).toLowerCase();
     const mimeTypes = {
@@ -55,6 +68,7 @@ function serveFile(filePath, res) {
     };
 
     const contentType = mimeTypes[extname] || 'application/octet-stream';
+    console.log("cT: ", contentType)
     fs.readFile(filePath, (error, content) => {
         if (error) {
             console.error('File error:', error);
@@ -103,7 +117,7 @@ function handlePostRequests(req, res, pathname) {
     });
     req.on('end', async () => {
         const parsedBody = JSON.parse(body); // Parse the body only once outside of the switch statement
-    
+        
         switch (pathname) {
             case '/check-user':
                 checkUser(parsedBody, res);
@@ -121,6 +135,59 @@ function handlePostRequests(req, res, pathname) {
                     res.writeHead(500, { 'Content-Type': 'application/json' });
                     res.end(JSON.stringify({ error: error.toString() }));
                 }
+                break;
+            case "/talkToAI":
+                const accessToken = req.headers.authorization?.split(' ')[1];
+                if (!accessToken) {
+                    res.writeHead(401, { 'Content-Type': 'application/json' });
+                    res.end(JSON.stringify({ message: 'Unauthorized: No access token provided' }));
+                    return;
+                }
+                // Ensure body contains 'prompt'
+                if (!parsedBody.prompt) {
+                    res.writeHead(400, { "Content-Type": "application/json" });
+                    res.end(JSON.stringify({ message: "Prompt is required" }));
+                    responseSent = true;
+                    break;
+                }
+                try {
+                    console.log("parsedBody: ", parsedBody)
+                    await getResponseFromOpenAI(parsedBody)
+                    .then((response) => {
+                        // console.log("AI Response:", response);
+                        res.writeHead(200, { "Content-Type": "application/json" });
+                        res.end(
+                        JSON.stringify({
+                            message: "Operation successful",
+                            data: response,
+                        })
+                        );
+                        responseSent = true;
+                    })
+                    .catch((error) => {
+                        console.log("Error interacting with AI:", error); // Debugging line
+                        res.writeHead(500, { "Content-Type": "application/json" });
+                        res.end(
+                        JSON.stringify({
+                            message: "Error interacting with AI",
+                            error: error.toString(),
+                        })
+                        );
+                        responseSent = true;
+                    });
+                } catch (Error) {
+                    // handling login errors
+                    res.writeHead(400, { "Content-Type": "application/json" });
+                    res.end(
+                    JSON.stringify({
+                        message: "Not able to send prompt to AI", // implement better
+                        error: Error.message,
+                    })
+                    );
+                    responseSent = true;
+                    return;
+                }
+    
                 break;
             default:
                 res.writeHead(404, { 'Content-Type': 'application/json' });
