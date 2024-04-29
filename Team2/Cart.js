@@ -78,7 +78,12 @@ async function getUserFromToken(token) {
 
 async function addToCart(token, productId, quantity) {
     const user = await getUserFromToken(token);
+    if (!user) {
+        return { error: "User not found. Please log in before adding to the watchlist." };
+    }
+
     const userId = user._id; 
+
     const cart = await Cart.findOne({ userId: userId }) || new Cart({ userId, items: [], cartSubTotal: 0 });
 
     // Assuming you have a function to get the price of a product
