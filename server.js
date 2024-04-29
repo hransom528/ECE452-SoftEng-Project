@@ -592,38 +592,26 @@ const server = http.createServer(async (req, res) => {
             break;
 
           case "add-to-cart":
-            const token = req.headers.authorization; // Get token from request headers
-
-            if (!token) {
-                res.writeHead(401, { "Content-Type": "application/json" });
-                res.end(JSON.stringify({ message: "No token provided, authorization denied" }));
-                return; // Exit if no token is provided
-            }
-
-            if (!ObjectId.isValid(requestBody.productId) ||
-                typeof requestBody.quantity !== "number" ||
-                requestBody.quantity < 1) {
-                res.writeHead(400, { "Content-Type": "application/json" });
-                res.end(JSON.stringify({ message: "Invalid input for adding to cart" }));
-                return; // Exit the function here to prevent further execution
-            }
-
+            
             try {
-              // Call addToCart function with token instead of userId
-              const result = await addToCart(token, requestBody.productId, requestBody.quantity);
-              res.writeHead(200, { "Content-Type": "application/json" });
-              res.end(JSON.stringify(result)); // Send back the updated cart
-            } catch (error) {
-              res.writeHead(500, { "Content-Type": "application/json" });
-              res.end(JSON.stringify({ message: error.message }));
+    // Assume token is retrieved from headers and validated before this point
+            const result = await addToCart(token, requestBody.productId, requestBody.quantity);
+
+    // Handle the result and send appropriate response
+            if (result.error) {
+              res.writeHead(404, { "Content-Type": "application/json" });
+              res.end(JSON.stringify({ error: result.error }));
+              return;
             }
+            res.writeHead(200, { "Content-Type": "application/json" });
+            res.end(JSON.stringify(result)); // Assuming result contains a message field on success
             return;
-
-      
-
-
-
-
+          } catch (error) {
+            console.error("Error adding to cart:", error);
+            res.writeHead(500, { "Content-Type": "application/json" });
+            res.end(JSON.stringify({ error: "Internal Server Error" }));
+            return;
+          }
 
           case "remove-from-cart":
             if (
