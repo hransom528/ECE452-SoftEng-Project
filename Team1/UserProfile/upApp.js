@@ -55,21 +55,146 @@ function renderAdditionalAddresses(addresses) {
     }
 }
 
-// Helper function to generate HTML for an address
+// Function to generate HTML for an address, now using data attributes
 function getAddressHTML(address, includeEditButton) {
+    // Ensure each attribute is safely encoded to avoid HTML injection issues
+    const safeHtml = (str) => String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
+    
     return `
-        <div class="address" data-address-id="${address._id}">
-            <p>Recipient: ${address.recipientName}</p>
-            <p>Street: ${address.street}</p>
-            <p>City: ${address.city}</p>
-            <p>State: ${address.state}</p>
-            <p>Postal Code: ${address.postalCode}</p>
-            <p>Country: ${address.country}</p>
-            <p>Default: ${address.isDefault ? 'Yes' : 'No'}</p>
-            ${includeEditButton ? `<button onclick="editAddress('${address._id}')">Edit</button>` : ''}
-            <button onclick="deleteAddress('${address._id}')">Delete</button>
+        <div class="address" data-address-id="${safeHtml(address.addressId)}" 
+                             data-recipient-name="${safeHtml(address.recipientName)}" 
+                             data-street="${safeHtml(address.street)}" 
+                             data-city="${safeHtml(address.city)}" 
+                             data-state="${safeHtml(address.state)}" 
+                             data-postal-code="${safeHtml(address.postalCode)}" 
+                             data-country="${safeHtml(address.country)}" 
+                             data-is-default="${safeHtml(address.isDefault)}">
+            <p>Recipient: <span>${safeHtml(address.recipientName)}</span></p>
+            <p>Street: <span>${safeHtml(address.street)}</span></p>
+            <p>City: <span>${safeHtml(address.city)}</span></p>
+            <p>State: <span>${safeHtml(address.state)}</span></p>
+            <p>Postal Code: <span>${safeHtml(address.postalCode)}</span></p>
+            <p>Country: <span>${safeHtml(address.country)}</span></p>
+            <p>Default: <span>${address.isDefault ? 'Yes' : 'No'}</span></p>
+            ${includeEditButton ? `<button type="button" onclick="editAddress('${safeHtml(address.addressId)}')">Edit</button>` : ''}
         </div>
     `;
+}
+
+function editAddress(addressId) {
+    console.log("Edit Address ID:", addressId);
+    const addressDiv = document.querySelector(`div[data-address-id="${addressId}"]`);
+    if (!addressDiv) {
+        console.error("Failed to find address div for ID:", addressId);
+        return;
+    }
+
+    // Store the current HTML before editing
+    const currentHTML = addressDiv.innerHTML;
+
+    // Setup form with correct IDs and add a cancel button
+    addressDiv.innerHTML = `
+        <form onsubmit="saveEditedAddress(event, '${addressId}')">
+            <input type="text" id="editRecipientName_${addressId}" value="${addressDiv.getAttribute('data-recipient-name')}" placeholder="Recipient Name">
+            <input type="text" id="editStreet_${addressId}" value="${addressDiv.getAttribute('data-street')}" placeholder="Street">
+            <input type="text" id="editCity_${addressId}" value="${addressDiv.getAttribute('data-city')}" placeholder="City">
+            <input type="text" id="editState_${addressId}" value="${addressDiv.getAttribute('data-state')}" placeholder="State">
+            <input type="text" id="editPostalCode_${addressId}" value="${addressDiv.getAttribute('data-postal-code')}" placeholder="Postal Code">
+            <input type="text" id="editCountry_${addressId}" value="${addressDiv.getAttribute('data-country')}" placeholder="Country">
+            <label>Set as Default:
+                <input type="checkbox" id="editIsDefault_${addressId}" ${addressDiv.getAttribute('data-is-default') === 'true' ? 'checked' : ''}>
+            </label>
+            <button type="submit">Save</button>
+            <button type="button" onclick="cancelEditAddress('${addressId}', '${encodeURIComponent(currentHTML)}')">Cancel</button>
+            <button type="button" onclick="deleteAddress('${addressId}')">Delete</button>
+        </form>
+    `;
+}
+
+function cancelEditAddress(addressId, encodedHtml) {
+    const addressDiv = document.querySelector(`div[data-address-id="${addressId}"]`);
+    if (addressDiv) {
+        addressDiv.innerHTML = decodeURIComponent(encodedHtml);
+    } else {
+        console.error("Failed to restore original address content for ID:", addressId);
+    }
+}
+
+// Function to save edited address from the form
+function saveEditedAddress(event, addressId) {
+    event.preventDefault();
+    console.log("Saving Address ID:", addressId);  // Verify the addressId at save
+
+    const addressDetails = {
+        recipientName: document.getElementById(`editRecipientName_${addressId}`).value,
+        street: document.getElementById(`editStreet_${addressId}`).value,
+        city: document.getElementById(`editCity_${addressId}`).value,
+        state: document.getElementById(`editState_${addressId}`).value,
+        postalCode: document.getElementById(`editPostalCode_${addressId}`).value,
+        country: document.getElementById(`editCountry_${addressId}`).value,
+        isDefault: document.getElementById(`editIsDefault_${addressId}`).checked
+    };
+
+    console.log("Address Details:", addressDetails); // Log the address details
+
+    updateAddress(addressId, addressDetails);  // Ensure updateAddress is called with the correct ID
+}
+
+async function updateAddress(addressId, updatedAddress) {
+    const accessToken = sessionStorage.getItem('accessToken');
+    if (!accessToken) {
+        console.log('No access token found');
+        return;
+    }
+
+    try {
+        const response = await fetch('/update-shipping-address', {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${accessToken}`
+            },
+            body: JSON.stringify({ addressId, updatedAddress })
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            alert(data.message); // Display success message
+            populateUserProfile(); // Refresh the user profile after updating the address
+        } else {
+            console.error('Failed to update address:', response.statusText);
+        }
+    } catch (error) {
+        console.error('Error updating address:', error);
+    }
+}
+
+// Function to delete an address with specific ID
+function deleteAddress(addressId) {
+    if (confirm('Are you sure you want to delete this address?')) {
+        const accessToken = sessionStorage.getItem('accessToken');
+        fetch('/delete-shipping-address', {
+            method: 'DELETE',
+            headers: {
+                'Authorization': `Bearer ${accessToken}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ addressId: addressId }) // Send the addressId in the request body
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('Address deleted successfully.');
+                populateUserProfile(); // Refresh the list of addresses
+            } else {
+                alert('Failed to delete address: ' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error deleting address:', error);
+            alert('Failed to delete address due to an error.');
+        });
+    }
 }
 
 // Toggle the visibility of additional addresses
@@ -85,12 +210,17 @@ function showAddressForm() {
     document.getElementById('addAddress').style.display = 'none';
 }
 
+
 // This function will be triggered when the address form is submitted
 document.getElementById('addressForm').addEventListener('submit', function(event) {
     event.preventDefault();
+    const addressId = this.dataset.editingAddressId; // Check if we are editing
+    createAddress(addressId); // Function to handle both create and update
+});
 
-    // Collect address details from the form
-    const address = {
+// Function to only handle creating a new address
+function createAddress() {
+    const addressDetails = {
         recipientName: document.getElementById('recipientName').value,
         street: document.getElementById('street').value,
         city: document.getElementById('city').value,
@@ -100,57 +230,28 @@ document.getElementById('addressForm').addEventListener('submit', function(event
         isDefault: document.getElementById('isDefault').checked
     };
 
-    const accessToken = sessionStorage.getItem('accessToken'); // Retrieve the access token
-    if (!accessToken) {
-        alert('You must be logged in to perform this action.');
-        return;
-    }
-
-    // Make the API request to add the address
+    const accessToken = sessionStorage.getItem('accessToken');
     fetch('/add-shipping-address', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${accessToken}`
         },
-        body: JSON.stringify(address)
+        body: JSON.stringify(addressDetails)
     })
     .then(response => response.json())
     .then(data => {
         if (data.message === 'Address added successfully') {
-            alert('New address added successfully!');
-            populateUserProfile(); // Reload the addresses on the page
+            alert(data.message);
+            populateUserProfile(); // Refresh the addresses
         } else {
             alert('Failed to add address: ' + data.message);
         }
     })
     .catch(error => {
-        console.error('Error adding new address:', error);
+        console.error('Error adding address:', error);
         alert('Failed to add address due to an error.');
     });
-});
-
-function updateAddress() {
-    const recipientName = document.getElementById('recipientName').value;
-    const street = document.getElementById('street').value;
-    const city = document.getElementById('city').value;
-    const state = document.getElementById('state').value;
-    const postalCode = document.getElementById('postalCode').value;
-    const country = document.getElementById('country').value;
-    const isDefault = document.getElementById('isDefault').checked;
-
-    const addressDetails = { recipientName, street, city, state, postalCode, country, isDefault };
-
-    fetch('/update-shipping-address', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify(addressDetails)
-    })
-    .then(response => response.json())
-    .then(data => {
-        alert('Address Update Response: ' + data.message);
-    })
-    .catch(error => console.error('Error updating address:', error));
 }
 
 function purchaseMembership() {
