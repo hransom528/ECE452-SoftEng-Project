@@ -326,16 +326,7 @@ const server = http.createServer(async (req, res) => {
             return;
 
           case "checkout":
-            // const { userId, cartId, address, paymentToken, stripeCustomerId } =
-            //   requestBody;
-            // await checkout(
-            //   userId,
-            //   cartId,
-            //   address,
-            //   paymentToken,
-            //   stripeCustomerId
-            // );
-            // result = { message: "Checkout successful" };
+          
             const { userId, billingAddr, shippingAddr, paymentInfo } = requestBody;
             const addr1 = requestBody.billingAddr;
             const addr2 = requestBody.shippingAddr;

@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gym Haven</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
+        integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+    <link rel="stylesheet" href="onBoard.css">
+</head>
+
+<body>
+     <!-- Navigation Bar -->
+     <nav class="navbar navbar-expand-sm navbar-dark sticky-top" id="navbar">
+        <a class="navbar-brand" href="#">GymHaven</a>
+        <div class="collapse navbar-collapse" id="expandme">
+            <div class="navbar-nav">
+                <a href="Home" class="nav-item nav-link">Home</a>
+                <a href="Home" class="nav-item nav-link">About</a>
+            </div>
+            <button id="enter" class="ml-auto">Hi "Add Name Here"</button>
+        </div>
+    </nav>
+    <div class="container">
+        <h3 class="display-4">Welcome to Gym Haven's On Boarding</h3>
+        <h5>Please fill in the fields below to complete your registration!</h5>
+        <form action="#nowhere">
+            <div class="form-group">
+                <label for="address">Street Address</label>
+                <input type="text" class="form-control" id="address" placeholder="Enter an Address" required>
+            </div>
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label for="city" >City</label>
+                    <input type="text" class="form-control" id="city" placeholder="Enter a City" required>
+                </div>
+                <div class="form-group col-md-6 col-6">
+                    <label for="state">State</label>
+                    <input type="text" class="form-control" id="state" placeholder="Enter a State" required>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group col-md-6 col-6">
+                    <label for="zip">Zip Code</label>
+                    <input type="text" class="form-control" id="zip" placeholder="Enter a Zip Code" required>
+                </div>
+                <div class="form-group col-md-6 col-6">
+                    <label for="ctry">Country</label>
+                    <input type="text" class="form-control" id="ctry" placeholder="Enter a Country"  required>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="custom-control custom-checkbox">
+                    <input type="checkbox" class="custom-control-input" id="tos" required>
+                    <label class="custom-control-label" for="tos">Please Accept our Terms of Agreement, click link below to view:</label>
+                </div>
+                <div class="pl-4">
+                    <a href="url">link text</a>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="personal0" id="personal1">Tell us about your yourself and your Gym Journey!</label>
+                <input type="text" class="form-control" id="personal0" placeholder="....">
+            </div>
+
+            <div class="form-group" id="lastOne">
+                <label for="personal3" id="personal2">What are your goals on our Platform?</label>
+                <input type="text" class="form-control" id="personal3" placeholder="....">
+            </div>
+
+            <button type="submit" id="registration" >Complete Registration</button>
+
+        </form>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+        integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+        integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+        crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"
+        integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI"
+        crossorigin="anonymous"></script>
+
+        <script src="onBoard.js"></script>
+</body>
+
+</html>

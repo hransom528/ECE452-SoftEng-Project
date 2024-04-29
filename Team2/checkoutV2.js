@@ -88,7 +88,7 @@ async function getCartByUserId(userId) {
     const collection = db.collection('carts');
 
     // Make sure to use ObjectId for the userId if it's stored as ObjectId in the carts collection
-    const cart = await collection.findOne({ userId: new ObjectId(userId) });
+    const cart = await collection.findOne({ userId: new (userId) });
     return cart;
 }
 

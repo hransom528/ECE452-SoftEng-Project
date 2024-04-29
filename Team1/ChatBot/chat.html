@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gym Haven</title>
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
+        integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+<link rel="stylesheet" href="/chat/chat.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-sm navbar-dark sticky-top" id="navbar">
+        <a class="navbar-brand" href="/Reg_lgn/home/home.html">GymHaven</a>
+        <div class="collapse navbar-collapse" id="expandme">
+            <div class="navbar-nav">
+                <a href="/Reg_lgn/home/home.html" class="nav-item nav-link">Home</a>
+                <a href="About" class="nav-item nav-link">About</a>
+            </div>
+            <a href="/profile" class="ml-auto nav-item nav-link" id="profileLink">
+                <label id="enter" class="ml-auto">Profile <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-person-circle" viewBox="0 0 16 18">
+                    <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0"/>
+                    <path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8m8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1"/>
+                </svg></label>
+            </a>
+        </div>
+    </nav>
+    <h3 class="display-3 text-left pl-4">AI Help Center</h1>
+
+    <h4>Welcome to our ChatBot! Ask it many things such as "What are some of the highest rated products at Gym Haven?" or "Give me 5 products that would allow me to make the best home gym, my goal is to lose weight". Our AI will curate responses based on what is the current data in our company. We hope you enjoy! </h4>
+    <div class="row">
+        <div class="col-6" id="AIform">
+            <form id="chatForm" action="#nowhere">
+                <div class="form-group">
+                    <label for="aiPrompt" id="AIlabel">Ask AI:</label>
+                    <input type="text" class="form-control" id="aiPrompt" placeholder="Enter a prompt" required>
+                </div>
+                <button type="submit" id="sendPrompt" >Send Message <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-send" viewBox="0 0 16 18">
+                    <path d="M15.854.146a.5.5 0 0 1 .11.54l-5.819 14.547a.75.75 0 0 1-1.329.124l-3.178-4.995L.643 7.184a.75.75 0 0 1 .124-1.33L15.314.037a.5.5 0 0 1 .54.11ZM6.636 10.07l2.761 4.338L14.13 2.576zm6.787-8.201L1.591 6.602l4.339 2.76z"/>
+                </svg></button>
+
+            </form>
+            <p class="response">Response: </p>
+            <div id="responses">
+            </div> 
+        </div> 
+        <div class="col-4" id="pictures">
+            <img src="/ChatBot/back.jpeg">
+        </div>
+    </div>
+
+<script src="https://apis.google.com/js/api.js"></script>
+<script src="/chat/chat.js"></script>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+        integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+        integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+        crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"
+        integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI"
+        crossorigin="anonymous"></script>
+
+</body>
+</html>
+

@@ -4,15 +4,15 @@
     "description": "The high-quality iron design is perfect for any home gym setup.",
     "brand": "Brooks",
     "type": "Treadmill",
-    "price": 284,
-    "stockQuantity": 23,
+    "price": 319.5,
+    "stockQuantity": 21,
     "specs": {
       "weight": "14 lbs"
     },
     "trendingScore": 6,
     "topTrending": true,
     "rating": 3,
-    "discount": 20,
+    "discount": 10,
     "originalPrice": 355
   },
   {
@@ -20,7 +20,7 @@
     "description": "The multi-purpose iron design is perfect for any home gym setup.",
     "brand": "Puma",
     "type": "Treadmill",
-    "price": 223.20000000000002,
+    "price": 251.1,
     "stockQuantity": 47,
     "specs": {
       "weight": "34 lbs"
@@ -28,7 +28,7 @@
     "trendingScore": 8,
     "topTrending": true,
     "rating": 5,
-    "discount": 20,
+    "discount": 10,
     "originalPrice": 279
   },
   {
@@ -50,28 +50,32 @@
     "description": "The compact iron design is perfect for any home gym setup.",
     "brand": "Brooks",
     "type": "Bench",
-    "price": 500,
+    "price": 450,
     "stockQuantity": 45,
     "specs": {
       "weight": "18 lbs"
     },
     "trendingScore": 6,
     "topTrending": false,
-    "rating": 4
+    "rating": 4,
+    "discount": 10,
+    "originalPrice": 500
   },
   {
     "name": "ProForm Foldable Bench",
     "description": "The foldable steel design is perfect for any home gym setup.",
     "brand": "ProForm",
     "type": "Bench",
-    "price": 500,
+    "price": 395,
     "stockQuantity": 45,
     "specs": {
       "weight": "44 lbs"
     },
     "trendingScore": 9,
     "topTrending": true,
-    "rating": 4
+    "rating": 4,
+    "discount": 21,
+    "originalPrice": 500
   },
   {
     "name": "Cybex Multi-purpose Home Gym",
@@ -106,7 +110,7 @@
     "description": "The high-quality iron design is perfect for any home gym setup.",
     "brand": "ProForm",
     "type": "Treadmill",
-    "price": 84.80000000000001,
+    "price": 90.1,
     "stockQuantity": 29,
     "specs": {
       "weight": "28 lbs"
@@ -114,7 +118,7 @@
     "trendingScore": 1,
     "topTrending": false,
     "rating": 1,
-    "discount": 20,
+    "discount": 15,
     "originalPrice": 106
   },
   {
@@ -122,27 +126,2133 @@
     "description": "The foldable steel design is perfect for any home gym setup.",
     "brand": "Asics",
     "type": "Bench",
-    "price": 452,
+    "price": 357.08000000000004,
     "stockQuantity": 36,
     "specs": {
       "weight": "63 lbs"
     },
     "trendingScore": 2,
     "topTrending": false,
-    "rating": 2
+    "rating": 2,
+    "discount": 21,
+    "originalPrice": 452
   },
   {
-    "name": "Lululemon Foldable Exercise Bike",
-    "description": "The foldable iron design is perfect for any home gym setup.",
-    "brand": "Lululemon",
-    "type": "Exercise Bike",
-    "price": 211,
-    "stockQuantity": 18,
+    "name": "ProForm High-quality Treadmill",
+    "description": "The high-quality iron design is perfect for any home gym setup.",
+    "brand": "ProForm",
+    "type": "Treadmill",
+    "price": 364.65,
+    "stockQuantity": 19,
     "specs": {
-      "weight": "45 lbs"
+      "weight": "53 lbs"
+    },
+    "trendingScore": 8,
+    "topTrending": true,
+    "rating": 4,
+    "discount": 15,
+    "originalPrice": 429
+  },
+  {
+    "name": "Under Armour Compact Bench",
+    "description": "The compact composite design is perfect for any home gym setup.",
+    "brand": "Under Armour",
+    "type": "Bench",
+    "price": 488,
+    "stockQuantity": 34,
+    "specs": {
+      "weight": "36 lbs"
+    },
+    "trendingScore": 2,
+    "topTrending": false,
+    "rating": 3
+  },
+  {
+    "name": "Nike Compact Barbell",
+    "description": "The compact titanium design is perfect for any home gym setup.",
+    "brand": "Nike",
+    "type": "Barbell",
+    "price": 60,
+    "stockQuantity": 16,
+    "specs": {
+      "weight": "53 lbs"
     },
     "trendingScore": 1,
     "topTrending": true,
+    "rating": 3
+  },
+  {
+    "name": "Brooks Multi-purpose Exercise Bike",
+    "description": "The multi-purpose plastic design is perfect for any home gym setup.",
+    "brand": "Brooks",
+    "type": "Exercise Bike",
+    "price": 43.2,
+    "stockQuantity": 9,
+    "specs": {
+      "weight": "51 lbs"
+    },
+    "trendingScore": 9,
+    "topTrending": true,
+    "rating": 4,
+    "discount": 10,
+    "originalPrice": 48
+  },
+  {
+    "name": "Nike Multi-purpose Dumbell",
+    "description": "The multi-purpose steel design is perfect for any home gym setup.",
+    "brand": "Nike",
+    "type": "Dumbell",
+    "price": 108,
+    "stockQuantity": 39,
+    "specs": {
+      "weight": "32 lbs"
+    },
+    "trendingScore": 4,
+    "topTrending": true,
+    "rating": 3
+  },
+  {
+    "name": "Life Fitness Foldable Dumbell",
+    "description": "The foldable composite design is perfect for any home gym setup.",
+    "brand": "Life Fitness",
+    "type": "Dumbell",
+    "price": 30,
+    "stockQuantity": 5,
+    "specs": {
+      "weight": "29 lbs"
+    },
+    "trendingScore": 10,
+    "topTrending": true,
     "rating": 4
+  },
+  {
+    "name": "Lululemon Compact Elliptical",
+    "description": "The compact titanium design is perfect for any home gym setup.",
+    "brand": "Lululemon",
+    "type": "Elliptical",
+    "price": 305,
+    "stockQuantity": 38,
+    "specs": {
+      "weight": "71 lbs"
+    },
+    "trendingScore": 7,
+    "topTrending": false,
+    "rating": 3
+  },
+  {
+    "name": "Bowflex Compact Barbell",
+    "description": "The compact iron design is perfect for any home gym setup.",
+    "brand": "Bowflex",
+    "type": "Barbell",
+    "price": 171,
+    "stockQuantity": 8,
+    "specs": {
+      "weight": "24 lbs"
+    },
+    "trendingScore": 10,
+    "topTrending": false,
+    "rating": 5
+  },
+  {
+    "name": "Reebok Compact Dumbell",
+    "description": "The compact plastic design is perfect for any home gym setup.",
+    "brand": "Reebok",
+    "type": "Dumbell",
+    "price": 234,
+    "stockQuantity": 13,
+    "specs": {
+      "weight": "54 lbs"
+    },
+    "trendingScore": 1,
+    "topTrending": true,
+    "rating": 5
+  },
+  {
+    "name": "ProForm Multi-purpose Dumbell",
+    "description": "The multi-purpose steel design is perfect for any home gym setup.",
+    "brand": "ProForm",
+    "type": "Dumbell",
+    "price": 149,
+    "stockQuantity": 36,
+    "specs": {
+      "weight": "25 lbs"
+    },
+    "trendingScore": 7,
+    "topTrending": true,
+    "rating": 2
+  },
+  {
+    "name": "Puma Compact Treadmill",
+    "description": "The compact titanium design is perfect for any home gym setup.",
+    "brand": "Puma",
+    "type": "Treadmill",
+    "price": 426.6,
+    "stockQuantity": 28,
+    "specs": {
+      "weight": "27 lbs"
+    },
+    "trendingScore": 10,
+    "topTrending": true,
+    "rating": 3,
+    "discount": 10,
+    "originalPrice": 474
+  },
+  {
+    "name": "New Balance Multi-purpose Barbell",
+    "description": "The multi-purpose iron design is perfect for any home gym setup.",
+    "brand": "New Balance",
+    "type": "Barbell",
+    "price": 22,
+    "stockQuantity": 32,
+    "specs": {
+      "weight": "99 lbs"
+    },
+    "trendingScore": 2,
+    "topTrending": false,
+    "rating": 4
+  },
+  {
+    "name": "Peloton Compact Treadmill",
+    "description": "The compact steel design is perfect for any home gym setup.",
+    "brand": "Peloton",
+    "type": "Treadmill",
+    "price": 187,
+    "stockQuantity": 19,
+    "specs": {
+      "weight": "89 lbs"
+    },
+    "trendingScore": 3,
+    "topTrending": true,
+    "rating": 2,
+    "discount": 15,
+    "originalPrice": 220
+  },
+  {
+    "name": "Peloton Multi-purpose Exercise Bike",
+    "description": "The multi-purpose plastic design is perfect for any home gym setup.",
+    "brand": "Peloton",
+    "type": "Exercise Bike",
+    "price": 434,
+    "stockQuantity": 50,
+    "specs": {
+      "weight": "67 lbs"
+    },
+    "trendingScore": 2,
+    "topTrending": true,
+    "rating": 3
+  },
+  {
+    "name": "Gymshark Compact Dumbell",
+    "description": "The compact composite design is perfect for any home gym setup.",
+    "brand": "Gymshark",
+    "type": "Dumbell",
+    "price": 89,
+    "stockQuantity": 14,
+    "specs": {
+      "weight": "23 lbs"
+    },
+    "trendingScore": 9,
+    "topTrending": true,
+    "rating": 5
+  },
+  {
+    "name": "Life Fitness Compact Dumbell",
+    "description": "The compact steel design is perfect for any home gym setup.",
+    "brand": "Life Fitness",
+    "type": "Dumbell",
+    "price": 85,
+    "stockQuantity": 24,
+    "specs": {
+      "weight": "49 lbs"
+    },
+    "trendingScore": 5,
+    "topTrending": false,
+    "rating": 2
+  },
+  {
+    "name": "Brooks High-quality Elliptical",
+    "description": "The high-quality iron design is perfect for any home gym setup.",
+    "brand": "Brooks",
+    "type": "Elliptical",
+    "price": 197.1,
+    "stockQuantity": 3,
+    "specs": {
+      "weight": "31 lbs"
+    },
+    "trendingScore": 2,
+    "topTrending": false,
+    "rating": 4,
+    "discount": 10,
+    "originalPrice": 219
+  },
+  {
+    "name": "New Balance Foldable Dumbell",
+    "description": "The foldable composite design is perfect for any home gym setup.",
+    "brand": "New Balance",
+    "type": "Dumbell",
+    "price": 60,
+    "stockQuantity": 46,
+    "specs": {
+      "weight": "77 lbs"
+    },
+    "trendingScore": 5,
+    "topTrending": false,
+    "rating": 3
+  },
+  {
+    "name": "Reebok Compact Bench",
+    "description": "The compact titanium design is perfect for any home gym setup.",
+    "brand": "Reebok",
+    "type": "Bench",
+    "price": 297,
+    "stockQuantity": 35,
+    "specs": {
+      "weight": "94 lbs"
+    },
+    "trendingScore": 3,
+    "topTrending": true,
+    "rating": 2
+  },
+  {
+    "name": "Bowflex Compact Barbell",
+    "description": "The compact iron design is perfect for any home gym setup.",
+    "brand": "Bowflex",
+    "type": "Barbell",
+    "price": 255,
+    "stockQuantity": 48,
+    "specs": {
+      "weight": "99 lbs"
+    },
+    "trendingScore": 3,
+    "topTrending": false,
+    "rating": 2
+  },
+  {
+    "name": "ProForm Multi-purpose Dumbell",
+    "description": "The multi-purpose composite design is perfect for any home gym setup.",
+    "brand": "ProForm",
+    "type": "Dumbell",
+    "price": 224,
+    "stockQuantity": 16,
+    "specs": {
+      "weight": "54 lbs"
+    },
+    "trendingScore": 9,
+    "topTrending": true,
+    "rating": 3
+  },
+  {
+    "name": "Gold gym Multi-purpose Exercise Bike",
+    "description": "The multi-purpose titanium design is perfect for any home gym setup.",
+    "brand": "Gold gym",
+    "type": "Exercise Bike",
+    "price": 248,
+    "stockQuantity": 18,
+    "specs": {
+      "weight": "88 lbs"
+    },
+    "trendingScore": 2,
+    "topTrending": true,
+    "rating": 4
+  },
+  {
+    "name": "Under Armour Foldable Treadmill",
+    "description": "The foldable composite design is perfect for any home gym setup.",
+    "brand": "Under Armour",
+    "type": "Treadmill",
+    "price": 341.7,
+    "stockQuantity": 11,
+    "specs": {
+      "weight": "77 lbs"
+    },
+    "trendingScore": 1,
+    "topTrending": true,
+    "rating": 1,
+    "discount": 15,
+    "originalPrice": 402
+  },
+  {
+    "name": "Cybex Foldable Bench",
+    "description": "The foldable iron design is perfect for any home gym setup.",
+    "brand": "Cybex",
+    "type": "Bench",
+    "price": 139,
+    "stockQuantity": 45,
+    "specs": {
+      "weight": "79 lbs"
+    },
+    "trendingScore": 6,
+    "topTrending": false,
+    "rating": 5
+  },
+  {
+    "name": "Brooks Compact Treadmill",
+    "description": "The compact plastic design is perfect for any home gym setup.",
+    "brand": "Brooks",
+    "type": "Treadmill",
+    "price": 103.5,
+    "stockQuantity": 30,
+    "specs": {
+      "weight": "62 lbs"
+    },
+    "trendingScore": 6,
+    "topTrending": true,
+    "rating": 5,
+    "discount": 10,
+    "originalPrice": 115
+  },
+  {
+    "name": "Cybex Multi-purpose Bench",
+    "description": "The multi-purpose steel design is perfect for any home gym setup.",
+    "brand": "Cybex",
+    "type": "Bench",
+    "price": 377,
+    "stockQuantity": 39,
+    "specs": {
+      "weight": "94 lbs"
+    },
+    "trendingScore": 3,
+    "topTrending": true,
+    "rating": 3
+  },
+  {
+    "name": "Gymshark High-quality Dumbell",
+    "description": "The high-quality composite design is perfect for any home gym setup.",
+    "brand": "Gymshark",
+    "type": "Dumbell",
+    "price": 62,
+    "stockQuantity": 19,
+    "specs": {
+      "weight": "56 lbs"
+    },
+    "trendingScore": 2,
+    "topTrending": false,
+    "rating": 1
+  },
+  {
+    "name": "Under Armour Compact Treadmill",
+    "description": "The compact steel design is perfect for any home gym setup.",
+    "brand": "Under Armour",
+    "type": "Treadmill",
+    "price": 57.8,
+    "stockQuantity": 9,
+    "specs": {
+      "weight": "87 lbs"
+    },
+    "trendingScore": 6,
+    "topTrending": false,
+    "rating": 1,
+    "discount": 15,
+    "originalPrice": 68
+  },
+  {
+    "name": "Cybex Multi-purpose Bench",
+    "description": "The multi-purpose composite design is perfect for any home gym setup.",
+    "brand": "Cybex",
+    "type": "Bench",
+    "price": 197,
+    "stockQuantity": 38,
+    "specs": {
+      "weight": "21 lbs"
+    },
+    "trendingScore": 5,
+    "topTrending": false,
+    "rating": 2
+  },
+  {
+    "name": "Gold gym Foldable Home Gym",
+    "description": "The foldable iron design is perfect for any home gym setup.",
+    "brand": "Gold gym",
+    "type": "Home Gym",
+    "price": 477,
+    "stockQuantity": 26,
+    "specs": {
+      "weight": "55 lbs"
+    },
+    "trendingScore": 6,
+    "topTrending": false,
+    "rating": 2
+  },
+  {
+    "name": "Gold gym Compact Bench",
+    "description": "The compact plastic design is perfect for any home gym setup.",
+    "brand": "Gold gym",
+    "type": "Bench",
+    "price": 372,
+    "stockQuantity": 8,
+    "specs": {
+      "weight": "86 lbs"
+    },
+    "trendingScore": 9,
+    "topTrending": true,
+    "rating": 2
+  },
+  {
+    "name": "Puma Compact Exercise Bike",
+    "description": "The compact steel design is perfect for any home gym setup.",
+    "brand": "Puma",
+    "type": "Exercise Bike",
+    "price": 377.1,
+    "stockQuantity": 6,
+    "specs": {
+      "weight": "94 lbs"
+    },
+    "trendingScore": 2,
+    "topTrending": false,
+    "rating": 1,
+    "discount": 10,
+    "originalPrice": 419
+  },
+  {
+    "name": "Adidas Multi-purpose Treadmill",
+    "description": "The multi-purpose iron design is perfect for any home gym setup.",
+    "brand": "Adidas",
+    "type": "Treadmill",
+    "price": 86.7,
+    "stockQuantity": 46,
+    "specs": {
+      "weight": "75 lbs"
+    },
+    "trendingScore": 2,
+    "topTrending": true,
+    "rating": 2,
+    "discount": 15,
+    "originalPrice": 102
+  },
+  {
+    "name": "Reebok Multi-purpose Treadmill",
+    "description": "The multi-purpose plastic design is perfect for any home gym setup.",
+    "brand": "Reebok",
+    "type": "Treadmill",
+    "price": 45.9,
+    "stockQuantity": 39,
+    "specs": {
+      "weight": "26 lbs"
+    },
+    "trendingScore": 10,
+    "topTrending": true,
+    "rating": 1,
+    "discount": 15,
+    "originalPrice": 54
+  },
+  {
+    "name": "Lululemon Compact Exercise Bike",
+    "description": "The compact iron design is perfect for any home gym setup.",
+    "brand": "Lululemon",
+    "type": "Exercise Bike",
+    "price": 401,
+    "stockQuantity": 47,
+    "specs": {
+      "weight": "64 lbs"
+    },
+    "trendingScore": 4,
+    "topTrending": false,
+    "rating": 2
+  },
+  {
+    "name": "Puma Multi-purpose Exercise Bike",
+    "description": "The multi-purpose titanium design is perfect for any home gym setup.",
+    "brand": "Puma",
+    "type": "Exercise Bike",
+    "price": 32.4,
+    "stockQuantity": 44,
+    "specs": {
+      "weight": "65 lbs"
+    },
+    "trendingScore": 7,
+    "topTrending": true,
+    "rating": 3,
+    "discount": 10,
+    "originalPrice": 36
+  },
+  {
+    "name": "New Balance Multi-purpose Elliptical",
+    "description": "The multi-purpose composite design is perfect for any home gym setup.",
+    "brand": "New Balance",
+    "type": "Elliptical",
+    "price": 150,
+    "stockQuantity": 19,
+    "specs": {
+      "weight": "35 lbs"
+    },
+    "trendingScore": 9,
+    "topTrending": true,
+    "rating": 1
+  },
+  {
+    "name": "Precor Multi-purpose Home Gym",
+    "description": "The multi-purpose plastic design is perfect for any home gym setup.",
+    "brand": "Precor",
+    "type": "Home Gym",
+    "price": 334,
+    "stockQuantity": 26,
+    "specs": {
+      "weight": "8 lbs"
+    },
+    "trendingScore": 1,
+    "topTrending": true,
+    "rating": 3
+  },
+  {
+    "name": "Asics Compact Bench",
+    "description": "The compact composite design is perfect for any home gym setup.",
+    "brand": "Asics",
+    "type": "Bench",
+    "price": 127,
+    "stockQuantity": 24,
+    "specs": {
+      "weight": "49 lbs"
+    },
+    "trendingScore": 4,
+    "topTrending": true,
+    "rating": 3
+  },
+  {
+    "name": "Adidas Foldable Home Gym",
+    "description": "The foldable steel design is perfect for any home gym setup.",
+    "brand": "Adidas",
+    "type": "Home Gym",
+    "price": 474,
+    "stockQuantity": 19,
+    "specs": {
+      "weight": "75 lbs"
+    },
+    "trendingScore": 3,
+    "topTrending": false,
+    "rating": 4
+  },
+  {
+    "name": "Life Fitness Multi-purpose Dumbell",
+    "description": "The multi-purpose iron design is perfect for any home gym setup.",
+    "brand": "Life Fitness",
+    "type": "Dumbell",
+    "price": 217,
+    "stockQuantity": 33,
+    "specs": {
+      "weight": "30 lbs"
+    },
+    "trendingScore": 7,
+    "topTrending": false,
+    "rating": 1
+  },
+  {
+    "name": "Asics Compact Elliptical",
+    "description": "The compact plastic design is perfect for any home gym setup.",
+    "brand": "Asics",
+    "type": "Elliptical",
+    "price": 471,
+    "stockQuantity": 8,
+    "specs": {
+      "weight": "25 lbs"
+    },
+    "trendingScore": 8,
+    "topTrending": true,
+    "rating": 3
+  },
+  {
+    "name": "Asics Compact Home Gym",
+    "description": "The compact composite design is perfect for any home gym setup.",
+    "brand": "Asics",
+    "type": "Home Gym",
+    "price": 117,
+    "stockQuantity": 19,
+    "specs": {
+      "weight": "42 lbs"
+    },
+    "trendingScore": 2,
+    "topTrending": false,
+    "rating": 3
+  },
+  {
+    "name": "Puma High-quality Barbell",
+    "description": "The high-quality composite design is perfect for any home gym setup.",
+    "brand": "Puma",
+    "type": "Barbell",
+    "price": 135.9,
+    "stockQuantity": 13,
+    "specs": {
+      "weight": "55 lbs"
+    },
+    "trendingScore": 6,
+    "topTrending": false,
+    "rating": 5,
+    "discount": 10,
+    "originalPrice": 151
+  },
+  {
+    "name": "Puma Multi-purpose Home Gym",
+    "description": "The multi-purpose composite design is perfect for any home gym setup.",
+    "brand": "Puma",
+    "type": "Home Gym",
+    "price": 435.6,
+    "stockQuantity": 9,
+    "specs": {
+      "weight": "24 lbs"
+    },
+    "trendingScore": 6,
+    "topTrending": false,
+    "rating": 1,
+    "discount": 10,
+    "originalPrice": 484
+  },
+  {
+    "name": "Under Armour Foldable Bench",
+    "description": "The foldable iron design is perfect for any home gym setup.",
+    "brand": "Under Armour",
+    "type": "Bench",
+    "price": 31,
+    "stockQuantity": 14,
+    "specs": {
+      "weight": "41 lbs"
+    },
+    "trendingScore": 5,
+    "topTrending": false,
+    "rating": 3
+  },
+  {
+    "name": "NordicTrack Multi-purpose Barbell",
+    "description": "The multi-purpose plastic design is perfect for any home gym setup.",
+    "brand": "NordicTrack",
+    "type": "Barbell",
+    "price": 92,
+    "stockQuantity": 13,
+    "specs": {
+      "weight": "14 lbs"
+    },
+    "trendingScore": 5,
+    "topTrending": true,
+    "rating": 3
+  },
+  {
+    "name": "Life Fitness High-quality Home Gym",
+    "description": "The high-quality plastic design is perfect for any home gym setup.",
+    "brand": "Life Fitness",
+    "type": "Home Gym",
+    "price": 317,
+    "stockQuantity": 4,
+    "specs": {
+      "weight": "52 lbs"
+    },
+    "trendingScore": 3,
+    "topTrending": true,
+    "rating": 1
+  },
+  {
+    "name": "Brooks Multi-purpose Home Gym",
+    "description": "The multi-purpose composite design is perfect for any home gym setup.",
+    "brand": "Brooks",
+    "type": "Home Gym",
+    "price": 126,
+    "stockQuantity": 18,
+    "specs": {
+      "weight": "68 lbs"
+    },
+    "trendingScore": 1,
+    "topTrending": false,
+    "rating": 1,
+    "discount": 10,
+    "originalPrice": 140
+  },
+  {
+    "name": "Nautilus High-quality Dumbell",
+    "description": "The high-quality titanium design is perfect for any home gym setup.",
+    "brand": "Nautilus",
+    "type": "Dumbell",
+    "price": 138,
+    "stockQuantity": 14,
+    "specs": {
+      "weight": "43 lbs"
+    },
+    "trendingScore": 4,
+    "topTrending": true,
+    "rating": 4
+  },
+  {
+    "name": "Gymshark Compact Home Gym",
+    "description": "The compact steel design is perfect for any home gym setup.",
+    "brand": "Gymshark",
+    "type": "Home Gym",
+    "price": 199,
+    "stockQuantity": 15,
+    "specs": {
+      "weight": "49 lbs"
+    },
+    "trendingScore": 8,
+    "topTrending": false,
+    "rating": 2
+  },
+  {
+    "name": "New Balance High-quality Treadmill",
+    "description": "The high-quality steel design is perfect for any home gym setup.",
+    "brand": "New Balance",
+    "type": "Treadmill",
+    "price": 227.79999999999998,
+    "stockQuantity": 45,
+    "specs": {
+      "weight": "73 lbs"
+    },
+    "trendingScore": 10,
+    "topTrending": false,
+    "rating": 5,
+    "discount": 15,
+    "originalPrice": 268
+  },
+  {
+    "name": "Rogue Fitness Compact Elliptical",
+    "description": "The compact steel design is perfect for any home gym setup.",
+    "brand": "Rogue Fitness",
+    "type": "Elliptical",
+    "price": 391,
+    "stockQuantity": 44,
+    "specs": {
+      "weight": "35 lbs"
+    },
+    "trendingScore": 1,
+    "topTrending": false,
+    "rating": 4
+  },
+  {
+    "name": "Asics High-quality Home Gym",
+    "description": "The high-quality composite design is perfect for any home gym setup.",
+    "brand": "Asics",
+    "type": "Home Gym",
+    "price": 395,
+    "stockQuantity": 11,
+    "specs": {
+      "weight": "60 lbs"
+    },
+    "trendingScore": 2,
+    "topTrending": true,
+    "rating": 3
+  },
+  {
+    "name": "Precor High-quality Bench",
+    "description": "The high-quality steel design is perfect for any home gym setup.",
+    "brand": "Precor",
+    "type": "Bench",
+    "price": 165,
+    "stockQuantity": 49,
+    "specs": {
+      "weight": "66 lbs"
+    },
+    "trendingScore": 5,
+    "topTrending": false,
+    "rating": 1
+  },
+  {
+    "name": "Nike Foldable Home Gym",
+    "description": "The foldable iron design is perfect for any home gym setup.",
+    "brand": "Nike",
+    "type": "Home Gym",
+    "price": 98,
+    "stockQuantity": 42,
+    "specs": {
+      "weight": "10 lbs"
+    },
+    "trendingScore": 7,
+    "topTrending": true,
+    "rating": 4
+  },
+  {
+    "name": "Adidas Multi-purpose Barbell",
+    "description": "The multi-purpose titanium design is perfect for any home gym setup.",
+    "brand": "Adidas",
+    "type": "Barbell",
+    "price": 339,
+    "stockQuantity": 8,
+    "specs": {
+      "weight": "95 lbs"
+    },
+    "trendingScore": 10,
+    "topTrending": true,
+    "rating": 3
+  },
+  {
+    "name": "Reebok Compact Bench",
+    "description": "The compact composite design is perfect for any home gym setup.",
+    "brand": "Reebok",
+    "type": "Bench",
+    "price": 413,
+    "stockQuantity": 17,
+    "specs": {
+      "weight": "12 lbs"
+    },
+    "trendingScore": 2,
+    "topTrending": false,
+    "rating": 4
+  },
+  {
+    "name": "Nautilus Foldable Bench",
+    "description": "The foldable composite design is perfect for any home gym setup.",
+    "brand": "Nautilus",
+    "type": "Bench",
+    "price": 236,
+    "stockQuantity": 4,
+    "specs": {
+      "weight": "63 lbs"
+    },
+    "trendingScore": 9,
+    "topTrending": true,
+    "rating": 1
+  },
+  {
+    "name": "Life Fitness Foldable Home Gym",
+    "description": "The foldable composite design is perfect for any home gym setup.",
+    "brand": "Life Fitness",
+    "type": "Home Gym",
+    "price": 339,
+    "stockQuantity": 50,
+    "specs": {
+      "weight": "48 lbs"
+    },
+    "trendingScore": 1,
+    "topTrending": false,
+    "rating": 4
+  },
+  {
+    "name": "Brooks Multi-purpose Home Gym",
+    "description": "The multi-purpose iron design is perfect for any home gym setup.",
+    "brand": "Brooks",
+    "type": "Home Gym",
+    "price": 209.70000000000002,
+    "stockQuantity": 4,
+    "specs": {
+      "weight": "10 lbs"
+    },
+    "trendingScore": 4,
+    "topTrending": false,
+    "rating": 4,
+    "discount": 10,
+    "originalPrice": 233
+  },
+  {
+    "name": "Gold gym High-quality Treadmill",
+    "description": "The high-quality titanium design is perfect for any home gym setup.",
+    "brand": "Gold gym",
+    "type": "Treadmill",
+    "price": 353.59999999999997,
+    "stockQuantity": 35,
+    "specs": {
+      "weight": "32 lbs"
+    },
+    "trendingScore": 4,
+    "topTrending": false,
+    "rating": 5,
+    "discount": 15,
+    "originalPrice": 416
+  },
+  {
+    "name": "Bowflex Multi-purpose Dumbell",
+    "description": "The multi-purpose steel design is perfect for any home gym setup.",
+    "brand": "Bowflex",
+    "type": "Dumbell",
+    "price": 217,
+    "stockQuantity": 22,
+    "specs": {
+      "weight": "29 lbs"
+    },
+    "trendingScore": 7,
+    "topTrending": false,
+    "rating": 4
+  },
+  {
+    "name": "Asics Compact Elliptical",
+    "description": "The compact steel design is perfect for any home gym setup.",
+    "brand": "Asics",
+    "type": "Elliptical",
+    "price": 394,
+    "stockQuantity": 23,
+    "specs": {
+      "weight": "21 lbs"
+    },
+    "trendingScore": 7,
+    "topTrending": true,
+    "rating": 2
+  },
+  {
+    "name": "Lululemon Compact Home Gym",
+    "description": "The compact steel design is perfect for any home gym setup.",
+    "brand": "Lululemon",
+    "type": "Home Gym",
+    "price": 83,
+    "stockQuantity": 24,
+    "specs": {
+      "weight": "99 lbs"
+    },
+    "trendingScore": 8,
+    "topTrending": true,
+    "rating": 3
+  },
+  {
+    "name": "Cybex Compact Home Gym",
+    "description": "The compact titanium design is perfect for any home gym setup.",
+    "brand": "Cybex",
+    "type": "Home Gym",
+    "price": 271,
+    "stockQuantity": 28,
+    "specs": {
+      "weight": "100 lbs"
+    },
+    "trendingScore": 1,
+    "topTrending": true,
+    "rating": 1
+  },
+  {
+    "name": "Gold gym High-quality Barbell",
+    "description": "The high-quality composite design is perfect for any home gym setup.",
+    "brand": "Gold gym",
+    "type": "Barbell",
+    "price": 279,
+    "stockQuantity": 24,
+    "specs": {
+      "weight": "22 lbs"
+    },
+    "trendingScore": 7,
+    "topTrending": false,
+    "rating": 5
+  },
+  {
+    "name": "Puma Multi-purpose Elliptical",
+    "description": "The multi-purpose titanium design is perfect for any home gym setup.",
+    "brand": "Puma",
+    "type": "Elliptical",
+    "price": 90.9,
+    "stockQuantity": 34,
+    "specs": {
+      "weight": "51 lbs"
+    },
+    "trendingScore": 8,
+    "topTrending": true,
+    "rating": 4,
+    "discount": 10,
+    "originalPrice": 101
+  },
+  {
+    "name": "Nautilus Foldable Home Gym",
+    "description": "The foldable iron design is perfect for any home gym setup.",
+    "brand": "Nautilus",
+    "type": "Home Gym",
+    "price": 432,
+    "stockQuantity": 15,
+    "specs": {
+      "weight": "66 lbs"
+    },
+    "trendingScore": 1,
+    "topTrending": false,
+    "rating": 2
+  },
+  {
+    "name": "Nike High-quality Home Gym",
+    "description": "The high-quality plastic design is perfect for any home gym setup.",
+    "brand": "Nike",
+    "type": "Home Gym",
+    "price": 112,
+    "stockQuantity": 17,
+    "specs": {
+      "weight": "30 lbs"
+    },
+    "trendingScore": 10,
+    "topTrending": false,
+    "rating": 3
+  },
+  {
+    "name": "Life Fitness Compact Barbell",
+    "description": "The compact plastic design is perfect for any home gym setup.",
+    "brand": "Life Fitness",
+    "type": "Barbell",
+    "price": 112,
+    "stockQuantity": 33,
+    "specs": {
+      "weight": "56 lbs"
+    },
+    "trendingScore": 2,
+    "topTrending": false,
+    "rating": 1
+  },
+  {
+    "name": "Puma Compact Exercise Bike",
+    "description": "The compact iron design is perfect for any home gym setup.",
+    "brand": "Puma",
+    "type": "Exercise Bike",
+    "price": 60.300000000000004,
+    "stockQuantity": 25,
+    "specs": {
+      "weight": "58 lbs"
+    },
+    "trendingScore": 3,
+    "topTrending": false,
+    "rating": 1,
+    "discount": 10,
+    "originalPrice": 67
+  },
+  {
+    "name": "Gymshark Foldable Exercise Bike",
+    "description": "The foldable titanium design is perfect for any home gym setup.",
+    "brand": "Gymshark",
+    "type": "Exercise Bike",
+    "price": 434,
+    "stockQuantity": 24,
+    "specs": {
+      "weight": "99 lbs"
+    },
+    "trendingScore": 10,
+    "topTrending": true,
+    "rating": 1
+  },
+  {
+    "name": "Precor Foldable Elliptical",
+    "description": "The foldable composite design is perfect for any home gym setup.",
+    "brand": "Precor",
+    "type": "Elliptical",
+    "price": 121,
+    "stockQuantity": 31,
+    "specs": {
+      "weight": "72 lbs"
+    },
+    "trendingScore": 10,
+    "topTrending": false,
+    "rating": 4
+  },
+  {
+    "name": "Cybex Foldable Elliptical",
+    "description": "The foldable steel design is perfect for any home gym setup.",
+    "brand": "Cybex",
+    "type": "Elliptical",
+    "price": 431,
+    "stockQuantity": 31,
+    "specs": {
+      "weight": "41 lbs"
+    },
+    "trendingScore": 1,
+    "topTrending": false,
+    "rating": 5
+  },
+  {
+    "name": "Puma Foldable Treadmill",
+    "description": "The foldable titanium design is perfect for any home gym setup.",
+    "brand": "Puma",
+    "type": "Treadmill",
+    "price": 303.3,
+    "stockQuantity": 42,
+    "specs": {
+      "weight": "74 lbs"
+    },
+    "trendingScore": 2,
+    "topTrending": false,
+    "rating": 5,
+    "discount": 10,
+    "originalPrice": 337
+  },
+  {
+    "name": "Gymshark Multi-purpose Treadmill",
+    "description": "The multi-purpose titanium design is perfect for any home gym setup.",
+    "brand": "Gymshark",
+    "type": "Treadmill",
+    "price": 177.65,
+    "stockQuantity": 10,
+    "specs": {
+      "weight": "50 lbs"
+    },
+    "trendingScore": 1,
+    "topTrending": false,
+    "rating": 5,
+    "discount": 15,
+    "originalPrice": 209
+  },
+  {
+    "name": "Life Fitness Foldable Elliptical",
+    "description": "The foldable plastic design is perfect for any home gym setup.",
+    "brand": "Life Fitness",
+    "type": "Elliptical",
+    "price": 319,
+    "stockQuantity": 15,
+    "specs": {
+      "weight": "11 lbs"
+    },
+    "trendingScore": 2,
+    "topTrending": false,
+    "rating": 4
+  },
+  {
+    "name": "Gymshark Foldable Exercise Bike",
+    "description": "The foldable plastic design is perfect for any home gym setup.",
+    "brand": "Gymshark",
+    "type": "Exercise Bike",
+    "price": 430,
+    "stockQuantity": 47,
+    "specs": {
+      "weight": "20 lbs"
+    },
+    "trendingScore": 7,
+    "topTrending": true,
+    "rating": 1
+  },
+  {
+    "name": "Puma High-quality Barbell",
+    "description": "The high-quality steel design is perfect for any home gym setup.",
+    "brand": "Puma",
+    "type": "Barbell",
+    "price": 65.7,
+    "stockQuantity": 46,
+    "specs": {
+      "weight": "76 lbs"
+    },
+    "trendingScore": 2,
+    "topTrending": false,
+    "rating": 1,
+    "discount": 10,
+    "originalPrice": 73
+  },
+  {
+    "name": "NordicTrack Multi-purpose Dumbell",
+    "description": "The multi-purpose plastic design is perfect for any home gym setup.",
+    "brand": "NordicTrack",
+    "type": "Dumbell",
+    "price": 403,
+    "stockQuantity": 32,
+    "specs": {
+      "weight": "42 lbs"
+    },
+    "trendingScore": 4,
+    "topTrending": true,
+    "rating": 5
+  },
+  {
+    "name": "New Balance Foldable Bench",
+    "description": "The foldable titanium design is perfect for any home gym setup.",
+    "brand": "New Balance",
+    "type": "Bench",
+    "price": 325,
+    "stockQuantity": 44,
+    "specs": {
+      "weight": "83 lbs"
+    },
+    "trendingScore": 7,
+    "topTrending": false,
+    "rating": 1
+  },
+  {
+    "name": "Nautilus Foldable Bench",
+    "description": "The foldable steel design is perfect for any home gym setup.",
+    "brand": "Nautilus",
+    "type": "Bench",
+    "price": 213,
+    "stockQuantity": 44,
+    "specs": {
+      "weight": "20 lbs"
+    },
+    "trendingScore": 3,
+    "topTrending": true,
+    "rating": 5
+  },
+  {
+    "name": "Nike Multi-purpose Dumbell",
+    "description": "The multi-purpose plastic design is perfect for any home gym setup.",
+    "brand": "Nike",
+    "type": "Dumbell",
+    "price": 324,
+    "stockQuantity": 38,
+    "specs": {
+      "weight": "82 lbs"
+    },
+    "trendingScore": 8,
+    "topTrending": true,
+    "rating": 1
+  },
+  {
+    "name": "ProForm Foldable Bench",
+    "description": "The foldable titanium design is perfect for any home gym setup.",
+    "brand": "ProForm",
+    "type": "Bench",
+    "price": 432,
+    "stockQuantity": 31,
+    "specs": {
+      "weight": "95 lbs"
+    },
+    "trendingScore": 3,
+    "topTrending": true,
+    "rating": 1
+  },
+  {
+    "name": "Gymshark High-quality Dumbell",
+    "description": "The high-quality composite design is perfect for any home gym setup.",
+    "brand": "Gymshark",
+    "type": "Dumbell",
+    "price": 127,
+    "stockQuantity": 44,
+    "specs": {
+      "weight": "100 lbs"
+    },
+    "trendingScore": 4,
+    "topTrending": true,
+    "rating": 4
+  },
+  {
+    "name": "Reebok Foldable Elliptical",
+    "description": "The foldable plastic design is perfect for any home gym setup.",
+    "brand": "Reebok",
+    "type": "Elliptical",
+    "price": 130,
+    "stockQuantity": 31,
+    "specs": {
+      "weight": "53 lbs"
+    },
+    "trendingScore": 3,
+    "topTrending": false,
+    "rating": 4
+  },
+  {
+    "name": "Cybex High-quality Barbell",
+    "description": "The high-quality titanium design is perfect for any home gym setup.",
+    "brand": "Cybex",
+    "type": "Barbell",
+    "price": 171,
+    "stockQuantity": 25,
+    "specs": {
+      "weight": "10 lbs"
+    },
+    "trendingScore": 5,
+    "topTrending": false,
+    "rating": 5
+  },
+  {
+    "name": "Under Armour Multi-purpose Treadmill",
+    "description": "The multi-purpose titanium design is perfect for any home gym setup.",
+    "brand": "Under Armour",
+    "type": "Treadmill",
+    "price": 377.4,
+    "stockQuantity": 50,
+    "specs": {
+      "weight": "91 lbs"
+    },
+    "trendingScore": 6,
+    "topTrending": true,
+    "rating": 4,
+    "discount": 15,
+    "originalPrice": 444
+  },
+  {
+    "name": "Bowflex High-quality Elliptical",
+    "description": "The high-quality composite design is perfect for any home gym setup.",
+    "brand": "Bowflex",
+    "type": "Elliptical",
+    "price": 392,
+    "stockQuantity": 14,
+    "specs": {
+      "weight": "18 lbs"
+    },
+    "trendingScore": 7,
+    "topTrending": false,
+    "rating": 5
+  },
+  {
+    "name": "Gold gym High-quality Treadmill",
+    "description": "The high-quality titanium design is perfect for any home gym setup.",
+    "brand": "Gold gym",
+    "type": "Treadmill",
+    "price": 244.79999999999998,
+    "stockQuantity": 19,
+    "specs": {
+      "weight": "61 lbs"
+    },
+    "trendingScore": 1,
+    "topTrending": false,
+    "rating": 2,
+    "discount": 15,
+    "originalPrice": 288
+  },
+  {
+    "name": "Precor Compact Elliptical",
+    "description": "The compact titanium design is perfect for any home gym setup.",
+    "brand": "Precor",
+    "type": "Elliptical",
+    "price": 423,
+    "stockQuantity": 25,
+    "specs": {
+      "weight": "34 lbs"
+    },
+    "trendingScore": 4,
+    "topTrending": false,
+    "rating": 1
+  },
+  {
+    "name": "Cybex High-quality Dumbell",
+    "description": "The high-quality steel design is perfect for any home gym setup.",
+    "brand": "Cybex",
+    "type": "Dumbell",
+    "price": 374,
+    "stockQuantity": 18,
+    "specs": {
+      "weight": "5 lbs"
+    },
+    "trendingScore": 9,
+    "topTrending": true,
+    "rating": 4
+  },
+  {
+    "name": "Brooks Compact Barbell",
+    "description": "The compact titanium design is perfect for any home gym setup.",
+    "brand": "Brooks",
+    "type": "Barbell",
+    "price": 355.5,
+    "stockQuantity": 32,
+    "specs": {
+      "weight": "91 lbs"
+    },
+    "trendingScore": 8,
+    "topTrending": true,
+    "rating": 3,
+    "discount": 10,
+    "originalPrice": 395
+  },
+  {
+    "name": "Peloton Multi-purpose Treadmill",
+    "description": "The multi-purpose composite design is perfect for any home gym setup.",
+    "brand": "Peloton",
+    "type": "Treadmill",
+    "price": 256.7,
+    "stockQuantity": 28,
+    "specs": {
+      "weight": "97 lbs"
+    },
+    "trendingScore": 6,
+    "topTrending": false,
+    "rating": 2,
+    "discount": 15,
+    "originalPrice": 302
+  },
+  {
+    "name": "Under Armour Compact Home Gym",
+    "description": "The compact steel design is perfect for any home gym setup.",
+    "brand": "Under Armour",
+    "type": "Home Gym",
+    "price": 97,
+    "stockQuantity": 26,
+    "specs": {
+      "weight": "6 lbs"
+    },
+    "trendingScore": 5,
+    "topTrending": true,
+    "rating": 3
+  },
+  {
+    "name": "Cybex High-quality Bench",
+    "description": "The high-quality steel design is perfect for any home gym setup.",
+    "brand": "Cybex",
+    "type": "Bench",
+    "price": 189,
+    "stockQuantity": 31,
+    "specs": {
+      "weight": "63 lbs"
+    },
+    "trendingScore": 9,
+    "topTrending": true,
+    "rating": 4
+  },
+  {
+    "name": "Gold gym High-quality Elliptical",
+    "description": "The high-quality iron design is perfect for any home gym setup.",
+    "brand": "Gold gym",
+    "type": "Elliptical",
+    "price": 260,
+    "stockQuantity": 43,
+    "specs": {
+      "weight": "56 lbs"
+    },
+    "trendingScore": 7,
+    "topTrending": false,
+    "rating": 5
+  },
+  {
+    "name": "Under Armour Multi-purpose Exercise Bike",
+    "description": "The multi-purpose composite design is perfect for any home gym setup.",
+    "brand": "Under Armour",
+    "type": "Exercise Bike",
+    "price": 48,
+    "stockQuantity": 38,
+    "specs": {
+      "weight": "21 lbs"
+    },
+    "trendingScore": 6,
+    "topTrending": false,
+    "rating": 2
+  },
+  {
+    "name": "New Balance High-quality Treadmill",
+    "description": "The high-quality iron design is perfect for any home gym setup.",
+    "brand": "New Balance",
+    "type": "Treadmill",
+    "price": 15.299999999999999,
+    "stockQuantity": 36,
+    "specs": {
+      "weight": "41 lbs"
+    },
+    "trendingScore": 6,
+    "topTrending": false,
+    "rating": 5,
+    "discount": 15,
+    "originalPrice": 18
+  },
+  {
+    "name": "NordicTrack Compact Elliptical",
+    "description": "The compact iron design is perfect for any home gym setup.",
+    "brand": "NordicTrack",
+    "type": "Elliptical",
+    "price": 89,
+    "stockQuantity": 17,
+    "specs": {
+      "weight": "90 lbs"
+    },
+    "trendingScore": 2,
+    "topTrending": true,
+    "rating": 2
+  },
+  {
+    "name": "Life Fitness Multi-purpose Exercise Bike",
+    "description": "The multi-purpose iron design is perfect for any home gym setup.",
+    "brand": "Life Fitness",
+    "type": "Exercise Bike",
+    "price": 37,
+    "stockQuantity": 47,
+    "specs": {
+      "weight": "56 lbs"
+    },
+    "trendingScore": 3,
+    "topTrending": true,
+    "rating": 5
+  },
+  {
+    "name": "Nautilus Multi-purpose Elliptical",
+    "description": "The multi-purpose steel design is perfect for any home gym setup.",
+    "brand": "Nautilus",
+    "type": "Elliptical",
+    "price": 91,
+    "stockQuantity": 3,
+    "specs": {
+      "weight": "47 lbs"
+    },
+    "trendingScore": 4,
+    "topTrending": true,
+    "rating": 5
+  },
+  {
+    "name": "Rogue Fitness Foldable Barbell",
+    "description": "The foldable iron design is perfect for any home gym setup.",
+    "brand": "Rogue Fitness",
+    "type": "Barbell",
+    "price": 280,
+    "stockQuantity": 17,
+    "specs": {
+      "weight": "13 lbs"
+    },
+    "trendingScore": 5,
+    "topTrending": true,
+    "rating": 1
+  },
+  {
+    "name": "Asics Multi-purpose Barbell",
+    "description": "The multi-purpose plastic design is perfect for any home gym setup.",
+    "brand": "Asics",
+    "type": "Barbell",
+    "price": 330,
+    "stockQuantity": 34,
+    "specs": {
+      "weight": "39 lbs"
+    },
+    "trendingScore": 9,
+    "topTrending": true,
+    "rating": 4
+  },
+  {
+    "name": "Lululemon Compact Bench",
+    "description": "The compact iron design is perfect for any home gym setup.",
+    "brand": "Lululemon",
+    "type": "Bench",
+    "price": 338,
+    "stockQuantity": 47,
+    "specs": {
+      "weight": "30 lbs"
+    },
+    "trendingScore": 1,
+    "topTrending": true,
+    "rating": 1
+  },
+  {
+    "name": "Peloton Compact Home Gym",
+    "description": "The compact steel design is perfect for any home gym setup.",
+    "brand": "Peloton",
+    "type": "Home Gym",
+    "price": 330,
+    "stockQuantity": 43,
+    "specs": {
+      "weight": "8 lbs"
+    },
+    "trendingScore": 1,
+    "topTrending": true,
+    "rating": 1
+  },
+  {
+    "name": "Under Armour Foldable Treadmill",
+    "description": "The foldable iron design is perfect for any home gym setup.",
+    "brand": "Under Armour",
+    "type": "Treadmill",
+    "price": 338.3,
+    "stockQuantity": 38,
+    "specs": {
+      "weight": "50 lbs"
+    },
+    "trendingScore": 4,
+    "topTrending": false,
+    "rating": 2,
+    "discount": 15,
+    "originalPrice": 398
+  },
+  {
+    "name": "Cybex Multi-purpose Home Gym",
+    "description": "The multi-purpose iron design is perfect for any home gym setup.",
+    "brand": "Cybex",
+    "type": "Home Gym",
+    "price": 223,
+    "stockQuantity": 40,
+    "specs": {
+      "weight": "70 lbs"
+    },
+    "trendingScore": 2,
+    "topTrending": true,
+    "rating": 2
+  },
+  {
+    "name": "Rogue Fitness Foldable Bench",
+    "description": "The foldable steel design is perfect for any home gym setup.",
+    "brand": "Rogue Fitness",
+    "type": "Bench",
+    "price": 47,
+    "stockQuantity": 14,
+    "specs": {
+      "weight": "61 lbs"
+    },
+    "trendingScore": 3,
+    "topTrending": true,
+    "rating": 1
+  },
+  {
+    "name": "Brooks High-quality Elliptical",
+    "description": "The high-quality plastic design is perfect for any home gym setup.",
+    "brand": "Brooks",
+    "type": "Elliptical",
+    "price": 442.8,
+    "stockQuantity": 41,
+    "specs": {
+      "weight": "79 lbs"
+    },
+    "trendingScore": 7,
+    "topTrending": true,
+    "rating": 3,
+    "discount": 10,
+    "originalPrice": 492
+  },
+  {
+    "name": "Nautilus Compact Home Gym",
+    "description": "The compact steel design is perfect for any home gym setup.",
+    "brand": "Nautilus",
+    "type": "Home Gym",
+    "price": 185,
+    "stockQuantity": 14,
+    "specs": {
+      "weight": "51 lbs"
+    },
+    "trendingScore": 10,
+    "topTrending": false,
+    "rating": 4
+  },
+  {
+    "name": "Rogue Fitness High-quality Exercise Bike",
+    "description": "The high-quality composite design is perfect for any home gym setup.",
+    "brand": "Rogue Fitness",
+    "type": "Exercise Bike",
+    "price": 299,
+    "stockQuantity": 10,
+    "specs": {
+      "weight": "99 lbs"
+    },
+    "trendingScore": 9,
+    "topTrending": true,
+    "rating": 3
+  },
+  {
+    "name": "Reebok High-quality Dumbell",
+    "description": "The high-quality composite design is perfect for any home gym setup.",
+    "brand": "Reebok",
+    "type": "Dumbell",
+    "price": 71,
+    "stockQuantity": 1,
+    "specs": {
+      "weight": "83 lbs"
+    },
+    "trendingScore": 4,
+    "topTrending": true,
+    "rating": 2
+  },
+  {
+    "name": "Gold gym Foldable Treadmill",
+    "description": "The foldable plastic design is perfect for any home gym setup.",
+    "brand": "Gold gym",
+    "type": "Treadmill",
+    "price": 174.25,
+    "stockQuantity": 5,
+    "specs": {
+      "weight": "31 lbs"
+    },
+    "trendingScore": 10,
+    "topTrending": false,
+    "rating": 1,
+    "discount": 15,
+    "originalPrice": 205
+  },
+  {
+    "name": "Brooks Multi-purpose Exercise Bike",
+    "description": "The multi-purpose iron design is perfect for any home gym setup.",
+    "brand": "Brooks",
+    "type": "Exercise Bike",
+    "price": 447.3,
+    "stockQuantity": 5,
+    "specs": {
+      "weight": "58 lbs"
+    },
+    "trendingScore": 5,
+    "topTrending": true,
+    "rating": 4,
+    "discount": 10,
+    "originalPrice": 497
+  },
+  {
+    "name": "ProForm Multi-purpose Home Gym",
+    "description": "The multi-purpose steel design is perfect for any home gym setup.",
+    "brand": "ProForm",
+    "type": "Home Gym",
+    "price": 330,
+    "stockQuantity": 25,
+    "specs": {
+      "weight": "8 lbs"
+    },
+    "trendingScore": 8,
+    "topTrending": false,
+    "rating": 4
+  },
+  {
+    "name": "Nautilus High-quality Exercise Bike",
+    "description": "The high-quality titanium design is perfect for any home gym setup.",
+    "brand": "Nautilus",
+    "type": "Exercise Bike",
+    "price": 297,
+    "stockQuantity": 12,
+    "specs": {
+      "weight": "22 lbs"
+    },
+    "trendingScore": 7,
+    "topTrending": true,
+    "rating": 4
+  },
+  {
+    "name": "New Balance High-quality Bench",
+    "description": "The high-quality iron design is perfect for any home gym setup.",
+    "brand": "New Balance",
+    "type": "Bench",
+    "price": 135,
+    "stockQuantity": 2,
+    "specs": {
+      "weight": "84 lbs"
+    },
+    "trendingScore": 7,
+    "topTrending": true,
+    "rating": 5
+  },
+  {
+    "name": "Gymshark Foldable Elliptical",
+    "description": "The foldable steel design is perfect for any home gym setup.",
+    "brand": "Gymshark",
+    "type": "Elliptical",
+    "price": 175,
+    "stockQuantity": 8,
+    "specs": {
+      "weight": "20 lbs"
+    },
+    "trendingScore": 10,
+    "topTrending": false,
+    "rating": 5
+  },
+  {
+    "name": "Cybex Multi-purpose Elliptical",
+    "description": "The multi-purpose titanium design is perfect for any home gym setup.",
+    "brand": "Cybex",
+    "type": "Elliptical",
+    "price": 364,
+    "stockQuantity": 17,
+    "specs": {
+      "weight": "87 lbs"
+    },
+    "trendingScore": 3,
+    "topTrending": false,
+    "rating": 4
+  },
+  {
+    "name": "Brooks Foldable Barbell",
+    "description": "The foldable composite design is perfect for any home gym setup.",
+    "brand": "Brooks",
+    "type": "Barbell",
+    "price": 392.40000000000003,
+    "stockQuantity": 28,
+    "specs": {
+      "weight": "31 lbs"
+    },
+    "trendingScore": 5,
+    "topTrending": false,
+    "rating": 4,
+    "discount": 10,
+    "originalPrice": 436
+  },
+  {
+    "name": "Puma Multi-purpose Bench",
+    "description": "The multi-purpose titanium design is perfect for any home gym setup.",
+    "brand": "Puma",
+    "type": "Bench",
+    "price": 441.90000000000003,
+    "stockQuantity": 2,
+    "specs": {
+      "weight": "44 lbs"
+    },
+    "trendingScore": 1,
+    "topTrending": false,
+    "rating": 4,
+    "discount": 10,
+    "originalPrice": 491
+  },
+  {
+    "name": "Lululemon Foldable Elliptical",
+    "description": "The foldable plastic design is perfect for any home gym setup.",
+    "brand": "Lululemon",
+    "type": "Elliptical",
+    "price": 453,
+    "stockQuantity": 3,
+    "specs": {
+      "weight": "70 lbs"
+    },
+    "trendingScore": 4,
+    "topTrending": false,
+    "rating": 1
+  },
+  {
+    "name": "Cybex Compact Bench",
+    "description": "The compact composite design is perfect for any home gym setup.",
+    "brand": "Cybex",
+    "type": "Bench",
+    "price": 416,
+    "stockQuantity": 1,
+    "specs": {
+      "weight": "71 lbs"
+    },
+    "trendingScore": 3,
+    "topTrending": true,
+    "rating": 3
+  },
+  {
+    "name": "Cybex Multi-purpose Home Gym",
+    "description": "The multi-purpose composite design is perfect for any home gym setup.",
+    "brand": "Cybex",
+    "type": "Home Gym",
+    "price": 119,
+    "stockQuantity": 6,
+    "specs": {
+      "weight": "45 lbs"
+    },
+    "trendingScore": 4,
+    "topTrending": true,
+    "rating": 2
+  },
+  {
+    "name": "Gymshark Foldable Dumbell",
+    "description": "The foldable iron design is perfect for any home gym setup.",
+    "brand": "Gymshark",
+    "type": "Dumbell",
+    "price": 227,
+    "stockQuantity": 16,
+    "specs": {
+      "weight": "46 lbs"
+    },
+    "trendingScore": 6,
+    "topTrending": true,
+    "rating": 5
+  },
+  {
+    "name": "New Balance Multi-purpose Elliptical",
+    "description": "The multi-purpose titanium design is perfect for any home gym setup.",
+    "brand": "New Balance",
+    "type": "Elliptical",
+    "price": 142,
+    "stockQuantity": 45,
+    "specs": {
+      "weight": "19 lbs"
+    },
+    "trendingScore": 3,
+    "topTrending": false,
+    "rating": 2
+  },
+  {
+    "name": "NordicTrack Compact Elliptical",
+    "description": "The compact titanium design is perfect for any home gym setup.",
+    "brand": "NordicTrack",
+    "type": "Elliptical",
+    "price": 486,
+    "stockQuantity": 13,
+    "specs": {
+      "weight": "26 lbs"
+    },
+    "trendingScore": 8,
+    "topTrending": false,
+    "rating": 3
+  },
+  {
+    "name": "Lululemon Compact Exercise Bike",
+    "description": "The compact iron design is perfect for any home gym setup.",
+    "brand": "Lululemon",
+    "type": "Exercise Bike",
+    "price": 372,
+    "stockQuantity": 44,
+    "specs": {
+      "weight": "61 lbs"
+    },
+    "trendingScore": 2,
+    "topTrending": false,
+    "rating": 3
+  },
+  {
+    "name": "Nautilus Multi-purpose Home Gym",
+    "description": "The multi-purpose steel design is perfect for any home gym setup.",
+    "brand": "Nautilus",
+    "type": "Home Gym",
+    "price": 483,
+    "stockQuantity": 17,
+    "specs": {
+      "weight": "31 lbs"
+    },
+    "trendingScore": 7,
+    "topTrending": true,
+    "rating": 4
+  },
+  {
+    "name": "Gold gym High-quality Barbell",
+    "description": "The high-quality iron design is perfect for any home gym setup.",
+    "brand": "Gold gym",
+    "type": "Barbell",
+    "price": 61,
+    "stockQuantity": 4,
+    "specs": {
+      "weight": "23 lbs"
+    },
+    "trendingScore": 4,
+    "topTrending": true,
+    "rating": 2
+  },
+  {
+    "name": "Life Fitness Multi-purpose Dumbell",
+    "description": "The multi-purpose titanium design is perfect for any home gym setup.",
+    "brand": "Life Fitness",
+    "type": "Dumbell",
+    "price": 292,
+    "stockQuantity": 3,
+    "specs": {
+      "weight": "95 lbs"
+    },
+    "trendingScore": 8,
+    "topTrending": true,
+    "rating": 3
+  },
+  {
+    "name": "Bowflex High-quality Treadmill",
+    "description": "The high-quality iron design is perfect for any home gym setup.",
+    "brand": "Bowflex",
+    "type": "Treadmill",
+    "price": 133.45,
+    "stockQuantity": 33,
+    "specs": {
+      "weight": "24 lbs"
+    },
+    "trendingScore": 6,
+    "topTrending": true,
+    "rating": 5,
+    "discount": 15,
+    "originalPrice": 157
+  },
+  {
+    "name": "New Balance Multi-purpose Exercise Bike",
+    "description": "The multi-purpose composite design is perfect for any home gym setup.",
+    "brand": "New Balance",
+    "type": "Exercise Bike",
+    "price": 102,
+    "stockQuantity": 3,
+    "specs": {
+      "weight": "91 lbs"
+    },
+    "trendingScore": 4,
+    "topTrending": true,
+    "rating": 4
+  },
+  {
+    "name": "Peloton Multi-purpose Barbell",
+    "description": "The multi-purpose plastic design is perfect for any home gym setup.",
+    "brand": "Peloton",
+    "type": "Barbell",
+    "price": 251,
+    "stockQuantity": 15,
+    "specs": {
+      "weight": "40 lbs"
+    },
+    "trendingScore": 10,
+    "topTrending": false,
+    "rating": 2
+  },
+  {
+    "name": "Reebok Multi-purpose Treadmill",
+    "description": "The multi-purpose steel design is perfect for any home gym setup.",
+    "brand": "Reebok",
+    "type": "Treadmill",
+    "price": 138.54999999999998,
+    "stockQuantity": 22,
+    "specs": {
+      "weight": "59 lbs"
+    },
+    "trendingScore": 4,
+    "topTrending": true,
+    "rating": 3,
+    "discount": 15,
+    "originalPrice": 163
+  },
+  {
+    "name": "Lululemon High-quality Bench",
+    "description": "The high-quality plastic design is perfect for any home gym setup.",
+    "brand": "Lululemon",
+    "type": "Bench",
+    "price": 18,
+    "stockQuantity": 47,
+    "specs": {
+      "weight": "38 lbs"
+    },
+    "trendingScore": 3,
+    "topTrending": false,
+    "rating": 1
+  },
+  {
+    "name": "Reebok High-quality Elliptical",
+    "description": "The high-quality iron design is perfect for any home gym setup.",
+    "brand": "Reebok",
+    "type": "Elliptical",
+    "price": 224,
+    "stockQuantity": 32,
+    "specs": {
+      "weight": "26 lbs"
+    },
+    "trendingScore": 1,
+    "topTrending": true,
+    "rating": 2
+  },
+  {
+    "name": "Bowflex Foldable Treadmill",
+    "description": "The foldable titanium design is perfect for any home gym setup.",
+    "brand": "Bowflex",
+    "type": "Treadmill",
+    "price": 346.8,
+    "stockQuantity": 31,
+    "specs": {
+      "weight": "47 lbs"
+    },
+    "trendingScore": 10,
+    "topTrending": true,
+    "rating": 1,
+    "discount": 15,
+    "originalPrice": 408
+  },
+  {
+    "name": "Brooks High-quality Treadmill",
+    "description": "The high-quality titanium design is perfect for any home gym setup.",
+    "brand": "Brooks",
+    "type": "Treadmill",
+    "price": 240.3,
+    "stockQuantity": 36,
+    "specs": {
+      "weight": "58 lbs"
+    },
+    "trendingScore": 8,
+    "topTrending": false,
+    "rating": 2,
+    "discount": 10,
+    "originalPrice": 267
+  },
+  {
+    "name": "Puma Multi-purpose Treadmill 290",
+    "description": "The multi-purpose iron design is perfect for any home gym setup.",
+    "brand": "Puma",
+    "type": "T-shirt",
+    "price": 21.590999999999998,
+    "stockQuantity": 10,
+    "specs": {
+      "weight": "300 lbs",
+      "length": "6 ft"
+    },
+    "trendingScore": 4,
+    "topTrending": false,
+    "rating": 5,
+    "discount": 10,
+    "originalPrice": 23.99
+  },
+  {
+    "name": "Puma Multi-purpose Treadmill 292",
+    "description": "The multi-purpose iron design is perfect for any home gym setup.",
+    "brand": "Puma",
+    "type": "Treadmill",
+    "price": 810,
+    "stockQuantity": 10,
+    "specs": {
+      "weight": "350 lbs",
+      "length": "7 ft"
+    },
+    "trendingScore": 6,
+    "topTrending": true,
+    "rating": 5,
+    "discount": 10,
+    "originalPrice": 900
+  },
+  {
+    "name": "Puma Multi-purpose Treadmill 225",
+    "description": "The multi-purpose iron design is perfect for any home gym setup.",
+    "brand": "Puma",
+    "type": "Treadmill",
+    "price": 359.99100000000004,
+    "stockQuantity": 10,
+    "specs": {
+      "weight": "225 lbs",
+      "length": "7 ft"
+    },
+    "trendingScore": 6,
+    "topTrending": true,
+    "rating": 5,
+    "discount": 10,
+    "originalPrice": 399.99
+  },
+  {
+    "name": "Brooks Multi-purpose Treadmill 250",
+    "description": "Best rated treadmill by GQ",
+    "brand": "Brooks",
+    "type": "Treadmill",
+    "price": 359.99100000000004,
+    "stockQuantity": 10,
+    "specs": {
+      "weight": "250 lbs",
+      "length": "7 ft"
+    },
+    "trendingScore": 9,
+    "topTrending": true,
+    "rating": 5,
+    "discount": 10,
+    "originalPrice": 399.99
   }
 ]

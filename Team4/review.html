@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head elements -->
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Review</title>
+    <link rel="stylesheet" href="reviewStyle.css">
+</head>
+
+<!-- Body elements -->
+<body>
+    <div class="form-container">
+        <form id="reviewForm">
+            <h2>Submit a Review</h2>
+            
+            <label for="userId">User ID:</label>
+            <input type="text" id="userid" name="userid" size="26" required><br>
+
+            <label for="productId">Product ID:</label>
+            <input type="text" id="productId" name="productId" size="26" required><br>
+
+            <label for="title">Title:</label>
+            <input type="text" id="title" name="title" required><br>
+
+            <label for="rating">Rating (1-5):</label>
+            <input type="number" id="rating" name="rating" min="1" max="5" required><br>
+
+            <label for="review">Review:</label>
+            <textarea id="review" name="review" required></textarea><br>
+
+            <button id="submit-button" type="button">Submit Review</button>
+        </form>
+
+        <div id="resultMessage"></div>
+    </div>
+
+    <script src="reviewfrontend.js"></script>
+</body>
+
+</html>
