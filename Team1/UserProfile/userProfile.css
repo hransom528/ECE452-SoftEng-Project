@@ -1,11 +1,12 @@
-body {
+/* body {
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 20px;
     background-color: #f4f4f4;
-}
+} */
 
 h1 {
+    padding-top: 10px;
     color: #333;
 }
 
@@ -34,3 +35,32 @@ button {
     border: none;
     width: auto; /* Adjust button width as needed */
 }
+
+nav {
+    background-color: #457b9d;
+}
+
+#navbar {
+  padding-top: 18px;
+  padding-bottom: 18px;
+}
+
+#enter {
+    background: none;
+    color:#f7ede2;
+    border: 2px solid;
+    border-radius: 10px;
+    padding: 1em 2.5em;
+    font-size: 1em;
+    transition: color 0.25s, border-color 0.25s, box-shadow 0.25s,transform 0.25s;
+  }
+  
+  #enter:hover {
+    border-color: #f1ff5c;
+    border-radius: 10px;
+    background: #219ebc ;
+    color: white;
+    box-shadow: 0 0.5em 0.5em -0.4em #f1ff5c;
+    transform: translateY(-0.15em);
+    cursor: pointer;
+  }

@@ -20,6 +20,7 @@
     "mongoose": "^8.2.3",
     "node": "^21.7.1",
     "open": "^10.1.0",
+    "nodemailer": "^6.9.13",
     "openai": "^4.30.0",
     "openai-sdk": "^1.0.1",
     "stripe": "^14.22.0",

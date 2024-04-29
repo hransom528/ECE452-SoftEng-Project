@@ -7,7 +7,7 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
-async function getResponseFromOpenAI(userInfo, body) {
+async function getResponseFromOpenAI(body) {
   // Waiting for products from the database to be retrieved
   await fetchAllProducts();
 
@@ -20,8 +20,8 @@ async function getResponseFromOpenAI(userInfo, body) {
   try {
     console.log("AI is thinking...");
     const response = await openai.chat.completions.create({
-      model: "gpt-3.5-turbo-1106",
-      // model: "gpt-4-1106-preview",
+      // model: "gpt-3.5-turbo-1106",
+      model: "gpt-4-1106-preview",
       messages: [
         {
           role: "system",
