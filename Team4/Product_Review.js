@@ -29,7 +29,7 @@ async function hasPurchasedProduct(userid, productId) {
     const purchasesCollection = db.collection('purchases');
     const purchase = await purchasesCollection.findOne({ userId: userid, productId: productId });
     if (!purchase) {
-       throw new Error(`Purchase with ID "${productId}" not found`);
+      throw new Error(`Purchase with UserID "${userid}" and Product ID "${productId}" not found`);
     }
     return true; // Indicate purchase found (similar to returning product ID)
   } catch (error) {
@@ -39,13 +39,14 @@ async function hasPurchasedProduct(userid, productId) {
 
 // Function to allow the user to give a star rating and leave a review for a product
 async function reviewProduct(userid, productId, title, rating, review) {
+  try{
       const product = await getProductById(productId);
-      const ratingInt = parseInt(rating);
+      await hasPurchasedProduct(userid,productId);
+      const ratingInt = parseInt(rating);  
   if (isNaN(ratingInt) || ratingInt < 1 || ratingInt > 5) {
     throw new Error("Rating must be a number between 1 and 5");
   }
-    
-    try {
+
         const db = await connectDB();
         const reviewsCollection = db.collection('reviews');
         const result = await reviewsCollection.insertOne({

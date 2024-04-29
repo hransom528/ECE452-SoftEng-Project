@@ -1,9 +1,10 @@
 // Get the form and result message elements
 const reviewForm = document.getElementById('reviewForm');
 const resultMessage = document.getElementById('resultMessage');
+const submitButton = document.getElementById('submit-button');
 
 // Handle form submission
-reviewForm.addEventListener('submit', function (e) {
+submitButton.addEventListener('click', function (e) {
     e.preventDefault(); // Prevent form from submitting the usual way
 
     // Gather form data
@@ -26,7 +27,6 @@ reviewForm.addEventListener('submit', function (e) {
     .then(response => response.json())
     .then(data => {
         // Display a success or error message
-     
             resultMessage.textContent = 'Review submitted successfully!';
             resultMessage.style.color = 'green';
         
