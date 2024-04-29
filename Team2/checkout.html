@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Checkout Form</title>
+<link rel="stylesheet" href="checkout.css">
+</head>
+<body>
+<div class="checkout-form">
+    <h2>Checkout</h2>
+    <form action="http://localhost:3000/checkout" method="POST" id="checkoutForm">
+        <div class="section">
+            <h3>Contact Information</h3>
+            <input type="text" id="userId" name="userId" placeholder="User ID" required>
+        </div>
+        <div class="section">
+            <h3>Billing Address</h3>
+            <input type="text" name="billingAddr[street]" placeholder="Street" required>
+            <input type="text" name="billingAddr[city]" placeholder="City" required>
+            <input type="text" name="billingAddr[state]" placeholder="State" required>
+            <input type="text" name="billingAddr[postalCode]" placeholder="Postal Code" required>
+            <input type="text" name="billingAddr[country]" placeholder="Country" required>
+        </div>
+        <div class="section">
+            <h3>Shipping Address</h3>
+            <input type="text" name="shippingAddr[street]" placeholder="Street" required>
+            <input type="text" name="shippingAddr[city]" placeholder="City" required>
+            <input type="text" name="shippingAddr[state]" placeholder="State" required>
+            <input type="text" name="shippingAddr[postalCode]" placeholder="Postal Code" required>
+            <input type="text" name="shippingAddr[country]" placeholder="Country" required>
+        </div>
+        <div class="section">
+            <h3>Payment Information</h3>
+            <input type="text" name="paymentInfo[card]" placeholder="Card Number" required>
+            <input type="text" name="paymentInfo[cvv]" placeholder="CVV" required>
+            <input type="number" name="paymentInfo[exp_month]" placeholder="Exp Month (MM)" required>
+            <input type="number" name="paymentInfo[exp_year]" placeholder="Exp Year (YYYY)" required>
+        </div>
+        <button type="submit">Submit Order</button>
+    </form>
+</div>
+</body>
+</html>

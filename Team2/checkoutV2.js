@@ -3,6 +3,7 @@ const { ObjectId } = require('mongodb');
 const {createPaymentAndProcessing, verifyCardAndUpdateDB, createStripeCustomerAndUpdateDB} = require('../Team3/stripe.js');
 const { verifyAddress } = require('./AddressValidationAPI.js');
 const fetch = require('node-fetch'); // Ensure you have 'node-fetch' installed if running in Node.js
+const nodemailer = require('nodemailer');
 
 
 
@@ -10,12 +11,12 @@ const fetch = require('node-fetch'); // Ensure you have 'node-fetch' installed i
 async function sendConfirmationEmail(user, purchaseDetails) {
   // Create reusable transporter object using the default SMTP transport
   let transporter = nodemailer.createTransport({
-    host: 'smtp.example.com', // Your SMTP server
+    host: 'smtp.gmail.com', // Your SMTP server
     port: 587,
     secure: false, // true for 465, false for other ports
     auth: {
-      user: 'your-email@example.com', // Your email
-      pass: 'your-email-password' // Your email password
+      user: 'gymhavenbusiness@gmail.com', // Your email
+      pass: 'Software123' // Your email password
     }
   });
 
@@ -23,7 +24,7 @@ async function sendConfirmationEmail(user, purchaseDetails) {
 
   // Prepare email contents
   let info = await transporter.sendMail({
-    from: '"Your Store" <your-email@example.com>', // Sender address
+    from: '"Gym Haven" gymhavenbusiness@gmail.com', // Sender address
     to: user.email, // Recipient address from the user object
     subject: 'Purchase Confirmation', // Subject line
     text: `Hello, ${user.name}\n\nThank you for your purchase.\n\nOrder details:\nTotal: ${purchaseDetails.total}`, // Plain text body
@@ -60,7 +61,6 @@ async function createStripeToken(paymentInfo) {
     // Test card 
     if (paymentInfo.card == "4242 4242 4242 4242"){
       return {
-        //tokenId: data.id,
         tokenId: 'tok_visa',
         cardBrand: data.card.brand,
         cardLast4: data.card.last4,
@@ -231,7 +231,7 @@ async function checkoutCart(userId, billingAddr, shippingAddr, paymentInfo) {
       //-----------------------------------------
       // Send email confirmatoin of purchase
       //-----------------------------------------
-
+      //await sendConfirmationEmail(user, purchaseDetails);
 
 
       //-----------------------------------------
