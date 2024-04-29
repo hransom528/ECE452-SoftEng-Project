@@ -1047,7 +1047,44 @@ const server = http.createServer(async (req, res) => {
             );
             responseSent=true;
             break;
-        }
+            case "Product_Review":
+              // Parse the request body and destructure the necessary data
+              const { userid, productId, title, rating, review } = requestBody;
+
+              // Validate input data (you can add more specific validation if needed)
+              if (!userid || !productId || !title || !rating || !review) {
+                  res.writeHead(400, { "Content-Type": "application/json" });
+                  res.end(JSON.stringify({ message: "Missing required fields" }));
+                  responseSent = true;
+                  return;
+              }
+
+              // Try to handle the review submission
+              try {
+                  // Call the reviewProduct function with the input data
+                  const reviewResult = await reviewProduct(userid, productId, title, rating, review);
+
+                  // Send a success response with the result
+                  res.writeHead(200, { "Content-Type": "application/json" });
+                  res.end(JSON.stringify({
+                      message: "Review submitted successfully",
+                      data: reviewResult
+                  }));
+                  responseSent = true;
+              } catch (error) {
+                  console.error("Error submitting review:", error);
+                  // Send an error response if something goes wrong
+                  res.writeHead(500, { "Content-Type": "application/json" });
+                  res.end(
+                      JSON.stringify({
+                          message: "Error submitting review",
+                          error: error.message,
+                      })
+                  );
+                  responseSent = true;
+              }
+              break;
+          }
 
         if (!responseSent) {
           // Check the flag
