@@ -7,8 +7,9 @@
 const { MongoClient } = require('mongodb');
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
+const { getUserInfo } = require('../Team1/Reg_lgn/oAuthHandler');
 
-//fuxk this 
+
 //speficiatation of connection details for MongoDatabse
 const MONGO_URI = 'mongodb+srv://admin:SoftEng452@cluster0.qecmfqe.mongodb.net/website?retryWrites=true&w=majority&appName=Cluster0';
 
@@ -68,7 +69,16 @@ async function getProductPrice(productId) {
         return product.price; // Ensure this is always a number
 }
 
-async function addToCart(userId, productId, quantity) {
+// Helper function to retrieve user from token
+async function getUserFromToken(token) {
+    const user = await getUserInfo(token);  // Implement this according to your token structure
+    if (!user) throw new Error("Authentication failed: User not found");
+    return user;
+}
+
+async function addToCart(token, productId, quantity) {
+    const user = await getUserFromToken(token);
+    const userId = user._id; 
     const cart = await Cart.findOne({ userId: userId }) || new Cart({ userId, items: [], cartSubTotal: 0 });
 
     // Assuming you have a function to get the price of a product
@@ -100,7 +110,9 @@ async function addToCart(userId, productId, quantity) {
     return cart;
 }
 
-async function removeFromCart(userId, productId, quantityToRemove) {
+async function removeFromCart(token, productId, quantityToRemove) {
+    const user = await getUserFromToken(token);
+    const userId = user._id;
     const cart = await Cart.findOne({ userId: userId });
     
     if (!cart) throw new Error("Cart not found");
@@ -129,8 +141,10 @@ async function removeFromCart(userId, productId, quantityToRemove) {
         }
     }
 
-async function getCart(userId) {
-    console.log("Received userId:", userId);  // Log the received userId
+async function getCart(token) {
+    const user = await getUserFromToken(token);
+    const userId = user._id;
+    // Log the received userId
     try {
                 // Convert userId from string to ObjectId
         const userIdAsObjectId = new mongoose.Types.ObjectId(userId);
