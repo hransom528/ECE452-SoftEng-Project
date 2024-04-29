@@ -1,5 +1,8 @@
 document.addEventListener('DOMContentLoaded', function() {
     populateUserProfile(); // Call this function on load to fetch and display user data
+    const stripe = Stripe('pk_test_51Ot8H8IYD2Ak4FLoPHpmVZsGQY9mtmlaJBqmDxQvuqi6HsM9oDkIal74YGlJDw0LuWqNxb8r1eD8cH1Q2yjGtvpW00crbHgrlB');
+    const elements = stripe.elements();
+    setupForm(stripe, elements);
 });
 
 async function populateUserProfile() {
@@ -21,7 +24,7 @@ async function populateUserProfile() {
             const userProfile = await response.json();
             document.getElementById('name').value = userProfile.name;
             document.getElementById('email').value = userProfile.email;
-            document.getElementById('isPremium').checked = userProfile.isPremium;
+            document.getElementById('isPremium').textContent = userProfile.isPremium ? "True" : "False";
                     
             const defaultAddress = userProfile.shippingAddresses.find(address => address.isDefault);
             const additionalAddresses = userProfile.shippingAddresses.filter(address => !address.isDefault);
@@ -36,7 +39,6 @@ async function populateUserProfile() {
     }
         // Similar handling for shoppingCart, watchlist, orderHistory, and reviews
 }
-
 
 function renderDefaultAddress(address) {
     const defaultAddressContainer = document.getElementById('defaultAddressContainer');
@@ -199,7 +201,7 @@ function deleteAddress(addressId) {
 
 // Toggle the visibility of additional addresses
 document.getElementById('toggleAddresses').addEventListener('click', function() {
-    const additionalAddressesCsontainer = document.getElementById('additionalAddressesContainer');
+    const additionalAddressesContainer = document.getElementById('additionalAddressesContainer');
     additionalAddressesContainer.style.display = additionalAddressesContainer.style.display === 'none' ? '' : 'none';
     this.textContent = additionalAddressesContainer.style.display === 'none' ? 'View Other Addresses' : 'Hide Other Addresses';
 });
@@ -218,7 +220,7 @@ document.getElementById('addressForm').addEventListener('submit', function(event
     createAddress(addressId); // Function to handle both create and update
 });
 
-// Function to only handle creating a new address
+// Function to handle creating a new address
 function createAddress() {
     const addressDetails = {
         recipientName: document.getElementById('recipientName').value,
@@ -243,6 +245,7 @@ function createAddress() {
     .then(data => {
         if (data.message === 'Address added successfully') {
             alert(data.message);
+            clearAndHideAddressForm(); // Clear the form fields and hide the form
             populateUserProfile(); // Refresh the addresses
         } else {
             alert('Failed to add address: ' + data.message);
@@ -254,16 +257,59 @@ function createAddress() {
     });
 }
 
-function purchaseMembership() {
-    fetch('/purchase-premium-membership', {
+// Function to clear and hide the address form
+function clearAndHideAddressForm() {
+    document.getElementById('addressForm').style.display = 'none';
+    document.getElementById('addAddress').style.display = 'block';
+    document.getElementById('addressForm').reset(); // Reset form fields to initial values
+}
+
+// Function for cancel button in add address form
+function cancelAddAddress() {
+    clearAndHideAddressForm();
+}
+
+document.getElementById('cancelAddress').addEventListener('click', cancelAddAddress);
+
+function setupForm(stripe, elements) {
+    const cardElement = elements.create('card');
+    cardElement.mount('#card-element');
+
+    document.getElementById('purchaseMembership').addEventListener('click', async function(event) {
+        event.preventDefault(); // Prevent form submission
+        const {token, error} = await stripe.createToken(cardElement);
+    
+        if (error) {
+            console.error('Error:', error.message);
+            alert('Failed to create payment token: ' + error.message);
+        } else {
+            // Send the token to your server
+            try {
+                const result = await purchaseMembership(token);
+                alert(result.message);
+            } catch (err) {
+                console.error('Server response error:', err);
+                alert('Membership purchase failed: ' + err.message);
+            }
+        }
+    });
+}
+
+
+async function purchaseMembership(token) {
+    const response = await fetch('/purchase-premium-membership', {
         method: 'POST',
-        headers: {'Content-Type': 'application/json'}
-    })
-    .then(response => response.json())
-    .then(data => {
-        alert(data.message);
-    })
-    .catch(error => console.error('Error purchasing membership:', error));
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${sessionStorage.getItem('accessToken')}`
+        },
+        body: JSON.stringify({ stripeToken: token.id })
+    });
+
+    if (!response.ok) {
+        throw new Error('Network response was not ok');
+    }
+    return await response.json();
 }
 
 function cancelMembership() {

@@ -27,7 +27,10 @@ async function hasPurchasedProduct(userid, productId) {
   try {
     const db = await connectDB();
     const purchasesCollection = db.collection('purchases');
-    const purchase = await purchasesCollection.findOne({ userId: userid, productId: productId });
+    const purchase = await purchasesCollection.findOne({
+      userId: new ObjectId(userid),
+      'items.productId': new ObjectId(productId)
+    });
     if (!purchase) {
       throw new Error(`Purchase with UserID "${userid}" and Product ID "${productId}" not found`);
     }

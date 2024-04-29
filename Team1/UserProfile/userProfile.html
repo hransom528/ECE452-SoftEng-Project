@@ -45,7 +45,6 @@
         <div id="additionalAddressesContainer" style="display:none;">
             <!-- Additional addresses will be rendered here -->
         </div>
-        <!-- Unified form for adding or editing addresses -->
         <form id="addressForm" style="display:none;">
             <input type="text" id="recipientName" placeholder="Recipient Name">
             <input type="text" id="street" placeholder="Street">
@@ -57,21 +56,25 @@
                 <input type="checkbox" id="isDefault">
             </label>
             <button type="submit" id="saveAddress">Save Address</button>
+            <button type="button" id="cancelAddress">Cancel</button>
         </form>
         <button type="button" id="addAddress" onclick="showAddressForm()">Add New Address</button>
     </div>
 
     <div class="form-section membership-management-section">
         <h2>Membership Management</h2>
+\        <div id="card-element"></div>
         <button id="purchaseMembership">Purchase Membership</button>
         <button id="cancelMembership">Cancel Membership</button>
     </div>
-
+    
     <div class="form-section profile-delete-section">
         <h2>Delete Profile</h2>
         <button id="deleteProfile">Delete Profile</button>
     </div>
 
+    <!-- Include Stripe.js -->
+    <script src="https://js.stripe.com/v3/"></script>
     <script src="/profile/upApp.js"></script>
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
         integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"

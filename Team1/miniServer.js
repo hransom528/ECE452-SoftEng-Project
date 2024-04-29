@@ -7,7 +7,12 @@ const { connectDBandClose } = require("../dbConfig");
 const { getUserInfo } = require('./Reg_lgn/oAuthHandler.js');
 // const {registerUser}=require('./Reg_lgn/regLogin');
 const { verifyAddress } = require('../Team2/AddressValidationAPI.js');
+
 const { getResponseFromOpenAI } = require('./ChatBot/openAi')
+
+const { purchasePremiumMembership } = require('./UserProfile/membershipController');
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+
 
 const PORT = 3000;
 
@@ -116,7 +121,15 @@ function handlePostRequests(req, res, pathname) {
         body += chunk.toString();
     });
     req.on('end', async () => {
-        const parsedBody = JSON.parse(body); // Parse the body only once outside of the switch statement
+        let parsedBody;
+        try {
+            parsedBody = JSON.parse(body); // Parse the body only once outside of the switch statement
+        } catch (error) {
+            console.error('Error parsing request body:', error);
+            res.writeHead(400, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ error: 'Bad Request', message: 'Invalid JSON' }));
+            return; // Return here to stop further execution in case of JSON parse error
+        }
         
         switch (pathname) {
             case '/check-user':
@@ -126,7 +139,7 @@ function handlePostRequests(req, res, pathname) {
             case '/registerUser':
                 registerUser(parsedBody, res);
                 break;
-
+    
             case '/add-shipping-address':
                 try {
                     await addUserShippingAddress(req, res, parsedBody);
@@ -136,6 +149,7 @@ function handlePostRequests(req, res, pathname) {
                     res.end(JSON.stringify({ error: error.toString() }));
                 }
                 break;
+
             case "/talkToAI":
                 const accessToken = req.headers.authorization?.split(' ')[1];
                 if (!accessToken) {
@@ -188,6 +202,18 @@ function handlePostRequests(req, res, pathname) {
                     return;
                 }
     
+
+            case '/purchase-premium-membership':
+                try {
+                    const result = await purchasePremiumMembership(parsedBody);
+                    res.writeHead(200, { 'Content-Type': 'application/json' });
+                    res.end(JSON.stringify(result));
+                } catch (error) {
+                    console.error('Error processing membership:', error);
+                    res.writeHead(500, { 'Content-Type': 'application/json' });
+                    res.end(JSON.stringify({ success: false, message: error.message }));
+                }
+
                 break;
             default:
                 res.writeHead(404, { 'Content-Type': 'application/json' });
