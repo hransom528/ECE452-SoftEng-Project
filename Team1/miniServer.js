@@ -3,12 +3,12 @@ const fs = require('fs');
 const path = require('path');
 const url = require('url');
 const { v4: uuidv4 } = require('uuid');
-const { connectDBandClose } = require("../dbConfig");
+const { connectDBandClose, openDBConnection } = require("../dbConfig");
 const { getUserInfo } = require('./Reg_lgn/oAuthHandler.js');
 // const {registerUser}=require('./Reg_lgn/regLogin');
 const { verifyAddress } = require('../Team2/AddressValidationAPI.js');
 const { getResponseFromOpenAI } = require('./ChatBot/openAi')
-const { createStripeCustomerAndUpdateDB, verifyCardAndUpdateDB, createPaymentAndProcessing } = require('../Team3/stripe.js');
+const { createStripeCustomerAndUpdateDBWithConnection, verifyCardAndUpdateDB, createPaymentAndProcessing } = require('../Team3/stripe.js');
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
 
@@ -578,47 +578,58 @@ async function deleteUserProfile(req, res) {
 
 // Function to purchase premium membership
 async function purchasePremiumMembership(accessToken, stripeToken) {
+    let client;
     try {
-        if (!stripeToken) {
-            throw new Error("Stripe token is missing.");
-        }
+        const { db, clientTemp } = await openDBConnection();  // Open the database connection and keep it throughout the operation
+        client = clientTemp;
 
         const userInfo = await getUserInfo(accessToken);
-        const { db, client } = await connectDBandClose();
+        if (!userInfo) {
+            throw new Error("Access token invalid or user not found.");
+        }
+
         const user = await db.collection('users').findOne({ email: userInfo.email });
         if (!user) {
-            client.close();
             throw new Error("User not found.");
         }
 
-        const result1 = await createStripeCustomerAndUpdateDB(user._id, user.email, user.name); //paymentInfo.name
-        
-        const stripeCustomerId = result1.stripeCustomerId;
+        // Check if a Stripe customer already exists
+        if (user.stripeCustomerId) {
+            return { success: false, message: "Stripe customer already exists for this user." };
+        }
+
+        // Create a new Stripe customer and update MongoDB, pass db explicitly
+        const result1 = await createStripeCustomerAndUpdateDBWithConnection(user._id, user.email, user.name, db);
         if (!result1.success) {
-          throw new Error(result1.message);
+            throw new Error(result1.message);
         }
-        console.log("Stripe token is ", stripeToken);
-        const result2 = await verifyCardAndUpdateDB(user._id, stripeCustomerId, stripeToken); 
+
+        // Verify the card with the newly created Stripe customer ID and the provided Stripe token
+        const result2 = await verifyCardAndUpdateDB(user._id, result1.stripeCustomerId, stripeToken, db);
         if (!result2.success) {
-          throw new Error(result2.message);
+            throw new Error(result2.message);
         }
-        const paymentMethodId = result2.paymentMethodId;
+
+        // Assuming a fixed membership fee for simplicity
         const membershipFee = 19.99;
-
-        const result3 = await createPaymentAndProcessing(stripeCustomerId, paymentMethodId, membershipFee, 'usd', 'pm_card_visa'); //payment_method
-        if (!result3.success) {
-          throw new Error(result3.message);
+        const paymentResult = await createPaymentAndProcessing(result1.stripeCustomerId, result2.paymentMethodId, membershipFee, 'usd', 'card', db);
+        if (!paymentResult.success) {
+            throw new Error(paymentResult.message);
         }
 
-        // Update user's premium status in your database
+        // Update the user's premium status in MongoDB
         await db.collection('users').updateOne({ _id: user._id }, { $set: { isPremium: true } });
 
-        client.close();
         return { success: true, message: "Membership purchased successfully." };
+        
     } catch (error) {
         console.error('Purchase Premium Membership Error:', error);
-        client?.close(); // Ensure to close the client if an error occurs
         return { success: false, message: error.message };
+    } finally {
+        if (client) {
+            client.close();  // Ensure the MongoDB connection is closed
+            console.log("MongoDB connection closed.");
+        }
     }
 }
 
