@@ -1,11 +1,6 @@
-/* body {
-  font-family: 'Roboto', sans-serif;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 100vh;
-  background-color: #151b29;
-} */
+body {
+  background-color: #e9ecef;
+}
 
 h1 {
     padding-top: 20px;
