@@ -52,6 +52,8 @@ const server = http.createServer(async (req, res) => {
         handlePatchRequests(req, res, pathname);
     } else if (req.method === 'DELETE') {
         handleDeleteRequests(req, res, pathname);
+    // } else if (pathname === '/Reg_lgn/onBoard/landing/landing.html') {
+    //     serveFile('Team1/Reg_lgn/landing/landingPage.html', res);
     } else {
         // Serve files based on the actual path, adjusting for non-root requests
         serveFile('Team1' + pathname, res);
@@ -66,16 +68,17 @@ function serveFile(filePath, res) {
         // return; // Or handle this scenario in a different way
     }
 
-    console.log('Serving file:', filePath);  // Log which file is being served
+    // console.log('Serving file:', filePath);  // Log which file is being served
     const extname = path.extname(filePath).toLowerCase();
     const mimeTypes = {
         '.html': 'text/html',
         '.js': 'text/javascript',
         '.css': 'text/css',
+        '.pdf': 'application/pdf',
     };
 
     const contentType = mimeTypes[extname] || 'application/octet-stream';
-    console.log("cT: ", contentType)
+    // console.log("cT: ", contentType)
     fs.readFile(filePath, (error, content) => {
         if (error) {
             console.error('File error:', error);
