@@ -8,6 +8,7 @@ let searchString = searchInput.value;
 
 //filter function items
 const filterForm = document.getElementById('filter-form');
+let filterBody;
 let filterResults= [];
 
 searchInput.addEventListener("input", (e) => {
@@ -81,11 +82,11 @@ function filterProducts(){
         }
     }
 
-    let filterBody=JSON.stringify(formData)
+    filterBody=formData;
    
     fetch("http://localhost:3000/filterCatalog", {
             method: "POST",
-            body: filterBody,
+            body: JSON.stringify(filterBody),
             headers: {
                 "Content-type": "application/json; charset=UTF-8"
             }
@@ -104,27 +105,45 @@ function setList(searchResults,filterResults) {
     filterProducts();
     results = searchResults.filter(value => filterResults.includes(value.name));
     
+    if (results.length === 0) {        
+        if(Object.keys(filterBody).length<1){
+            noResults();
+        } else{
+            for (const result of filterResults) {
+                // creating a li element for each result item
+                const resultItem = document.createElement('li')
+    
+                // adding a class to each item of the results
+                resultItem.classList.add('result-item')
+    
+                // grabbing the name of the current point of the loop and adding the name as the list item's text
+                const text = document.createTextNode(result)
+    
+                // appending the text to the result item
+                resultItem.appendChild(text)
+    
+                // appending the result item to the list
+                list.appendChild(resultItem)
+            }
+        }
+    } else{
+        for (const result of results) {
+            // creating a li element for each result item
+            const resultItem = document.createElement('li')
 
-    for (const result of results) {
-        // creating a li element for each result item
-        const resultItem = document.createElement('li')
+            // adding a class to each item of the results
+            resultItem.classList.add('result-item')
 
-        // adding a class to each item of the results
-        resultItem.classList.add('result-item')
+            // grabbing the name of the current point of the loop and adding the name as the list item's text
+            const text = document.createTextNode(result.name)
 
-        // grabbing the name of the current point of the loop and adding the name as the list item's text
-        const text = document.createTextNode(result.name)
+            // appending the text to the result item
+            resultItem.appendChild(text)
 
-        // appending the text to the result item
-        resultItem.appendChild(text)
-
-        // appending the result item to the list
-        list.appendChild(resultItem)
-    }
-
-    if (results.length === 0) {
-        noResults()
-    }
+            // appending the result item to the list
+            list.appendChild(resultItem)
+        }
+}
 }
 
 // Clears search results list
