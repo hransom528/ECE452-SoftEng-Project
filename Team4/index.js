@@ -1,5 +1,5 @@
 //search function items
-const searchInput = document.querySelector('.input');
+const searchInput = document.querySelector('.search-input');
 const searchButton = document.getElementById('search-button');
 const clearButton = document.getElementById('clear');
 let searchResults=[]
@@ -7,14 +7,26 @@ let results = [];
 let searchString = searchInput.value;
 
 //filter function items
-const filterForm = document.getElementById('filter-form');
+const filterForm =document.getElementById('filter-form');
+const brandInput=document.querySelector('.brand-input');
+const typeInput=document.querySelector('.type-input');
+
 let filterBody=[];
 let filterResults= [];
 
 searchInput.addEventListener("input", (e) => {
     searchString = e.target.value;
     fetchData();
+    filterProducts();
     // TODO: Perform autocomplete
+});
+
+brandInput.addEventListener("input", (e) => {
+        filterProducts();
+});
+
+typeInput.addEventListener("input", (e) => {
+    filterProducts();
 });
 
 searchButton.addEventListener("click", () => {
