@@ -8,20 +8,12 @@ let searchString = searchInput.value;
 
 //filter function items
 const filterForm = document.getElementById('filter-form');
-let filterBody;
+let filterBody=[];
 let filterResults= [];
 
 searchInput.addEventListener("input", (e) => {
     searchString = e.target.value;
     fetchData();
-
-    // TODO: Perform autocomplete
-});
-
-searchInput.addEventListener("input", (e) => {
-    searchString = e.target.value;
-    fetchData();
-
     // TODO: Perform autocomplete
 });
 
@@ -68,22 +60,23 @@ async function fetchData() {
     }
 };
 
-function filterProducts(){
-
+async function filterProducts(){
     // Gather form data
     const formData = {
         brand: filterForm.brand.value,
         type: filterForm.type.value,
     };
     
+    //delete empty properties
     for (const property in formData) {
         if(formData[property].trim()==""){
             delete formData[property]
         }
     }
-
+    //update global form data 
     filterBody=formData;
-   
+
+    //perform filtering, and update global filtered list
     fetch("http://localhost:3000/filterCatalog", {
             method: "POST",
             body: JSON.stringify(filterBody),
@@ -100,15 +93,15 @@ function filterProducts(){
 // creating and declaring a function called "setList"
 // setList takes in a param of "results"
 function setList(searchResults,filterResults) {
-
-    //NEED TO MAKE THIS AWAIT
-    filterProducts();
+    
+    filterProducts; //need to Add Await to this
     results = searchResults.filter(value => filterResults.includes(value.name));
     
-    if (results.length === 0) {        
-        if(Object.keys(filterBody).length<1){
+    //set results list
+    if (results.length === 0) {        //if there is no overlap in search and filters, check following
+        if(Object.keys(filterBody).length<1){ //if no filter is applied, then there are no results
             noResults();
-        } else{
+        } else if(searchString.length<1){ //if a filter is applied, and the search bar is empty, search only using filters
             for (const result of filterResults) {
                 // creating a li element for each result item
                 const resultItem = document.createElement('li')
@@ -126,7 +119,7 @@ function setList(searchResults,filterResults) {
                 list.appendChild(resultItem)
             }
         }
-    } else{
+    } else{ //if search is applied and meet filter requirements, return results
         for (const result of results) {
             // creating a li element for each result item
             const resultItem = document.createElement('li')
