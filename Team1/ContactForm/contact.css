@@ -3,10 +3,15 @@
     margin: 0;
     box-sizing: border-box;
 }
-body{
+
+body {
+    background-color: #e9ecef;
+  }
+
+/* body{
     font-family: 'Outfit';
     background: linear-gradient(#f0f0f0,#a9a9a9);
-}
+} */
 .container {
     display: flex;
     flex-direction: column;
@@ -67,8 +72,23 @@ button{
     border: none;
     border-radius: 50px;
     background: #555;
+    /* cursor: pointer; */
+}
+
+button:hover {
+    display: flex;
+    align-items: center;
+    padding: 15px 30px;
+    color: #fff;
+    gap: 10px;
+    border: none;
+    border-radius: 50px;
+    background: #555;
+    box-shadow: 0 0.5em 0.5em -0.4em #f1ff5c;
+    transform: translateY(-0.25em);
     cursor: pointer;
 }
+
 button img{
     height: 15px;
 }

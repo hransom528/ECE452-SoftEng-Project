@@ -95,6 +95,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const response = await fetch('/registerUser', {
                 method: 'POST',
                 headers: {
+                    'Authorization': `Bearer ${accessToken}`,
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify(userData)
