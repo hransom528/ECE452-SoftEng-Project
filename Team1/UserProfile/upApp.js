@@ -322,28 +322,17 @@ function cancelAddAddress() {
 
 document.getElementById('cancelAddress').addEventListener('click', cancelAddAddress);
 
-// This function is called with the result of stripe.createToken
+
 document.getElementById('cardForm').addEventListener('submit', function(event) {
     event.preventDefault();
-    stripe.createToken(cardElement).then(function(result) {
-        if (result.error) {
-            console.error('Error:', result.error.message);
-            alert('Failed to process payment: ' + result.error.message);
-        } else {
-            handlePurchaseMembership(result.token);
-        }
-    });
+    handlePurchaseMembership();
 });
 
-function handlePurchaseMembership(token) {
+function handlePurchaseMembership() {
     const accessToken = sessionStorage.getItem('accessToken');
-    if (!accessToken) {
-        alert('You must be logged in to purchase a membership.');
-        return;
-    }
+    const stripeToken = 'tok_visa'; // Note: This should be retrieved dynamically after Stripe Element handling.
 
-    // Ensure this logs the token ID, not the event or an undefined value
-    console.log('Stripe Token ID:', token.id);
+    console.log('Sending purchase request');
 
     fetch('/purchase-premium-membership', {
         method: 'POST',
@@ -351,18 +340,20 @@ function handlePurchaseMembership(token) {
             'Authorization': `Bearer ${accessToken}`,
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ stripeToken: token.id })
+        body: JSON.stringify({ stripeToken: stripeToken })
     })
-    .then(response => response.json())
+    .then(response => response.json()) // Ensure this is parsing correctly.
     .then(data => {
+        console.log('Response data:', data);
         if (data.success) {
             alert('Membership purchase successful!');
+            populateUserProfile(); // Refresh user data to reflect changes.
         } else {
             alert('Failed to purchase membership: ' + data.message);
         }
     })
     .catch(error => {
-        console.error('Error sending token to server:', error);
+        console.error('Error purchasing membership:', error);
         alert('Failed to purchase membership due to an error.');
     });
 }
