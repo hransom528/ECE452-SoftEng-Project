@@ -40,6 +40,7 @@ async function fetchUserData(accessToken) {
             const userInfoResponse = await fetch('http://localhost:3000/check-user', {
                 method: 'POST',
                 headers: {
+                    'Authorization': `Bearer ${accessToken}`,
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({ email: data.email }) // Now 'data' is defined

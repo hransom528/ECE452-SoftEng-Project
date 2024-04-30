@@ -18,7 +18,7 @@ const server = http.createServer(async (req, res) => {
     const parsedUrl = url.parse(req.url, true);
     const pathname = parsedUrl.pathname;
 
-    console.log('Request for:', pathname);
+    // console.log('Request for:', pathname);
 
     if (pathname === '/get-user-profile' && req.method === 'GET') {
         // Handle the GET request for user profile
@@ -154,6 +154,14 @@ async function handlePurchaseMembershipRequest(req, res) {
 }
 
 function handlePostRequests(req, res, pathname) {
+     // Log HTTP method, request URL, and headers
+    console.log(`HTTP Method: ${req.method}`);
+    console.log(`Request URL: ${req.url}`);
+    console.log(`Headers: ${JSON.stringify(req.headers, null, 2)}`);
+    // Assuming the buffer contains the full request body
+    // console.log(`Request Body: ${req.body}`);
+
+
     if (pathname === '/cancel-premium-membership') {
         // Directly handle cancellation without reading a body
         cancelPremiumMembership(req, res);
@@ -672,5 +680,6 @@ async function cancelPremiumMembership(req, res) {
 }
 
 server.listen(PORT, () => {
+    console.log(`\n\n\nWelcome to Gym Haven's Terminal! Enjoy the Demo \n\n `)
     console.log(`Server running at http://localhost:${PORT}/`);
 });
