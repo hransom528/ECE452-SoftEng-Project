@@ -94,7 +94,7 @@ async function filterProducts(){
 // setList takes in a param of "results"
 function setList(searchResults,filterResults) {
     
-    filterProducts; //need to Add Await to this
+    filterProducts(); //need to Add Await to this
     results = searchResults.filter(value => filterResults.includes(value.name));
     
     //set results list
