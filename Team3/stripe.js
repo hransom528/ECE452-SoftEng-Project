@@ -3,6 +3,76 @@ const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const { MongoClient, ObjectId } = require('mongodb');
 const { connectDB } = require('../dbConfig.js');
 const mongoURI = process.env.MONGO_URI;
+
+async function createStripeCustomerAndUpdateDBWithConnection(userObjectId, email, name, db) {
+    // Ensure necessary configuration is present
+    if (!mongoURI || !process.env.STRIPE_SECRET_KEY) {
+        throw new Error("Configuration error: Ensure all environment variables are set.");
+    }
+
+    // Input validation
+    if (!ObjectId.isValid(userObjectId)) {
+        return { success: false, message: "Invalid user object ID." };
+    }
+    if (typeof email !== "string" || !email.includes("@")) {
+        return { success: false, message: "Invalid email address." };
+    }
+    if (typeof name !== "string" || name.trim().length === 0) {
+        return { success: false, message: "Invalid name." };
+    }
+
+    try {
+        const users = db.collection('users');
+
+        // Check for an existing user document by ID and email
+        const existingUser = await users.findOne({ _id: new ObjectId(userObjectId), email: email });
+        if (!existingUser) {
+            return {
+                success: false,
+                message: 'No user found with the provided email and user ID.'
+            };
+        }
+        // Check if the email matches the user document's email
+        if (existingUser.email !== email) {
+            return {
+                success: false,
+                message: 'No such email address associated with the given name and user ID.'
+            };
+        }
+        // Check if the name matches the user document's name
+        if (existingUser.name !== name) {
+            return {
+                success: false,
+                message: 'No such name found with the given email and user ID.'
+            };
+        }
+
+        // Check for an existing Stripe customer ID
+        if (existingUser.stripeCustomerId) {
+            return {
+                success: false,
+                message: 'Stripe customer already exists for this user.',
+                stripeCustomerId: existingUser.stripeCustomerId
+            };
+        }
+
+        // Create Stripe customer
+        const customer = await stripe.customers.create({ email, name });
+
+        // Update MongoDB user document with Stripe customer ID
+        await users.updateOne(
+            { _id: new ObjectId(userObjectId) },
+            { $set: { stripeCustomerId: customer.id } }
+        );
+
+        console.log(`Stripe customer created and DB updated for user ID: ${userObjectId}`);
+        return { success: true, stripeCustomerId: customer.id };
+    } catch (error) {
+        console.error(`Error in createStripeCustomerAndUpdateDBWithConnection: ${error.message}`);
+        return { success: false, message: 'An error occurred while creating Stripe customer.' };
+    }
+}
+
 // Function to create a new Stripe customer and update the MongoDB database
 async function createStripeCustomerAndUpdateDB(userObjectId, email, name) {
     // Ensure necessary configuration is present
@@ -288,4 +358,5 @@ module.exports = {
     createPaymentAndProcessing,
     refundPayment,
     addBankTransferAccount,
+    createStripeCustomerAndUpdateDBWithConnection
 };
