@@ -1,8 +1,11 @@
+var stripe = Stripe('pk_test_51Ot8H8IYD2Ak4FLoPHpmVZsGQY9mtmlaJBqmDxQvuqi6HsM9oDkIal74YGlJDw0LuWqNxb8r1eD8cH1Q2yjGtvpW00crbHgrlB');
+var cardElement;
+
 document.addEventListener('DOMContentLoaded', function() {
-    populateUserProfile(); // Call this function on load to fetch and display user data
-    const stripe = Stripe('pk_test_51Ot8H8IYD2Ak4FLoPHpmVZsGQY9mtmlaJBqmDxQvuqi6HsM9oDkIal74YGlJDw0LuWqNxb8r1eD8cH1Q2yjGtvpW00crbHgrlB');
     const elements = stripe.elements();
-    setupForm(stripe, elements);
+    cardElement = elements.create('card');
+    cardElement.mount('#card-element');
+    populateUserProfile(); // Call this function on load to fetch and display user data
 });
 
 async function populateUserProfile() {
@@ -28,16 +31,43 @@ async function populateUserProfile() {
                     
             const defaultAddress = userProfile.shippingAddresses.find(address => address.isDefault);
             const additionalAddresses = userProfile.shippingAddresses.filter(address => !address.isDefault);
-        
+
             renderDefaultAddress(defaultAddress);
             renderAdditionalAddresses(additionalAddresses);
+
+            // Get the membership management section element
+            const membershipManagementSection = document.querySelector('.membership-management-section');
+
+            // Conditional rendering based on the premium status
+            if (userProfile.isPremium) {
+                // User is a premium member; show only the cancel membership button
+                membershipManagementSection.innerHTML = `
+                    <h2>Membership Management</h2>
+                    <button id="cancelMembership">Cancel Membership</button>
+                `;
+            } else {
+                // User is not a premium member; show only the purchase membership button
+                membershipManagementSection.innerHTML = `
+                    <h2>Membership Management</h2>
+                    <form id="cardForm">
+                        <div id="card-element"><!-- Stripe will insert the card element here --></div>
+                        <button id="purchaseMembership">Purchase Membership</button>
+                    </form>
+                `;
+                // Re-mount Stripe elements after updating the DOM
+                cardElement.mount('#card-element');
+            }
+
+            // Add event listeners for the buttons after they are rendered
+            document.getElementById('cancelMembership')?.addEventListener('click', handleCancelMembership);
+            document.getElementById('purchaseMembership')?.addEventListener('click', handlePurchaseMembership);
+
         } else {
             console.error('Failed to fetch user profile:', response.statusText);
         }
-            } catch (error) {
+    } catch (error) {
         console.error('Error fetching user profile:', error);
     }
-        // Similar handling for shoppingCart, watchlist, orderHistory, and reviews
 }
 
 function renderDefaultAddress(address) {
@@ -94,31 +124,44 @@ function editAddress(addressId) {
     // Store the current HTML before editing
     const currentHTML = addressDiv.innerHTML;
 
-    // Setup form with correct IDs and add a cancel button
-    addressDiv.innerHTML = `
-        <form onsubmit="saveEditedAddress(event, '${addressId}')">
-            <input type="text" id="editRecipientName_${addressId}" value="${addressDiv.getAttribute('data-recipient-name')}" placeholder="Recipient Name">
-            <input type="text" id="editStreet_${addressId}" value="${addressDiv.getAttribute('data-street')}" placeholder="Street">
-            <input type="text" id="editCity_${addressId}" value="${addressDiv.getAttribute('data-city')}" placeholder="City">
-            <input type="text" id="editState_${addressId}" value="${addressDiv.getAttribute('data-state')}" placeholder="State">
-            <input type="text" id="editPostalCode_${addressId}" value="${addressDiv.getAttribute('data-postal-code')}" placeholder="Postal Code">
-            <input type="text" id="editCountry_${addressId}" value="${addressDiv.getAttribute('data-country')}" placeholder="Country">
-            <label>Set as Default:
-                <input type="checkbox" id="editIsDefault_${addressId}" ${addressDiv.getAttribute('data-is-default') === 'true' ? 'checked' : ''}>
-            </label>
-            <button type="submit">Save</button>
-            <button type="button" onclick="cancelEditAddress('${addressId}', '${encodeURIComponent(currentHTML)}')">Cancel</button>
-            <button type="button" onclick="deleteAddress('${addressId}')">Delete</button>
-        </form>
+    // Hide the current display and show the editing form
+    addressDiv.style.display = 'none';
+
+    // Create an editing form and insert it next to the hidden address div
+    const formHTML = `
+        <div id="editForm_${addressId}">
+            <form onsubmit="saveEditedAddress(event, '${addressId}')">
+                <input type="text" id="editRecipientName_${addressId}" value="${addressDiv.getAttribute('data-recipient-name')}" placeholder="Recipient Name">
+                <input type="text" id="editStreet_${addressId}" value="${addressDiv.getAttribute('data-street')}" placeholder="Street">
+                <input type="text" id="editCity_${addressId}" value="${addressDiv.getAttribute('data-city')}" placeholder="City">
+                <input type="text" id="editState_${addressId}" value="${addressDiv.getAttribute('data-state')}" placeholder="State">
+                <input type="text" id="editPostalCode_${addressId}" value="${addressDiv.getAttribute('data-postal-code')}" placeholder="Postal Code">
+                <input type="text" id="editCountry_${addressId}" value="${addressDiv.getAttribute('data-country')}" placeholder="Country">
+                <label>Set as Default:
+                    <input type="checkbox" id="editIsDefault_${addressId}" ${addressDiv.getAttribute('data-is-default') === 'true' ? 'checked' : ''}>
+                </label>
+                <button type="submit">Save</button>
+                <button type="button" onclick="cancelEdit('${addressId}')">Cancel</button>
+                <button type="button" onclick="deleteAddress('${addressId}')">Delete</button>
+            </form>
+        </div>
     `;
+    addressDiv.insertAdjacentHTML('afterend', formHTML);
 }
 
-function cancelEditAddress(addressId, encodedHtml) {
+// Function to cancel editing and revert back to the original display
+function cancelEdit(addressId) {
+    const editForm = document.getElementById(`editForm_${addressId}`);
     const addressDiv = document.querySelector(`div[data-address-id="${addressId}"]`);
+
+    // Remove the form and show the original data
+    if (editForm) {
+        editForm.remove();
+    }
     if (addressDiv) {
-        addressDiv.innerHTML = decodeURIComponent(encodedHtml);
+        addressDiv.style.display = '';
     } else {
-        console.error("Failed to restore original address content for ID:", addressId);
+        console.error("Failed to find address div for ID:", addressId);
     }
 }
 
@@ -159,35 +202,43 @@ async function updateAddress(addressId, updatedAddress) {
             body: JSON.stringify({ addressId, updatedAddress })
         });
 
+        const data = await response.json(); // Parse JSON response
+
         if (response.ok) {
-            const data = await response.json();
             alert(data.message); // Display success message
             populateUserProfile(); // Refresh the user profile after updating the address
         } else {
-            console.error('Failed to update address:', response.statusText);
+            console.error('Failed to update address:', data.message);
+            alert('Failed to update address: ' + data.message); // Display error message from server
         }
     } catch (error) {
         console.error('Error updating address:', error);
+        alert('Failed to update address due to an error.'); // Fallback error message
     }
 }
 
 // Function to delete an address with specific ID
 function deleteAddress(addressId) {
-    if (confirm('Are you sure you want to delete this address?')) {
+    if (confirm('Are you sure you want to delete this address? This action cannot be undone.')) {
         const accessToken = sessionStorage.getItem('accessToken');
+        if (!accessToken) {
+            alert('You must be logged in to perform this action.');
+            return;
+        }
+
         fetch('/delete-shipping-address', {
             method: 'DELETE',
             headers: {
                 'Authorization': `Bearer ${accessToken}`,
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ addressId: addressId }) // Send the addressId in the request body
+            body: JSON.stringify({ addressId: addressId }) // Ensure the addressId is correctly sent to the server
         })
         .then(response => response.json())
         .then(data => {
             if (data.success) {
                 alert('Address deleted successfully.');
-                populateUserProfile(); // Refresh the list of addresses
+                populateUserProfile(); // Refresh the user profile
             } else {
                 alert('Failed to delete address: ' + data.message);
             }
@@ -271,55 +322,98 @@ function cancelAddAddress() {
 
 document.getElementById('cancelAddress').addEventListener('click', cancelAddAddress);
 
-function setupForm(stripe, elements) {
-    const cardElement = elements.create('card');
-    cardElement.mount('#card-element');
-
-    document.getElementById('purchaseMembership').addEventListener('click', async function(event) {
-        event.preventDefault(); // Prevent form submission
-        const {token, error} = await stripe.createToken(cardElement);
-    
-        if (error) {
-            console.error('Error:', error.message);
-            alert('Failed to create payment token: ' + error.message);
+// This function is called with the result of stripe.createToken
+document.getElementById('cardForm').addEventListener('submit', function(event) {
+    event.preventDefault();
+    stripe.createToken(cardElement).then(function(result) {
+        if (result.error) {
+            console.error('Error:', result.error.message);
+            alert('Failed to process payment: ' + result.error.message);
         } else {
-            // Send the token to your server
-            try {
-                const result = await purchaseMembership(token);
-                alert(result.message);
-            } catch (err) {
-                console.error('Server response error:', err);
-                alert('Membership purchase failed: ' + err.message);
-            }
+            handlePurchaseMembership(result.token);
         }
     });
-}
+});
 
+function handlePurchaseMembership(token) {
+    const accessToken = sessionStorage.getItem('accessToken');
+    if (!accessToken) {
+        alert('You must be logged in to purchase a membership.');
+        return;
+    }
 
-async function purchaseMembership(token) {
-    const response = await fetch('/purchase-premium-membership', {
+    // Ensure this logs the token ID, not the event or an undefined value
+    console.log('Stripe Token ID:', token.id);
+
+    fetch('/purchase-premium-membership', {
         method: 'POST',
         headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${sessionStorage.getItem('accessToken')}`
+            'Authorization': `Bearer ${accessToken}`,
+            'Content-Type': 'application/json'
         },
         body: JSON.stringify({ stripeToken: token.id })
-    });
-
-    if (!response.ok) {
-        throw new Error('Network response was not ok');
-    }
-    return await response.json();
-}
-
-function cancelMembership() {
-    fetch('/cancel-premium-membership', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'}
     })
     .then(response => response.json())
     .then(data => {
-        alert(data.message);
+        if (data.success) {
+            alert('Membership purchase successful!');
+        } else {
+            alert('Failed to purchase membership: ' + data.message);
+        }
     })
-    .catch(error => console.error('Error cancelling membership:', error));
+    .catch(error => {
+        console.error('Error sending token to server:', error);
+        alert('Failed to purchase membership due to an error.');
+    });
 }
+
+function handleCancelMembership() {
+    const accessToken = sessionStorage.getItem('accessToken');
+    if (!accessToken) {
+        alert('You need to be logged in to cancel your membership.');
+        return;
+    }
+
+    fetch('/cancel-premium-membership', {
+        method: 'POST',
+        headers: {
+            'Authorization': `Bearer ${accessToken}`,
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('Membership cancelled successfully.');
+            populateUserProfile(); // Refresh user profile to update UI
+        } else {
+            alert('Failed to cancel membership: ' + data.message);
+        }
+    })
+    .catch(error => {
+        console.error('Error cancelling membership:', error);
+        alert('Failed to cancel membership due to an error.');
+    });
+}
+
+document.getElementById('deleteProfile').addEventListener('click', function() {
+    if (confirm('Are you sure you want to delete your profile? This action cannot be undone.')) {
+        fetch('/delete-user-profile', {
+            method: 'DELETE',
+            headers: {
+                'Authorization': `Bearer ${sessionStorage.getItem('accessToken')}`
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            alert(data.message);
+            if (data.success) {
+                window.location.href = '/Reg_lgn/home/home.html'; // Redirect to home page
+            }
+        })
+        .catch(error => {
+            console.error('Failed to delete profile:', error);
+            alert('Failed to delete profile.');
+        });
+    }
+});
