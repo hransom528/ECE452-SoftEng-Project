@@ -7,10 +7,8 @@ const { connectDBandClose } = require("../dbConfig");
 const { getUserInfo } = require('./Reg_lgn/oAuthHandler.js');
 // const {registerUser}=require('./Reg_lgn/regLogin');
 const { verifyAddress } = require('../Team2/AddressValidationAPI.js');
-
 const { getResponseFromOpenAI } = require('./ChatBot/openAi')
-
-const { purchasePremiumMembership } = require('./UserProfile/membershipController');
+const { createStripeCustomerAndUpdateDB, verifyCardAndUpdateDB, createPaymentAndProcessing } = require('../Team3/stripe.js');
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
 
@@ -25,6 +23,10 @@ const server = http.createServer(async (req, res) => {
     if (pathname === '/get-user-profile' && req.method === 'GET') {
         // Handle the GET request for user profile
         await getUserProfile(req, res);
+    } else if (pathname === '/purchase-premium-membership' && req.method === 'POST') {
+            // Directly handle purchase requests
+            handlePurchaseMembershipRequest(req, res);
+            return;
     } else if (pathname === '/oauth2callback' || pathname === '/' || pathname === '/landing.css' || pathname === '/landing.js') {
         if (pathname === '/landing.css' || pathname === '/landing.js') {
             serveFile('Team1/Reg_lgn/landing' + pathname, res);
@@ -114,8 +116,47 @@ async function getUserProfile(req, res) {
     }
 }
 
+async function handlePurchaseMembershipRequest(req, res) {
+    let body = '';
+    req.on('data', chunk => {
+        body += chunk.toString();
+    });
+    req.on('end', async () => {
+        console.log('Complete body received:', body);  // Log the complete body to debug
+        let parsedBody;
+        try {
+            parsedBody = JSON.parse(body);
+            console.log('Parsed body:', parsedBody);  // Log the parsed body to debug
+            const stripeToken = parsedBody.stripeToken;
+            if (!stripeToken) {
+                throw new Error("Stripe token is missing.");
+            }
+
+            const accessToken = req.headers.authorization?.split(' ')[1];
+            if (!accessToken) {
+                res.writeHead(401, { 'Content-Type': 'application/json' });
+                res.end(JSON.stringify({ message: 'Unauthorized: No access token provided' }));
+                return;
+            }
+
+            const result = await purchasePremiumMembership(accessToken, stripeToken);
+            res.writeHead(200, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify(result));
+        } catch (error) {
+            console.error('Error processing membership:', error);
+            res.writeHead(500, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ success: false, message: error.message }));
+        }
+    });
+}
 
 function handlePostRequests(req, res, pathname) {
+    if (pathname === '/cancel-premium-membership') {
+        // Directly handle cancellation without reading a body
+        cancelPremiumMembership(req, res);
+        return;
+    }
+
     let body = '';
     req.on('data', chunk => {
         body += chunk.toString();
@@ -130,15 +171,25 @@ function handlePostRequests(req, res, pathname) {
             res.end(JSON.stringify({ error: 'Bad Request', message: 'Invalid JSON' }));
             return; // Return here to stop further execution in case of JSON parse error
         }
-        
+
+        // Handle endpoints that do not require access token
+        if (pathname === '/check-user') {
+            await checkUser(parsedBody, res);
+            return; // Return early to prevent further execution
+        } else if (pathname === '/registerUser') {
+            await registerUser(parsedBody, res);
+            return; // Return early to prevent further execution
+        }
+
+        // Extract the access token from the header
+        const accessToken = req.headers.authorization?.split(' ')[1];
+        if (!accessToken) {
+            res.writeHead(401, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ message: 'Unauthorized: No access token provided' }));
+            return;
+        }
+
         switch (pathname) {
-            case '/check-user':
-                checkUser(parsedBody, res);
-                break;
-    
-            case '/registerUser':
-                registerUser(parsedBody, res);
-                break;
     
             case '/add-shipping-address':
                 try {
@@ -151,7 +202,6 @@ function handlePostRequests(req, res, pathname) {
                 break;
 
             case "/talkToAI":
-                const accessToken = req.headers.authorization?.split(' ')[1];
                 if (!accessToken) {
                     res.writeHead(401, { 'Content-Type': 'application/json' });
                     res.end(JSON.stringify({ message: 'Unauthorized: No access token provided' }));
@@ -201,24 +251,11 @@ function handlePostRequests(req, res, pathname) {
                     responseSent = true;
                     return;
                 }
-    
-
-            case '/purchase-premium-membership':
-                try {
-                    const result = await purchasePremiumMembership(parsedBody);
-                    res.writeHead(200, { 'Content-Type': 'application/json' });
-                    res.end(JSON.stringify(result));
-                } catch (error) {
-                    console.error('Error processing membership:', error);
-                    res.writeHead(500, { 'Content-Type': 'application/json' });
-                    res.end(JSON.stringify({ success: false, message: error.message }));
-                }
-
                 break;
             default:
                 res.writeHead(404, { 'Content-Type': 'application/json' });
                 res.end(JSON.stringify({ error: 'Endpoint not found' }));
-                break;
+            break;
         }
     });
 }
@@ -264,8 +301,10 @@ function handleDeleteRequests(req, res, pathname) {
                         res.writeHead(400, { 'Content-Type': 'application/json' });
                         res.end(JSON.stringify({ error: 'Bad request', message: 'Invalid JSON' }));
                     }
+                    break;
                 case '/delete-user-profile':
-                    
+                    deleteUserProfile(req, res);
+                    break;            
             default:
                 res.writeHead(404, { 'Content-Type': 'application/json' });
                 res.end(JSON.stringify({ error: 'Endpoint not found' }));
@@ -415,6 +454,21 @@ async function updateShippingAddress(req, res, parsedBody) {
         return;
     }
 
+    // Verify the address first
+    try {
+        const verificationResult = await verifyAddress(updatedAddress);
+        if (!verificationResult.isValid) {
+            res.writeHead(400, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ message: 'Address verification failed: ' + verificationResult.message }));
+            return;
+        }
+    } catch (verificationError) {
+        console.error('Address verification error:', verificationError);
+        res.writeHead(500, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: 'Failed to verify address', message: verificationError.message }));
+        return;
+    }
+
     try {
         const { db, client } = await connectDBandClose();
         const usersCollection = db.collection("users");
@@ -489,6 +543,117 @@ async function deleteShippingAddress(req, res, addressId) {
         console.error('Error deleting address:', error);
         res.writeHead(500, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ error: 'Internal server error', message: error.message }));
+    }
+}
+
+async function deleteUserProfile(req, res) {
+    const accessToken = getAccessToken(req);
+    if (!accessToken) {
+        res.writeHead(401, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ message: 'Unauthorized: No access token provided' }));
+        return;
+    }
+
+    try {
+        const userInfo = await getUserInfo(accessToken);
+        const { db, client } = await connectDBandClose();
+        const result = await db.collection('users').deleteOne({ email: userInfo.email });
+        client.close();
+
+        if (result.deletedCount === 0) {
+            throw new Error("User not found or already deleted");
+        }
+
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ success: true, message: "User deleted successfully" }));
+    } catch (error) {
+        console.error('Error deleting user:', error);
+        res.writeHead(500, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ success: false, message: error.message }));
+    }
+}
+
+// Function to purchase premium membership
+async function purchasePremiumMembership(accessToken, stripeToken) {
+    try {
+        if (!stripeToken) {
+            throw new Error("Stripe token is missing.");
+        }
+
+        const userInfo = await getUserInfo(accessToken);
+        const { db, client } = await connectDBandClose();
+        const user = await db.collection('users').findOne({ email: userInfo.email });
+        if (!user) {
+            client.close();
+            throw new Error("User not found.");
+        }
+
+        const result1 = await createStripeCustomerAndUpdateDB(user._id, user.email, user.name); //paymentInfo.name
+        
+        const stripeCustomerId = result1.stripeCustomerId;
+        if (!result1.success) {
+          throw new Error(result1.message);
+        }
+        console.log("Stripe token is ", stripeToken);
+        const result2 = await verifyCardAndUpdateDB(user._id, stripeCustomerId, stripeToken); 
+        if (!result2.success) {
+          throw new Error(result2.message);
+        }
+        const paymentMethodId = result2.paymentMethodId;
+        const membershipFee = 19.99;
+
+        const result3 = await createPaymentAndProcessing(stripeCustomerId, paymentMethodId, membershipFee, 'usd', 'pm_card_visa'); //payment_method
+        if (!result3.success) {
+          throw new Error(result3.message);
+        }
+
+        // Update user's premium status in your database
+        await db.collection('users').updateOne({ _id: user._id }, { $set: { isPremium: true } });
+
+        client.close();
+        return { success: true, message: "Membership purchased successfully." };
+    } catch (error) {
+        console.error('Purchase Premium Membership Error:', error);
+        client?.close(); // Ensure to close the client if an error occurs
+        return { success: false, message: error.message };
+    }
+}
+
+async function cancelPremiumMembership(req, res) {
+    const accessToken = getAccessToken(req);
+    if (!accessToken) {
+        res.writeHead(401, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ message: 'Unauthorized: No access token provided' }));
+        return;
+    }
+
+    try {
+        const userInfo = await getUserInfo(accessToken);
+        const { db, client } = await connectDBandClose();
+        const user = await db.collection('users').findOne({ email: userInfo.email });
+        if (!user) {
+            client.close();
+            res.writeHead(404, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ message: 'User not found' }));
+            return;
+        }
+
+        // Cancel the Stripe subscription if there's one active
+        if (user.stripeSubscriptionId) {
+            await stripe.subscriptions.del(user.stripeSubscriptionId);
+        }
+
+        // Update the user's premium status in the database
+        await db.collection('users').updateOne({ _id: user._id }, { $set: { isPremium: false } });
+
+        client.close();
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ success: true, message: "Premium membership cancelled successfully." }));
+    } catch (error) {
+        console.error('Error cancelling premium membership:', error);
+        client?.close();
+        res.writeHead(500, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ success: false, message: error.message }));
     }
 }
 
