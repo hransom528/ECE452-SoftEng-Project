@@ -6,6 +6,7 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
         integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
     <link rel="stylesheet" href="/profile/userProfile.css">
+    <script src="https://js.stripe.com/v3/"></script>
     <title>User Profile</title>
 </head>
 <body>
@@ -45,7 +46,7 @@
         <div id="additionalAddressesContainer" style="display:none;">
             <!-- Additional addresses will be rendered here -->
         </div>
-        <!-- Unified form for adding or editing addresses -->
+        <!-- Form for adding or editing addresses -->
         <form id="addressForm" style="display:none;">
             <input type="text" id="recipientName" placeholder="Recipient Name">
             <input type="text" id="street" placeholder="Street">
@@ -57,21 +58,28 @@
                 <input type="checkbox" id="isDefault">
             </label>
             <button type="submit" id="saveAddress">Save Address</button>
+            <button type="button" id="cancelAddress">Cancel</button>
         </form>
         <button type="button" id="addAddress" onclick="showAddressForm()">Add New Address</button>
     </div>
 
     <div class="form-section membership-management-section">
         <h2>Membership Management</h2>
-        <button id="purchaseMembership">Purchase Membership</button>
-        <button id="cancelMembership">Cancel Membership</button>
+        <!-- Include form for card details -->
+        <form id="cardForm">
+            <div id="card-element"><!-- Stripe will insert the card element here --></div>
+            <button id="purchaseMembership">Purchase Membership</button>
+            <button id="cancelMembership">Cancel Membership</button>
+        </form>
     </div>
-
+    
     <div class="form-section profile-delete-section">
         <h2>Delete Profile</h2>
         <button id="deleteProfile">Delete Profile</button>
     </div>
 
+    <!-- Include Stripe.js -->
+    <script src="https://js.stripe.com/v3/"></script>
     <script src="/profile/upApp.js"></script>
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
         integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"

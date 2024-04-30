@@ -16,112 +16,6 @@
     "originalPrice": 355
   },
   {
-    "name": "Puma Multi-purpose Treadmill",
-    "description": "The multi-purpose iron design is perfect for any home gym setup.",
-    "brand": "Puma",
-    "type": "Treadmill",
-    "price": 251.1,
-    "stockQuantity": 47,
-    "specs": {
-      "weight": "34 lbs"
-    },
-    "trendingScore": 8,
-    "topTrending": true,
-    "rating": 5,
-    "discount": 10,
-    "originalPrice": 279
-  },
-  {
-    "name": "Lululemon Foldable Exercise Bike",
-    "description": "The foldable iron design is perfect for any home gym setup.",
-    "brand": "Lululemon",
-    "type": "Exercise Bike",
-    "price": 17,
-    "stockQuantity": 45,
-    "specs": {
-      "weight": "36 lbs"
-    },
-    "trendingScore": 2,
-    "topTrending": false,
-    "rating": 2
-  },
-  {
-    "name": "Brooks Compact Bench",
-    "description": "The compact iron design is perfect for any home gym setup.",
-    "brand": "Brooks",
-    "type": "Bench",
-    "price": 450,
-    "stockQuantity": 45,
-    "specs": {
-      "weight": "18 lbs"
-    },
-    "trendingScore": 6,
-    "topTrending": false,
-    "rating": 4,
-    "discount": 10,
-    "originalPrice": 500
-  },
-  {
-    "name": "ProForm Foldable Bench",
-    "description": "The foldable steel design is perfect for any home gym setup.",
-    "brand": "ProForm",
-    "type": "Bench",
-    "price": 395,
-    "stockQuantity": 45,
-    "specs": {
-      "weight": "44 lbs"
-    },
-    "trendingScore": 9,
-    "topTrending": true,
-    "rating": 4,
-    "discount": 21,
-    "originalPrice": 500
-  },
-  {
-    "name": "Cybex Multi-purpose Home Gym",
-    "description": "The multi-purpose iron design is perfect for any home gym setup.",
-    "brand": "Cybex",
-    "type": "Home Gym",
-    "price": 387,
-    "stockQuantity": 37,
-    "specs": {
-      "weight": "51 lbs"
-    },
-    "trendingScore": 9,
-    "topTrending": true,
-    "rating": 3
-  },
-  {
-    "name": "ProForm Multi-purpose Elliptical",
-    "description": "The multi-purpose plastic design is perfect for any home gym setup.",
-    "brand": "ProForm",
-    "type": "Elliptical",
-    "price": 362,
-    "stockQuantity": 36,
-    "specs": {
-      "weight": "13 lbs"
-    },
-    "trendingScore": 4,
-    "topTrending": false,
-    "rating": 3
-  },
-  {
-    "name": "ProForm High-quality Treadmill",
-    "description": "The high-quality iron design is perfect for any home gym setup.",
-    "brand": "ProForm",
-    "type": "Treadmill",
-    "price": 90.1,
-    "stockQuantity": 29,
-    "specs": {
-      "weight": "28 lbs"
-    },
-    "trendingScore": 1,
-    "topTrending": false,
-    "rating": 1,
-    "discount": 15,
-    "originalPrice": 106
-  },
-  {
     "name": "Asics Foldable Bench",
     "description": "The foldable steel design is perfect for any home gym setup.",
     "brand": "Asics",
@@ -602,22 +496,6 @@
     "rating": 1,
     "discount": 10,
     "originalPrice": 419
-  },
-  {
-    "name": "Adidas Multi-purpose Treadmill",
-    "description": "The multi-purpose iron design is perfect for any home gym setup.",
-    "brand": "Adidas",
-    "type": "Treadmill",
-    "price": 86.7,
-    "stockQuantity": 46,
-    "specs": {
-      "weight": "75 lbs"
-    },
-    "trendingScore": 2,
-    "topTrending": true,
-    "rating": 2,
-    "discount": 15,
-    "originalPrice": 102
   },
   {
     "name": "Reebok Multi-purpose Treadmill",

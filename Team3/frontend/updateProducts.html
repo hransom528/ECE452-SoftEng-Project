@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Manage Product Listings</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="container">
+    <div class="flex-container">
+        <div class="flex-item update-section">
+            <h1>Update Product Listings</h1>
+            <form id="updateForm">
+                <label for="productIds">Product IDs (comma-separated):</label>
+                <input type="text" id="productIds" name="productIds" required>
+                
+                <div id="updateFieldsContainer">
+                    <!-- Update fields will be added here dynamically -->
+                </div>
+                <button type="button" id="addUpdateField">Add Field to Update</button>
+                
+                <label for="removeFields">Remove Fields (comma-separated, optional):</label>
+                <input type="text" id="removeFields" name="removeFields">
+                
+                <button type="submit">Update Products</button>
+            </form>
+        </div>
+        
+        <div class="flex-item delete-section">
+            <h1>Delete Product Listings</h1>
+            <form id="deleteForm">
+                <label for="deleteProductIds">Product IDs to delete (comma-separated):</label>
+                <input type="text" id="deleteProductIds" name="deleteProductIds">
+                <button type="button" id="deleteProductsButton">Delete Products</button>
+            </form>
+        </div>
+    </div>
+    <div id="responseArea"></div>
+</div>
+<script src="app.js"></script>
+</body>
+</html>
