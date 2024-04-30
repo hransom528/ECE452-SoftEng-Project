@@ -2,7 +2,11 @@ h2 {
     text-align: center;
 }
 
-.form-container {
+h3 {
+    text-align: center;
+}
+
+.search_form-container {
     width: 50%;
     margin-right: auto;
     margin-left:auto;
@@ -13,7 +17,25 @@ h2 {
     justify-content: center;
 }
 
-.form {
+.search-form {
     align-self: center;
     text-align: center;
 }
+
+.filter_form-container {
+    width: 50%;
+    margin-right: auto;
+    margin-left:auto;
+    margin: auto;
+    align-self: center;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+}
+
+.filter-form {
+    align-self: center;
+    text-align: center;
+}
+
+

@@ -1,8 +1,21 @@
+//search function items
 const searchInput = document.querySelector('.input');
 const searchButton = document.getElementById('search-button');
 const clearButton = document.getElementById('clear');
+let searchResults=[]
 let results = [];
 let searchString = searchInput.value;
+
+//filter function items
+const filterForm = document.getElementById('filter-form');
+let filterResults= [];
+
+searchInput.addEventListener("input", (e) => {
+    searchString = e.target.value;
+    fetchData();
+
+    // TODO: Perform autocomplete
+});
 
 searchInput.addEventListener("input", (e) => {
     searchString = e.target.value;
@@ -13,7 +26,7 @@ searchInput.addEventListener("input", (e) => {
 
 searchButton.addEventListener("click", () => {
     clearList();
-    setList(results);
+    setList(searchResults,filterResults); 
 });
 
 clearButton.addEventListener("click", () => {
@@ -21,11 +34,11 @@ clearButton.addEventListener("click", () => {
     clearList();
 });
 
-function fetchData() {
+async function fetchData() {
     // inside, we will need to achieve a few things:
+
     // 1. declare and assign the value of the event's target to a variable AKA whatever is typed in the search bar
     let value = searchString;
-
     // 2. check: if input exists and if input is larger than 0
     if (value && value.trim().length > 0){
         // 3. redefine 'value' to exclude white space and change input to all lowercase
@@ -44,8 +57,7 @@ function fetchData() {
         })
         .then((response) => response.json())
         .then((json) => {
-            results = json.data;
-        
+            searchResults = json.data;;
         });
 
     } else {
@@ -55,9 +67,43 @@ function fetchData() {
     }
 };
 
+function filterProducts(){
+
+    // Gather form data
+    const formData = {
+        brand: filterForm.brand.value,
+        type: filterForm.type.value,
+    };
+    
+    for (const property in formData) {
+        if(formData[property].trim()==""){
+            delete formData[property]
+        }
+    }
+
+    let filterBody=JSON.stringify(formData)
+   
+    fetch("http://localhost:3000/filterCatalog", {
+            method: "POST",
+            body: filterBody,
+            headers: {
+                "Content-type": "application/json; charset=UTF-8"
+            }
+        })
+        .then((response) => response.json())
+        .then((json) => {
+            filterResults=json.data
+        });
+};
+
 // creating and declaring a function called "setList"
 // setList takes in a param of "results"
-function setList(results) {
+function setList(searchResults,filterResults) {
+
+    //NEED TO MAKE THIS AWAIT
+    filterProducts();
+    results = searchResults.filter(value => filterResults.includes(value.name));
+    
 
     for (const result of results) {
         // creating a li element for each result item

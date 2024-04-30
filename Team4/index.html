@@ -12,13 +12,25 @@
     <body>
         <h2>GymHaven Product Search</h2>
 
-        <div class="form-container">
-            <form class="form">
+        <div class="search_form-container">
+            <form class="search-form">
                 <input id="search" type="text" class="input" placeholder="search..."/>
                 <button id="search-button" class="search" type='button'>search</button>
                 <button id="clear" class="clear-results">clear</button>
             </form>
         </div>
+        
+        <div class="filter_form-container">
+            <form id="filter-form">
+                <h3>Filters</h3>
+                <label for="brand">Brand:</label>
+                <input type="text" id="brand" name="brand" size="26"><br>
+
+                <label for="type">Type:</label>
+                <input type="text" id="type" name="type" size="26"><br>
+            </form>
+        <div>
+
         <div class="results-container">
             <ul class="results-list" id="list">
 
