@@ -72,8 +72,3 @@ button{
 button img{
     height: 15px;
 }
-@media (max-width:800px) {
-    .contact-inputs{
-        width: 80vw;
-    }
-}
