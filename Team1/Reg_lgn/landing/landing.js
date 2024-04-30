@@ -18,6 +18,7 @@ function handleAuthRedirect() {
         if (accessToken) {
             sessionStorage.setItem('accessToken', accessToken);
             fetchUserData(accessToken);  // Fetch user data immediately after logging in
+
             // Clean up the URL
             history.pushState("", document.title, window.location.pathname + window.location.search);
         }
