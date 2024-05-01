@@ -18,12 +18,21 @@ async function addProduct(productDetails) {
     }
 
 // Validate specifications
+// if (productDetails.specs) {
+//     // Validate weight ends with 'lbs' or 'kg'
+//     if (productDetails.specs.weight) {
+//         const weightUnit = productDetails.specs.weight.slice(-3);
+//         if (weightUnit !== 'lbs' && weightUnit !== 'kg') {
+//             throw new Error('Weight must end with \'lbs\' or \'kg\'');
+//         }
+//     }
+
 if (productDetails.specs) {
     // Validate weight ends with 'lbs' or 'kg'
     if (productDetails.specs.weight) {
-        const weightUnit = productDetails.specs.weight.slice(-3);
-        if (weightUnit !== 'lbs' && weightUnit !== 'kg') {
-            throw new Error('Weight must end with \'lbs\' or \'kg\'');
+        const weightRegex = /^\d+(\.\d+)?\s*(lbs|kg)$/;
+        if (!weightRegex.test(productDetails.specs.weight)) {
+            throw new Error('Weight must be a number followed by "lbs" or "kg"');
         }
     }
 
