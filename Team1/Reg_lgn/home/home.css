@@ -1,11 +1,6 @@
-/* body {
-  font-family: 'Roboto', sans-serif;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 100vh;
-  background-color: #151b29;
-} */
+body {
+  background-color: #e9ecef;
+}
 
 h1 {
     padding-top: 20px;
@@ -140,6 +135,11 @@ img {
   /* margin: 1.6666666%; */
   margin: calc(10%/6);
   padding-top: 30px;
+}
+
+#THEh4 {
+  color: #4895ef;
+  display: inline;
 }
 
 #supportBtn {
