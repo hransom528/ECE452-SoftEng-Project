@@ -322,7 +322,6 @@ function cancelAddAddress() {
 
 document.getElementById('cancelAddress').addEventListener('click', cancelAddAddress);
 
-
 document.getElementById('cardForm').addEventListener('submit', function(event) {
     event.preventDefault();
     handlePurchaseMembership();
@@ -330,7 +329,7 @@ document.getElementById('cardForm').addEventListener('submit', function(event) {
 
 function handlePurchaseMembership() {
     const accessToken = sessionStorage.getItem('accessToken');
-    const stripeToken = 'tok_visa'; // Note: This should be retrieved dynamically after Stripe Element handling.
+    const stripeToken = 'tok_visa'; // This should be retrieved dynamically after Stripe Element handling
 
     console.log('Sending purchase request');
 
@@ -342,19 +341,25 @@ function handlePurchaseMembership() {
         },
         body: JSON.stringify({ stripeToken: stripeToken })
     })
-    .then(response => response.json()) // Ensure this is parsing correctly.
+    .then(response => {
+        if (response.ok) {
+            return response.json();
+        } else {
+            throw new Error('Failed to process the request with status: ' + response.status);
+        }
+    })
     .then(data => {
         console.log('Response data:', data);
         if (data.success) {
             alert('Membership purchase successful!');
-            populateUserProfile(); // Refresh user data to reflect changes.
+            populateUserProfile(); // Refresh user data to reflect changes
         } else {
-            alert('Failed to purchase membership: ' + data.message);
+            throw new Error(data.message);
         }
     })
     .catch(error => {
         console.error('Error purchasing membership:', error);
-        alert('Failed to purchase membership due to an error.');
+        alert('Failed to purchase membership due to an error: ' + error.message);
     });
 }
 
@@ -399,7 +404,10 @@ document.getElementById('deleteProfile').addEventListener('click', function() {
         .then(data => {
             alert(data.message);
             if (data.success) {
-                window.location.href = '/Reg_lgn/home/home.html'; // Redirect to home page
+                // Clear session or local storage if necessary
+                sessionStorage.clear(); // or localStorage.clear();
+                // Redirect and replace the current location in the history stack
+                window.location.replace('/Reg_lgn/landing/landingPage.html');
             }
         })
         .catch(error => {
