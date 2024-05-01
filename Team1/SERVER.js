@@ -8,7 +8,7 @@ const { getUserInfo } = require('./Reg_lgn/oAuthHandler.js');
 // const {registerUser}=require('./Reg_lgn/regLogin');
 const { verifyAddress } = require('../Team2/AddressValidationAPI.js');
 const { getResponseFromOpenAI } = require('./ChatBot/openAi')
-const { createStripeCustomerAndUpdateDBWithConnection, verifyCardAndUpdateDB, createPaymentAndProcessing } = require('../Team3/stripe.js');
+const { createStripeCustomerAndUpdateDBWithConnection, createStripeCustomerAndUpdateDB, verifyCardAndUpdateDB, createPaymentAndProcessing } = require('../Team3/stripe.js');
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
 
@@ -18,7 +18,6 @@ const server = http.createServer(async (req, res) => {
     const parsedUrl = url.parse(req.url, true);
     const pathname = parsedUrl.pathname;
 
-    console.log('Request for:', pathname);
 
     if (pathname === '/get-user-profile' && req.method === 'GET') {
         // Handle the GET request for user profile
@@ -66,7 +65,6 @@ function serveFile(filePath, res) {
         // return; // Or handle this scenario in a different way
     }
 
-    console.log('Serving file:', filePath);  // Log which file is being served
     const extname = path.extname(filePath).toLowerCase();
     const mimeTypes = {
         '.html': 'text/html',
@@ -75,7 +73,6 @@ function serveFile(filePath, res) {
     };
 
     const contentType = mimeTypes[extname] || 'application/octet-stream';
-    console.log("cT: ", contentType)
     fs.readFile(filePath, (error, content) => {
         if (error) {
             console.error('File error:', error);
@@ -122,20 +119,13 @@ async function handlePurchaseMembershipRequest(req, res) {
         body += chunk.toString();
     });
     req.on('end', async () => {
-        console.log('Complete body received:', body);  // Log the complete body to debug
-        let parsedBody;
         try {
-            parsedBody = JSON.parse(body);
-            console.log('Parsed body:', parsedBody);  // Log the parsed body to debug
+            const parsedBody = JSON.parse(body);
             const stripeToken = parsedBody.stripeToken;
-            if (!stripeToken) {
-                throw new Error("Stripe token is missing.");
-            }
-
             const accessToken = req.headers.authorization?.split(' ')[1];
-            if (!accessToken) {
+            if (!accessToken || !stripeToken) {
                 res.writeHead(401, { 'Content-Type': 'application/json' });
-                res.end(JSON.stringify({ message: 'Unauthorized: No access token provided' }));
+                res.end(JSON.stringify({ success: false, message: 'Unauthorized or missing information' }));
                 return;
             }
 
@@ -193,14 +183,20 @@ function handlePostRequests(req, res, pathname) {
     
             case '/add-shipping-address':
                 try {
+                    console.log('HTTP Headers:', req.headers);
+                    console.log('Request Body:', parsedBody);
+            
                     await addUserShippingAddress(req, res, parsedBody);
+            
+                    console.log('Response Status:', res.statusCode);
+                    console.log('Response Headers:', res.getHeaders());
                 } catch (error) {
                     console.error('Error adding address:', error);
                     res.writeHead(500, { 'Content-Type': 'application/json' });
                     res.end(JSON.stringify({ error: error.toString() }));
                 }
                 break;
-
+            
             case "/talkToAI":
                 if (!accessToken) {
                     res.writeHead(401, { 'Content-Type': 'application/json' });
@@ -580,6 +576,9 @@ async function purchasePremiumMembership(accessToken, stripeToken) {
         const { db, clientTemp } = await openDBConnection();  // Open the database connection and keep it throughout the operation
         client = clientTemp;
 
+        console.log("Access Token:", accessToken);
+        console.log("Stripe Token:", stripeToken);
+
         const userInfo = await getUserInfo(accessToken);
         if (!userInfo) {
             throw new Error("Access token invalid or user not found.");
@@ -614,8 +613,12 @@ async function purchasePremiumMembership(accessToken, stripeToken) {
             throw new Error(paymentResult.message);
         }
 
-        // Update the user's premium status in MongoDB
-        await db.collection('users').updateOne({ _id: user._id }, { $set: { isPremium: true } });
+        const updateUserResult = await db.collection('users').updateOne({ _id: user._id }, { $set: { isPremium: true } });
+        if (updateUserResult.modifiedCount === 1) {
+            console.log("User premium status updated successfully.");
+        } else {
+            throw new Error("Failed to update user premium status.");
+        }
 
         return { success: true, message: "Membership purchased successfully." };
         
@@ -624,11 +627,15 @@ async function purchasePremiumMembership(accessToken, stripeToken) {
         return { success: false, message: error.message };
     } finally {
         if (client) {
-            client.close();  // Ensure the MongoDB connection is closed
+            client.close();
             console.log("MongoDB connection closed.");
+        } else {
+            console.log("No MongoDB client found.");
         }
+        console.log("Exiting finally block...");
     }
 }
+
 
 async function cancelPremiumMembership(req, res) {
     const accessToken = getAccessToken(req);

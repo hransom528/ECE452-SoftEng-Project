@@ -26,16 +26,13 @@ async function connectDBandClose() {
 }
 
 async function openDBConnection() {
-    const client = new MongoClient(process.env.MONGO_URI);
+    const client = new MongoClient(mongoURI);
     try {
         await client.connect();
-        console.log("Connected successfully to MongoDB");
-        const db = client.db('website');
-        return { db, client };  // Return both db and client
-    } catch (error) {
-        console.error("Could not connect to MongoDB", error);
-        await client.close();
-        throw error;
+        return { db: client.db('website'), client };
+    } catch (err) {
+        console.error('Failed to connect to MongoDB', err);
+        throw new Error('Failed to connect to MongoDB');
     }
 }
 
