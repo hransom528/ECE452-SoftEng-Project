@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Purchase History</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            width: 90%;
+            margin: auto;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        button {
+            padding: 10px;
+            margin-top: 20px;
+            cursor: pointer;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            font-size: 16px;
+        }
+
+        #historyContainer {
+            margin-top: 20px;
+        }
+
+        .purchase {
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Retrieve Purchase History</h1>
+        <button id="fetchButton">Get Purchase History</button>
+        <div id="historyContainer"></div>
+    </div>
+
+    <script>
+        document.getElementById('fetchButton').addEventListener('click', function() {
+            getPurchaseHistory();
+        });
+
+        async function getPurchaseHistory() {
+            const userId = '662fd390bbe6d16f3f91f21b'; // Hardcoded user ID
+            try {
+                const response = await fetch(`http://localhost:3000/retrieve-purchase-history/${userId}`);
+                if (!response.ok) {
+                    throw new Error(`Server responded with status: ${response.status}`);
+                }
+                const data = await response.json();
+                displayHistory(data.purchaseHistory);
+            } catch (error) {
+                console.error('Failed to fetch purchase history:', error);
+                document.getElementById('historyContainer').innerHTML = 'Failed to retrieve purchase history. ' + error;
+            }
+        }
+
+        function displayHistory(purchaseHistory) {
+            const container = document.getElementById('historyContainer');
+            container.innerHTML = ''; // Clear previous results
+
+            purchaseHistory.forEach(purchase => {
+                const purchaseDiv = document.createElement('div');
+                purchaseDiv.classList.add('purchase');
+                const itemsList = purchase.items.map(item => `<li>${item.quantity} x ${item.productName} (${item.productBrand})</li>`).join('');
+                const content = `
+                    <h3>Purchase ID: ${purchase._id}</h3>
+                    <p>Total: $${purchase.total.toFixed(2)}</p>
+                    <p><strong>Order Status:</strong> ${purchase.OrderStatus}</p>
+                    <p><strong>Shipping Address:</strong> ${purchase.shippingAddr.street}, ${purchase.shippingAddr.city}, ${purchase.shippingAddr.state}, ${purchase.shippingAddr.postalCode}, ${purchase.shippingAddr.country}</p>
+                    <p><strong>Billing Address:</strong> ${purchase.billingAddr.street}, ${purchase.billingAddr.city}, ${purchase.billingAddr.state}, ${purchase.billingAddr.postalCode}, ${purchase.billingAddr.country}</p>
+                    <p><strong>Payment Details:</strong> Card Type: ${purchase.paymentDetails.cardBrand}, Last Four: ${purchase.paymentDetails.cardLast4}, Expires: ${purchase.paymentDetails.cardExpDate}</p>
+                    <h4>Items Purchased:</h4>
+                    <ul>${itemsList}</ul>
+                `;
+                purchaseDiv.innerHTML = content;
+                container.appendChild(purchaseDiv);
+            });
+        }
+    </script>
+</body>
+</html>
