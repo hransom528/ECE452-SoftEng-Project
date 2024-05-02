@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Checkout Success</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f7f7f7;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 50px auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: #4CAF50;
+            font-size: 24px;
+        }
+
+        pre {
+            background-color: #eee;
+            border: 1px solid #ddd;
+            padding: 15px;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+
+        .info {
+            font-size: 16px;
+            line-height: 1.6;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Checkout Successful!</h1>
+        <div id="checkoutInfo" class="info"></div>
+    </div>
+
+    <script>
+        // Parse the checkout data from the URL
+        const params = new URLSearchParams(window.location.search);
+        const checkoutData = params.get('checkoutData');
+
+        // Decode and parse the data
+        const dataToShow = checkoutData ? JSON.parse(decodeURIComponent(checkoutData)) : 'No checkout data provided.';
+
+        // Display data in a formatted way using JSON.stringify with spacing
+        document.getElementById('checkoutInfo').innerHTML = `<pre>${JSON.stringify(dataToShow, null, 2)}</pre>`;
+    </script>
+</body>
+</html>

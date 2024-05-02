@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            width: 90%;
+            margin: auto;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        input, button {
+            padding: 10px;
+            margin-top: 10px;
+            display: block;
+            width: 95%;
+        }
+
+        button {
+            cursor: pointer;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            font-size: 16px;
+        }
+
+        #responseContainer {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #f4f4f4;
+            border: 1px solid #ddd;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Checkout</h1>
+        <input type="text" id="userId" placeholder="User ID" value="662fd390bbe6d16f3f91f21b">
+        <h3>Billing Address</h3>
+        <input type="text" id="billingStreet" placeholder="Street" value="1600 Amphitheatre Pkwy">
+        <input type="text" id="billingCity" placeholder="City" value="Mountain View">
+        <input type="text" id="billingState" placeholder="State" value="CA">
+        <input type="text" id="billingPostalCode" placeholder="Postal Code" value="94043">
+        <input type="text" id="billingCountry" placeholder="Country" value="USA">
+        
+        <h3>Shipping Address</h3>
+        <!-- Assume shipping address is the same as billing for this example -->
+        <input type="checkbox" id="sameAsBilling" checked> Same as billing address
+        
+        <h3>Payment Information</h3>
+        <input type="text" id="card" placeholder="Card Number" value="4242 4242 4242 4242">
+        <input type="text" id="cvv" placeholder="CVV" value="314">
+        <input type="text" id="expMonth" placeholder="Expiry Month" value="5">
+        <input type="text" id="expYear" placeholder="Expiry Year" value="2024">
+        <input type="text" id="nameOnCard" placeholder="Name on Card" value="Customer One">
+        
+        <button id="checkoutButton">Perform Checkout</button>
+        <div id="responseContainer"></div>
+    </div>
+
+    <script>
+        document.getElementById('checkoutButton').addEventListener('click', performCheckout);
+
+        async function performCheckout() {
+            const userId = document.getElementById('userId').value;
+            const sameAsBilling = document.getElementById('sameAsBilling').checked;
+            const billingAddr = {
+                street: document.getElementById('billingStreet').value,
+                city: document.getElementById('billingCity').value,
+                state: document.getElementById('billingState').value,
+                postalCode: document.getElementById('billingPostalCode').value,
+                country: document.getElementById('billingCountry').value
+            };
+
+            const shippingAddr = sameAsBilling ? billingAddr : {
+                // Add inputs and logic for separate shipping address if necessary
+            };
+
+            const paymentInfo = {
+                card: document.getElementById('card').value,
+                cvv: document.getElementById('cvv').value,
+                exp_month: parseInt(document.getElementById('expMonth').value, 10),
+                exp_year: parseInt(document.getElementById('expYear').value, 10),
+                name: document.getElementById('nameOnCard').value
+            };
+
+            const checkoutData = { userId, billingAddr, shippingAddr, paymentInfo };
+
+            try {
+            const response = await fetch('http://localhost:3000/checkout', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(checkoutData)
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const resultData = await response.json();
+            // Redirect to checkout-success.html with the checkout data
+            const resultDataForUrl = encodeURIComponent(JSON.stringify(resultData));
+            window.location.href = `checkout-success.html?checkoutData=${resultDataForUrl}`;
+        } catch (error) {
+            console.error('Error during checkout:', error);
+            document.getElementById('responseContainer').textContent = 'Failed to perform checkout. ' + error;
+        }
+    }
+        
+
+        
+    </script>
+</body>
+</html>
