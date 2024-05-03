@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shopping Cart</title>
+    <link rel="stylesheet" href="Nahum.css">
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelector('button').addEventListener('click', function() {
+                const userId = 'your_user_id';  // Replace 'your_user_id' with the actual user ID
+                console.log("Fetching cart details...");
+                fetch('http://localhost:3000/fetch-cart-details', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ userId: userId })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    console.log(data);
+                    displayCart(data.data);
+                })
+                .catch(error => console.error('Error fetching cart:', error));
+            });
+
+            function displayCart(cartData) {
+                const cartItemsList = document.getElementById('cartItems');
+                cartItemsList.innerHTML = ''; // Clear existing cart items
+                cartData.items.forEach(item => {
+                    const listItem = document.createElement('li');
+                    listItem.textContent = `Product ID: ${item.productId}, Quantity: ${item.quantity}`;
+                    cartItemsList.appendChild(listItem);
+                });
+                document.getElementById('cartTotal').textContent = `$${cartData.cartSubTotal}`;
+            }
+        });
+    </script>
+</head>
+<body>
+    <header>
+        <h1>GYM HAVEN</h1>
+    </header>
+    <main>
+        <section id="cart">
+            <h2>Your Cart <img src="cart_image.jpg" alt="Cart Image" id="cartImage"></h2>
+            <button>View Cart</button>
+            <ul id="cartItems">
+                <!-- Cart items will be added here dynamically -->
+            </ul>
+            <p>Total: <span id="cartTotal">$0.00</span></p>
+        </section>
+    </main>
+    <footer>
+        <p>Thank you for choosing our service!</p>
+    </footer>
+</body>
+</html>
