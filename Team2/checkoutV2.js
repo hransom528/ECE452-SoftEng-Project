@@ -28,7 +28,7 @@ async function sendConfirmationEmail(user, purchaseDetails) {
     to: user.email, // Recipient address from the user object
     subject: 'Purchase Confirmation', // Subject line
     text: `Hello, ${user.name}\n\nThank you for your purchase.\n\nOrder details:\nTotal: ${purchaseDetails.total}`, // Plain text body
-    html: `<b>Hello, ${user.name}</b><br><br>Thank you for your purchase.<br><br><b>Order details:</b><br>Total: ${purchaseDetails.total}` // HTML body content
+    html: `<b>Hello, ${user.name}</b><br><br>Thank you for your purchase.<br><br><b>Order details are located on the Gym Haven website.` // HTML body content
   });
 
   console.log('Message sent: %s', info.messageId);
@@ -88,7 +88,7 @@ async function getCartByUserId(userId) {
     const collection = db.collection('carts');
 
     // Make sure to use ObjectId for the userId if it's stored as ObjectId in the carts collection
-    const cart = await collection.findOne({ userId: new (userId) });
+    const cart = await collection.findOne({ userId: new ObjectId(userId) });
     return cart;
 }
 
@@ -231,7 +231,14 @@ async function checkoutCart(userId, billingAddr, shippingAddr, paymentInfo) {
       //-----------------------------------------
       // Send email confirmatoin of purchase
       //-----------------------------------------
-      //await sendConfirmationEmail(user, purchaseDetails);
+      // Inside your checkoutCart function, after storing purchase info in DB
+      try {
+        await sendConfirmationEmail(user, purchaseDetails);
+        console.log('Confirmation email sent successfully.');
+      } catch (error) {
+        console.error('Failed to send confirmation email:', error);
+        // Optionally, you can handle the error more specifically, e.g., retry or log it differently
+      }
 
 
       //-----------------------------------------

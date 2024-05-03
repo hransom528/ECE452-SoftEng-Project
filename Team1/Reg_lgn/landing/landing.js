@@ -18,6 +18,7 @@ function handleAuthRedirect() {
         if (accessToken) {
             sessionStorage.setItem('accessToken', accessToken);
             fetchUserData(accessToken);  // Fetch user data immediately after logging in
+
             // Clean up the URL
             history.pushState("", document.title, window.location.pathname + window.location.search);
         }
@@ -39,6 +40,7 @@ async function fetchUserData(accessToken) {
             const userInfoResponse = await fetch('http://localhost:3000/check-user', {
                 method: 'POST',
                 headers: {
+                    'Authorization': `Bearer ${accessToken}`,
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({ email: data.email }) // Now 'data' is defined

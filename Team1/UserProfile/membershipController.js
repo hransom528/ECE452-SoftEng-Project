@@ -2,32 +2,23 @@ const fetch = require('node-fetch');
 const { connectDBandClose } = require('../../dbConfig.js');
 const { ObjectId } = require('mongodb');
 const { createStripeCustomerAndUpdateDB, verifyCardAndUpdateDB, createPaymentAndProcessing } = require('../../Team3/stripe.js');
+const { getUserInfo } = require('../Reg_lgn/oAuthHandler.js');
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY); // Assuming your Stripe secret key is stored in environment variables
 
 // Function to create a Stripe token
 async function createStripeToken(paymentInfo) {
     try {
-        const response = await fetch('https://api.stripe.com/v1/tokens', {
-            method: 'POST',
-            headers: {
-                'Authorization': 'Bearer sk_test_4eC39HqLyjWDarjtT1zdp7dc', // Replace with your actual test API key
-                'Content-Type': 'application/x-www-form-urlencoded'
-            },
-            body: new URLSearchParams({
-                'card[number]': paymentInfo.card.replace(/\s/g, ''), // Remove spaces from card number
-                'card[cvc]': paymentInfo.cvv,
-                'card[exp_month]': paymentInfo.exp_month,
-                'card[exp_year]': paymentInfo.exp_year
-            }).toString()
+        const data = await stripe.tokens.create({
+            card: {
+                number: paymentInfo.card.number,
+                exp_month: paymentInfo.card.exp_month,
+                exp_year: paymentInfo.card.exp_year,
+                cvc: paymentInfo.card.cvc
+            }
         });
 
-        const data = await response.json();
-
-        if (!response.ok) {
-            throw new Error(`Error from Stripe: ${data.error && data.error.message}`);
-        }
-
         // Test card 
-        if (paymentInfo.card == "4242 4242 4242 4242") {
+        if (paymentInfo.card.number === "4242 4242 4242 4242") {
             return {
                 tokenId: 'tok_visa',
                 cardBrand: data.card.brand,
@@ -42,7 +33,6 @@ async function createStripeToken(paymentInfo) {
                 cardExpDate: `${data.card.exp_month}/${data.card.exp_year}`
             };
         }
-
     } catch (error) {
         console.error('Failed to create token:', error);
         throw error;
@@ -50,31 +40,87 @@ async function createStripeToken(paymentInfo) {
 }
   
 // Function to purchase premium membership
-async function purchasePremiumMembership(userId, cardInfo) {
+async function purchasePremiumMembership(accessToken, stripeToken) {
     try {
+        if (!stripeToken) {
+            throw new Error("Stripe token is missing.");
+        }
+
+        const userInfo = await getUserInfo(accessToken);
         const { db, client } = await connectDBandClose();
+        const user = await db.collection('users').findOne({ email: userInfo.email });
+        if (!user) {
+            client.close();
+            throw new Error("User not found.");
+        }
+
+        const result1 = await createStripeCustomerAndUpdateDB(user._id, user.email, user.name); //paymentInfo.name
         
-        // Create Stripe Token
-        const stripeToken = await createStripeToken(cardInfo);
+        const stripeCustomerId = result1.stripeCustomerId;
+        if (!result1.success) {
+          throw new Error(result1.message);
+        }
+        console.log("Stripe token is ", stripeToken);
+        const result2 = await verifyCardAndUpdateDB(user._id, stripeCustomerId, stripeToken); 
+        if (!result2.success) {
+          throw new Error(result2.message);
+        }
+        const paymentMethodId = result2.paymentMethodId;
+        const membershipFee = 19.99;
 
-        // Create Stripe customer and update DB
-        const user = await db.collection('users').findOne({ _id: ObjectId(userId) });
-        const stripeCustomerId = await createStripeCustomerAndUpdateDB(userId, user.email, user.name);
+        const result3 = await createPaymentAndProcessing(stripeCustomerId, paymentMethodId, membershipFee, 'usd', 'pm_card_visa'); //payment_method
+        if (!result3.success) {
+          throw new Error(result3.message);
+        }
 
-        // Verify Card and create charge
-        const paymentMethodId = await verifyCardAndUpdateDB(userId, stripeCustomerId, stripeToken);
-        const membershipFee = 2000; // $20 in cents for Stripe
-        const charge = await createPaymentAndProcessing(stripeCustomerId, paymentMethodId, membershipFee, 'usd');
-
-        // Update user's premium status
-        await db.collection('users').updateOne({ _id: ObjectId(userId) }, { $set: { isPremium: true } });
+        // Update user's premium status in your database
+        await db.collection('users').updateOne({ _id: user._id }, { $set: { isPremium: true } });
 
         client.close();
         return { success: true, message: "Membership purchased successfully." };
     } catch (error) {
         console.error('Purchase Premium Membership Error:', error);
+        client?.close(); // Ensure to close the client if an error occurs
         return { success: false, message: error.message };
     }
 }
 
-module.exports = { purchasePremiumMembership };
+async function cancelPremiumMembership(req, res) {
+    const accessToken = getAccessToken(req);
+    if (!accessToken) {
+        res.writeHead(401, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ message: 'Unauthorized: No access token provided' }));
+        return;
+    }
+
+    try {
+        const userInfo = await getUserInfo(accessToken);
+        const { db, client } = await connectDBandClose();
+        const user = await db.collection('users').findOne({ email: userInfo.email });
+        if (!user) {
+            client.close();
+            res.writeHead(404, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ message: 'User not found' }));
+            return;
+        }
+
+        // Cancel the Stripe subscription if there's one active
+        if (user.stripeSubscriptionId) {
+            await stripe.subscriptions.del(user.stripeSubscriptionId);
+        }
+
+        // Update the user's premium status in the database
+        await db.collection('users').updateOne({ _id: user._id }, { $set: { isPremium: false } });
+
+        client.close();
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ success: true, message: "Premium membership cancelled successfully." }));
+    } catch (error) {
+        console.error('Error cancelling premium membership:', error);
+        client?.close();
+        res.writeHead(500, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ success: false, message: error.message }));
+    }
+}
+
+module.exports = { purchasePremiumMembership, cancelPremiumMembership };

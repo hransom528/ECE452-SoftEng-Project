@@ -56,12 +56,24 @@ function displayLoading() {
 }
 
 function displayResponse(response) {
-    const container = document.getElementById('responses');  // Assuming you have a container for responses
+    const container = document.getElementById('responses');  // Container for responses
     container.innerHTML = '';  // Clear previous content
 
+    const responseText = response.data || response.result;  // Extract response content
+
+    // Convert the response content to HTML manually
+    let htmlContent = responseText
+        .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")  // Bold text (**text**)
+        .replace(/__(.*?)__/g, "<em>$1</em>")  // Italic text (__text__)
+        .replace(/\*(.*?)\*/g, "<em>$1</em>")  // Italic text (*text*)
+        .replace(/^- (.*?)$/gm, "<li>$1</li>")  // Bulleted list item (- item)
+        .replace(/\n<li>/g, "<ul><li>")  // Wrap list items
+        .replace(/<\/li>\n/g, "</li></ul>\n");  // Close list
+
+    // Create a new div to hold the formatted HTML content
     const responseDiv = document.createElement('div');
-    responseDiv.id = "aiResponse";  // Assigning a specific ID for styling purposes
-    responseDiv.textContent = response.data || response.result;  // Modify as needed to extract the right info
+    responseDiv.id = "aiResponse";  // ID for styling consistency
+    responseDiv.innerHTML = htmlContent;  // Assign the converted HTML content
 
     container.appendChild(responseDiv);
 }

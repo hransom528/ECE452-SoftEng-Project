@@ -9,15 +9,50 @@ EasyPost API
 Google Address Validation API
 
 ------------
-Checkout.js
+checkoutV2.js
 ------------
-This is a Checkout implementation that handles the checkout portion of US-6 and the whole UC-12
+This is a Checkout implementation that handles the checkout portion of US-6
 
+Usage: 
+Method: POST
+Endpoint:http://localhost:3000/checkout
+
+Body (JSON):
+{
+    "userId": "662fd390bbe6d16f3f91f21b",
+
+    "billingAddr":{
+        "street": "1600 Amphitheatre Pkwy",
+        "city": "Mountain View",
+        "state": "CA", 
+        "postalCode": "94043",
+        "country": "USA"
+    },
+    "shippingAddr":{
+        "street": "1600 Amphitheatre Pkwy",
+        "city": "Mountain View",
+        "state": "CA", 
+        "postalCode": "94043",
+        "country": "USA"
+    },
+    "paymentInfo": {
+        "card": "4242 4242 4242 4242",
+        "cvv": "314",
+        "exp_month": 5,
+        "exp_year": 2024,
+        "name": "Customer One"
+    }
+}
+You can also use frontend file called checkout.html
+------------
+purchaseHisotry.js
+------------
+This is a way for a user to retireve all the purcahses
 Usage:
-Checkout usage w/ curl
-//curl -X POST -H "Content-Type: application/json" -d '{"userId": "66034fe1c4c80919996b4ec4", "cartId": "ObjectId('66035461382bf12efaa6386b')", "address": {"street": "46 Ray Street", "city": "New Brunswick", "state": "NJ", "zip": "08844"}, "paymentToken": "tok_visa", "stripeCustomerId": "cus_PnYvFk6K6O5fY8"}' http://localhost:3000/checkout
+Method: GET
+Endpoint: http://localhost:3000/retrieve-purchase-history/662fd390bbe6d16f3f91f21b
 
-Get Purchase History w/ curl:
+You can also use frontend file called purchaseHisotry.html
 
 ------------
 Cart.js

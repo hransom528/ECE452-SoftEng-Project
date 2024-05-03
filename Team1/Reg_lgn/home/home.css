@@ -1,11 +1,6 @@
-/* body {
-  font-family: 'Roboto', sans-serif;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 100vh;
-  background-color: #151b29;
-} */
+body {
+  background-color: #e9ecef;
+}
 
 h1 {
     padding-top: 20px;
@@ -140,4 +135,31 @@ img {
   /* margin: 1.6666666%; */
   margin: calc(10%/6);
   padding-top: 30px;
+}
+
+#THEh4 {
+  color: #4895ef;
+  display: inline;
+}
+
+#supportBtn {
+  background: #457b9d;
+  color: #f7ede2; /* Text color consistent with other buttons */
+  border: 2px solid;
+  border-radius: 10px;
+  padding: 1em 2.5em;
+  font-size: 1em;
+  margin: 20px 0; /* Add more spacing above and below the button */
+  transition: color 0.25s, border-color 0.25s, box-shadow 0.25s, transform 0.25s;
+}
+
+#supportBtn:hover {
+  border-color: #457b9d;
+  border-radius: 10px;
+  background: #219ebc ;
+  color: white;
+  box-shadow: 0 0.5em 0.5em -0.4em #90dbf4;
+  transform: translateY(-0.25em);
+  cursor: pointer;
+  font-style: bold;
 }

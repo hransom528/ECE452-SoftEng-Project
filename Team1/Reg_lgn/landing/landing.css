@@ -1,17 +1,12 @@
-/* body {
-  font-family: 'Roboto', sans-serif;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 100vh;
-  background-color: #151b29;
-} */
+body {
+  background-color: #e9ecef;
+}
 
 h1 {
     padding-left: 15px;
     padding-top: 20px;
     font-family: 'Roboto Condensed', sans-serif;
-    font-weight: 900;
+    font-weight: 800;
     font-optical-sizing: auto;
     font-style: bold;
 }

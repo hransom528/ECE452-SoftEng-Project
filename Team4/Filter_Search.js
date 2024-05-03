@@ -11,11 +11,11 @@ async function productFilterQuery(query) {
         const filteredProducts = await products.find(query)
             .toArray();
 
-        const productIds = filteredProducts.map(product => product._id.toString());
+        const productNames = filteredProducts.map(product => product.name);
 
         //console.log('Filtered Product IDS:', productIds);
 
-        return productIds;
+        return productNames;
     } catch (error) {
         console.error("An error occurred during fetching filtered products:", error);
         throw error;

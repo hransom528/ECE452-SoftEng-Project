@@ -22,7 +22,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
         // Update the page with the user's name
         const greeting = document.getElementById('THEh4');  
-        greeting.textContent = `Hi ${userInfo.name}! Welcome to our platform and thank you for choosing Gym Haven! `;
+        greeting.textContent = `${userInfo.name}`;
 
     } catch (error) {
         console.error('Error fetching user info:', error);
