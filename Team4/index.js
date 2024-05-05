@@ -18,7 +18,7 @@ searchInput.addEventListener("input", (e) => {
     searchString = e.target.value;
     fetchData();
     filterProducts();
-    // TODO: Perform autocomplete
+    
 });
 
 brandInput.addEventListener("input", (e) => {
