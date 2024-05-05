@@ -50,11 +50,11 @@ const {
   updateUserShippingAddress,
   deleteUserShippingAddress,
   deleteUserProfile,
-} = require("./Team1/userProfile");
+} = require("./Team1/UserProfile/userProfile");
 const {
   createPremiumMembership,
   cancelPremiumMembersçhip,
-} = require("./Team1/membershipManagement.js");
+} = require("./Team1/UserProfile/membershipManagement.js");
 const { registerUser, loginUser } = require("./Team1/Reg_lgn/regLogin");
 const {
   getAccessTokenFromCode,
