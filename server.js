@@ -7,6 +7,7 @@ const { ObjectId } = require("mongodb");
 const http = require("http");
 const url = require("url");
 
+
 const { StringDecoder } = require("string_decoder");
 const {
   createStripeCustomerAndUpdateDB,
@@ -39,6 +40,7 @@ const {
   addToCart,
   removeFromCart,
   getCart,
+  getUserIdFromEmail
 } = require("./Team2/Cart.js");
 
 const {
@@ -50,8 +52,8 @@ const {
   deleteUserProfile,
 } = require("./Team1/UserProfile/userProfile");
 const {
-  purchasePremiumMembership,
-  cancelPremiumMembership,
+  createPremiumMembership,
+  cancelPremiumMembersçhip,
 } = require("./Team1/UserProfile/membershipManagement.js");
 const { registerUser, loginUser } = require("./Team1/Reg_lgn/regLogin");
 const {
@@ -550,109 +552,153 @@ const server = http.createServer(async (req, res) => {
             result = await addUserShippingAddress(requestBody);
             break;
 
-          case "update-listings":
-            // Validate request body structure and content
-            if (!Array.isArray(requestBody.productIds) || requestBody.productIds.length === 0) {
-              res.writeHead(400, { "Content-Type": "application/json" });
-              res.end(JSON.stringify({ message: "Product IDs must be a non-empty array." }));
-              responseSent = true;
-              return;
-            }
-            if (typeof requestBody.updateFields !== "object" || Object.keys(requestBody.updateFields).length === 0) {
-              res.writeHead(400, { "Content-Type": "application/json" });
-              res.end(JSON.stringify({ message: "Update fields must be a non-empty object." }));
-              responseSent = true;
-              return;
-            }
-            if (requestBody.productIds.some(id => !ObjectId.isValid(id))) {
-              res.writeHead(400, { "Content-Type": "application/json" });
-              res.end(JSON.stringify({ message: "One or more product IDs are invalid." }));
-              responseSent = true;
-              return;
-            }
-            if (requestBody.unsetFields && !Array.isArray(requestBody.unsetFields)) {
-              res.writeHead(400, { "Content-Type": "application/json" });
-              res.end(JSON.stringify({ message: "Unset fields must be an array if provided." }));
-              responseSent = true;
-              return;
-            }
-            try {
-              const result = await updateListings(
-                requestBody.productIds,
-                requestBody.updateFields,
-                requestBody.unsetFields || []
-              );
-              res.writeHead(200, { "Content-Type": "application/json" });
-              res.end(JSON.stringify({ message: "Listings updated successfully.", result: result }));
-            } catch (error) {
-              console.error("Error updating listings:", error);
-              res.writeHead(500, { "Content-Type": "application/json" });
-              res.end(JSON.stringify({ message: "Internal server error while updating listings." }));
-            }
-            break;
-
+            case "update-listings":
+                // Validate request body structure and content
+                if (!Array.isArray(requestBody.productIds) || requestBody.productIds.length === 0) {
+                    res.writeHead(400, { "Content-Type": "application/json" });
+                    res.end(JSON.stringify({ message: "Product IDs must be a non-empty array." }));
+                    responseSent = true;
+                    return;
+                }
+                if (typeof requestBody.updateFields !== "object" || Object.keys(requestBody.updateFields).length === 0) {
+                    res.writeHead(400, { "Content-Type": "application/json" });
+                    res.end(JSON.stringify({ message: "Update fields must be a non-empty object." }));
+                    responseSent = true;
+                    return;
+                }
+                if (requestBody.productIds.some(id => !ObjectId.isValid(id))) {
+                    res.writeHead(400, { "Content-Type": "application/json" });
+                    res.end(JSON.stringify({ message: "One or more product IDs are invalid." }));
+                    responseSent = true;
+                    return;
+                }
+                if (requestBody.unsetFields && !Array.isArray(requestBody.unsetFields)) {
+                    res.writeHead(400, { "Content-Type": "application/json" });
+                    res.end(JSON.stringify({ message: "Unset fields must be an array if provided." }));
+                    responseSent = true;
+                    return;
+                }
+                try {
+                    const result = await updateListings(
+                        requestBody.productIds,
+                        requestBody.updateFields,
+                        requestBody.unsetFields || []
+                    );
+                    res.writeHead(200, { "Content-Type": "application/json" });
+                    res.end(JSON.stringify({ message: "Listings updated successfully.", result: result }));
+                } catch (error) {
+                    console.error("Error updating listings:", error);
+                    res.writeHead(500, { "Content-Type": "application/json" });
+                    res.end(JSON.stringify({ message: "Internal server error while updating listings." }));
+                }
+                break;
+            
           case "add-to-cart":
-            if (
-              !ObjectId.isValid(requestBody.userId) ||
-              !ObjectId.isValid(requestBody.productId) ||
-              typeof requestBody.quantity !== "number" ||
-              requestBody.quantity < 1
-            ) {
+            if (!token) {
               res.writeHead(400, { "Content-Type": "application/json" });
-              res.end(
-                JSON.stringify({ message: "Invalid input for adding to cart" })
-              );
-              return; // Exit the function here to prevent further execution
+              res.end(JSON.stringify({ message: "Access Token is required" }));
+              return;
             }
-
-            // Call addToCart function
-            result = await addToCart(
-              requestBody.userId,
-              requestBody.productId,
-              requestBody.quantity
-            );
-            res.writeHead(200, { "Content-Type": "application/json" });
-            res.end(JSON.stringify(result)); // Send back the updated cart
-            return; // Make sure to return here to stop further execution and prevent additional responses
-
-          case "remove-from-cart":
-            if (
-              !ObjectId.isValid(requestBody.userId) ||
-              !ObjectId.isValid(requestBody.productId) ||
-              typeof requestBody.quantityToRemove !== "number" ||
-              requestBody.quantityToRemove < 1
-            ) {
-              res.writeHead(400, { "Content-Type": "application/json" });
-              res.end(
-                JSON.stringify({
-                  message: "Invalid input for removing from cart",
-                })
-              );
-              return; // Exit this case block, ensuring no further code in this case is executed
-            }
-
-            // Assuming removeFromCart function is defined and properly handles the logic
             try {
+              // Use access token to get user's email from Google account
+              const userInfo = await getUserInfo(token); // Assume this returns an object with an email property
+              const email = userInfo.email;
+
+              if (!email) {
+                res.writeHead(400, { "Content-Type": "application/json" });
+                res.end(JSON.stringify({ message: "Email not found in token" }));
+                return;
+              }
+
+              const userId = await getUserIdFromEmail(email); //
+              
+              if (!userId) {
+                res.writeHead(404, { "Content-Type": "application/json" });
+                res.end(JSON.stringify({ message: "User not found" }));
+                return;
+              }
+
+              const result = await addToCart(
+                userId,
+                requestBody.ProductId,
+                requestBody.Quantity
+              );
+
+              // Send response just once, only here, without earlier header setting
+              res.writeHead(200, { "Content-Type": "application/json" });
+              res.end(JSON.stringify({ message: "Item added to cart", cart: result }));
+            } catch (error) {
+              res.writeHead(500, { "Content-Type": "application/json" });
+              res.end(JSON.stringify({ message: "Internal server error", error: error.message }));
+            }
+            break
+          
+              
+          case "remove-from-cart":
+            if (!token) {
+              res.writeHead(400, { "Content-Type": "application/json" });
+              res.end(JSON.stringify({ message: "Access Token is required" }));
+              return;
+            }
+      
+            try {
+              // Use access token to get user's email from Google account
+              const userInfo = await getUserInfo(token); // Assume this returns an object with an email property
+              const email = userInfo.email;
+      
+              if (!email) {
+                  res.writeHead(400, { "Content-Type": "application/json" });
+                  res.end(JSON.stringify({ message: "Email not found in token" }));
+                  return;
+              }
+              const userId = await getUserIdFromEmail(email);
+
+              if (!userId) {
+                res.writeHead(404, { "Content-Type": "application/json" });
+                res.end(JSON.stringify({ message: "User not found" }));
+                return;
+              } 
+
+              if (
+                  !ObjectId.isValid(requestBody.productId) ||
+                  typeof requestBody.quantityToRemove !== "number" ||
+                  requestBody.quantityToRemove < 1
+              ) {
+                  res.writeHead(400, { "Content-Type": "application/json" });
+                  res.end(
+                      JSON.stringify({
+                          message: "Invalid input for removing from cart",
+                    // Log the entire request body
+                      })
+                  );
+                  return;
+              }
+              console.log("ProductId:", requestBody.productId);
+              console.log("Quantity to Remove:", requestBody.quantityToRemove);
+              console.log("ProductId Valid:", ObjectId.isValid(requestBody.productId));
+              console.log("Quantity Type and Value:", typeof requestBody.quantityToRemove, requestBody.quantityToRemove);
+
               const result = await removeFromCart(
-                requestBody.userId,
+                userId,
                 requestBody.productId,
                 requestBody.quantityToRemove
               );
+
               res.writeHead(200, { "Content-Type": "application/json" });
-              res.end(JSON.stringify(result)); // Send back the updated cart
+              res.end(JSON.stringify({ message: "Item removed from cart", cart: result }));
             } catch (error) {
               console.error("Error removing item from cart:", error);
               res.writeHead(500, { "Content-Type": "application/json" });
               res.end(
                 JSON.stringify({
                   message: "Error handling request",
-                  error: error.toString(),
+                  error: error.message,
                 })
               );
             }
-            return;
+            break;
 
-          //break here
+                 
 
           case "update-discount":
             // Make sure requestBody has the necessary fields
