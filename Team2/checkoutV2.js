@@ -226,8 +226,8 @@ async function checkoutCart(userId, billingAddr, shippingAddr, paymentInfo) {
         OrderStatus: "pending"
       };
 
-      // Insert purchase details into 'purchases' collection
-      await db.collection('purchases').insertOne(purchaseDetails);
+      // Insert purchase details into 'orders' collection
+      await db.collection('orders').insertOne(purchaseDetails);
       //-----------------------------------------
       // Send email confirmatoin of purchase
       //-----------------------------------------
